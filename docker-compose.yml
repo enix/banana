@@ -1,0 +1,14 @@
+version: "3.4"
+
+services:
+  client:
+    image: docker-registry.enix.io/products/banana/client:dev
+    build:
+      context: ./client
+      target: bundler
+    ports:
+      - 3000:3000
+    volumes:
+      - ./client/src:/app/src
+    restart: unless-stopped
+    command: yarn start

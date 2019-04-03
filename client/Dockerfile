@@ -6,7 +6,7 @@ ENV PATH /app/node_modules/.bin:$PATH
 
 COPY package.json /app
 COPY src /app/src
-COPY public /app/public
+COPY res/public /app/public
 
 RUN yarn
 
@@ -30,10 +30,10 @@ FROM nginx:1.15-alpine as runner
 
 RUN rm -rf /etc/nginx/conf.d/*
 
-COPY ./docker/nginx/* /etc/nginx/conf.d/
+COPY res/nginx.conf /etc/nginx/conf.d/nginx.conf
 # COPY ./docker/tls/** /etc/nginx/tls/
 COPY --from=builder /app/build /usr/share/nginx/html
 
-EXPOSE 443
+EXPOSE 80 443
 
 CMD ["nginx", "-g", "daemon off;"]
