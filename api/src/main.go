@@ -1,9 +1,11 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
 
+	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )
@@ -19,6 +21,14 @@ func setupRouter() *gin.Engine {
 	// Ping test
 	r.GET("/ping", func(c *gin.Context) {
 		c.String(http.StatusOK, "pong")
+	})
+
+	r.GET("/buckets", func(c *gin.Context) {
+		var o ObjectStorage
+		o.Connect("https://object-storage.r1.nxs.enix.io/", credentials.NewStaticCredentials("1ff11a90064045c39ef40f73bd1838fb", "e5a508a5c0b748be8fc78a77a83b8a68", ""))
+		list, _ := o.ListBuckets()
+		out, _ := json.Marshal(list)
+		c.String(http.StatusOK, string(out))
 	})
 
 	// Get user value
