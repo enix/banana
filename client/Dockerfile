@@ -10,6 +10,8 @@ COPY res/public /app/public
 
 RUN yarn
 
+CMD ["yarn", "start"]
+
 # ---------------------------
 
 FROM node:8.12.0 as builder

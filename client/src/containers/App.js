@@ -12,7 +12,8 @@ class App extends Component {
   render() {
     return (
       <div className="App">
-        <span>isSetup: {this.props.isSetup ? "OK" : "KO"} </span>
+        <h1>isSetup: {this.props.isSetup ? "OK" : "KO"} </h1>
+        <button type="button" className="btn btn-primary">Primary</button>
       </div>
     );
   }
