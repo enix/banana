@@ -1,0 +1,39 @@
+FROM node:8.12.0 as bundler
+
+WORKDIR /app
+
+ENV PATH /app/node_modules/.bin:$PATH
+
+COPY package.json /app
+COPY src /app/src
+COPY public /app/public
+
+RUN yarn
+
+# ---------------------------
+
+FROM node:8.12.0 as builder
+
+WORKDIR /app
+
+COPY --from=bundler /app /app
+
+RUN ls
+
+ENV PATH /app/node_modules/.bin:$PATH
+
+RUN yarn run build
+
+# ---------------------------
+
+FROM nginx:1.15-alpine as runner
+
+RUN rm -rf /etc/nginx/conf.d/*
+
+COPY ./docker/nginx/* /etc/nginx/conf.d/
+# COPY ./docker/tls/** /etc/nginx/tls/
+COPY --from=builder /app/build /usr/share/nginx/html
+
+EXPOSE 443
+
+CMD ["nginx", "-g", "daemon off;"]
