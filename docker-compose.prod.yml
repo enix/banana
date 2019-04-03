@@ -8,3 +8,12 @@ services:
     ports:
       - 3000:80
     restart: unless-stopped
+
+  api:
+    image: docker-registry.enix.io/products/banana/api:prod
+    build:
+      context: ./api
+      target: prod
+    ports:
+      - 8080:80
+    restart: unless-stopped

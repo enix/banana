@@ -10,6 +10,14 @@ services:
       - 3000:3000
     volumes:
       - ./client/src:/app/src
-      - ./client/node_modules:/app/node_modules
-      - ./client/res/public:/app/public
+    restart: unless-stopped
+
+  api:
+    image: docker-registry.enix.io/products/banana/api:dev
+    build:
+      context: ./api
+    ports:
+      - 8080:80
+    volumes:
+      - ./api/src:/go/src/enix.io/banana/src
     restart: unless-stopped
