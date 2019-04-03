@@ -9,6 +9,9 @@ const ActionsTypes = keyMirror({
 
   PING_API: null,
   PING_API_FAILURE: null,
+
+  LIST_BUCKETS: null,
+  LIST_BUCKETS_SUCCESS: null,
 });
 
 export default ActionsTypes;

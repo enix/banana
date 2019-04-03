@@ -7,7 +7,16 @@ const api = {
   }),
   pingApiFailure: (error, ajax) => ({
     type: ActionsTypes.PING_API_FAILURE,
-    payload: { error },
+    payload: { error, ajax },
+  }),
+
+  listBuckets: () => ({
+    type: ActionsTypes.LIST_BUCKETS,
+    payload: {},
+  }),
+  listBucketsSuccess: (response, ajax) => ({
+    type: ActionsTypes.LIST_BUCKETS_SUCCESS,
+    payload: { response, ajax },
   }),
 };
 

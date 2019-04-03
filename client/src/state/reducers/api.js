@@ -11,6 +11,9 @@ const api = {
       isSetup: { $set: false },
     },
   }),
+  [ActionsTypes.LIST_BUCKETS_SUCCESS]: (state, { response: { data }}) => update(state, {
+    buckets: { $set: data }
+  }),
 };
 
 export default api;

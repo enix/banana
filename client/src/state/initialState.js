@@ -4,6 +4,7 @@ const initialState = {
     title: 'Banana',
     isSetup: false,
   },
+  buckets: {},
 };
 
 export default initialState;

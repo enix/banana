@@ -10,8 +10,16 @@ function* pingApi() {
   }));
 }
 
+function* listBuckets() {
+  yield put(ActionsCreators.fireAjax({
+    url: 'http://localhost:8080/buckets',
+    onSuccess: ActionsCreators.listBucketsSuccess,
+  }));
+}
+
 const sagas = function* () {
   yield takeLatest(ActionsTypes.PING_API, pingApi);
+  yield takeLatest(ActionsTypes.LIST_BUCKETS, listBuckets);
 };
 
 export default sagas;

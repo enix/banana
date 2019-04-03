@@ -17,10 +17,12 @@ class App extends Component {
         <button
           type="button"
           className="btn btn-primary"
-          onClick={() => this.props.actions.pingApi()}
+          onClick={() => this.props.actions.listBuckets()}
         >
           Primary
         </button>
+        <br />
+        {JSON.stringify(this.props.buckets, null, 2)}
       </div>
     );
   }
@@ -28,6 +30,7 @@ class App extends Component {
 
 const mapStateToProps = state => ({
   isSetup: state.app.isSetup,
+  buckets: state.buckets,
 });
 
 const mapDispatchToProps = dispatch => ({
