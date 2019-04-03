@@ -1,8 +1,10 @@
 import app from './app';
+import api from './api';
 import initialState from '../initialState';
 
 const reducersMap = {
   ...app,
+  ...api,
   leaveStateUnchanged: state => state,
 };
 

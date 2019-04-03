@@ -10,7 +10,7 @@ COPY res/public /app/public
 
 RUN yarn
 
-CMD ["yarn", "start"]
+CMD ["bash", "-c", "cd /app && yarn start"]
 
 # ---------------------------
 

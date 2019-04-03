@@ -5,6 +5,7 @@ import { connect } from 'react-redux'
 import ActionCreators from '../state/actions';
 
 class App extends Component {
+
   componentDidMount() {
     this.props.actions.setupApp();
   }
@@ -13,7 +14,13 @@ class App extends Component {
     return (
       <div className="App">
         <h1>isSetup: {this.props.isSetup ? "OK" : "KO"} </h1>
-        <button type="button" className="btn btn-primary">Primary</button>
+        <button
+          type="button"
+          className="btn btn-primary"
+          onClick={() => this.props.actions.pingApi()}
+        >
+          Primary
+        </button>
       </div>
     );
   }
