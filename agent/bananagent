@@ -1,0 +1,46 @@
+#! /usr/bin/env bash
+
+function run {
+  echo + $@
+  $@
+}
+
+function checkForEnvVar {
+  if [ -z "$2" ]; then
+    echo "please set the $1 environment variable"
+    exit 1
+  fi
+}
+
+function usage {
+  echo "usage:"
+  echo -e "\t$0 backup <name> <directory>"
+  echo -e "\t$0 restore <name> <time> <output directory>"
+  exit 1
+}
+
+if [ $# -lt 3 ]; then usage; fi
+
+checkForEnvVar API_ENDPOINT "${API_ENDPOINT}"
+checkForEnvVar BUCKET_NAME "${BUCKET_NAME}"
+checkForEnvVar AWS_ACCESS_KEY_ID "${AWS_ACCESS_KEY_ID}"
+checkForEnvVar AWS_SECRET_ACCESS_KEY "${AWS_SECRET_ACCESS_KEY}"
+
+export PASSPHRASE=mySuperSecurePassword
+export ENDPOINT="s3://${API_ENDPOINT}/${BUCKET_NAME}/$2"
+
+cmd=""
+
+if [[ $1 == "backup" ]]; then
+  cmd="duplicity --full-if-older-than 1W $3 ${ENDPOINT} ${@:4}"
+fi
+
+if [[ $1 == "restore" ]]; then
+  if [ $# -lt 4 ]; then usage; fi
+  cmd="duplicity --restore-time $3 ${ENDPOINT} $4 ${@:5}"
+fi
+
+run ${cmd}
+
+unset PASSPHRASE
+unset ENDPOINT
