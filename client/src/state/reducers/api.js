@@ -1,7 +1,7 @@
 import update from 'immutability-helper';
 
-import extendUpdate from '../../helpers/extendUpdate';
 import ActionsTypes from '../../constants/ActionsTypes';
+import { extendUpdate } from '../../helpers';
 
 extendUpdate(update);
 
@@ -11,7 +11,7 @@ const api = {
       isSetup: { $set: false },
     },
   }),
-  [ActionsTypes.LIST_BUCKETS_SUCCESS]: (state, { response: { data }}) => update(state, {
+  [ActionsTypes.LIST_BACKUP_CONTAINERS_SUCCESS]: (state, { response: { data }}) => update(state, {
     buckets: { $set: data }
   }),
 };

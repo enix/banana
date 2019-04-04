@@ -1,7 +1,7 @@
 import update from 'immutability-helper';
 
-import extendUpdate from '../../helpers/extendUpdate';
 import ActionsTypes from '../../constants/ActionsTypes';
+import { extendUpdate } from '../../helpers';
 
 extendUpdate(update);
 

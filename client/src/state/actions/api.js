@@ -5,18 +5,18 @@ const api = {
     type: ActionsTypes.PING_API,
     payload: {},
   }),
-  pingApiFailure: (error, ajax) => ({
+  pingApiFailure: (error) => ({
     type: ActionsTypes.PING_API_FAILURE,
-    payload: { error, ajax },
+    payload: { error },
   }),
 
-  listBuckets: () => ({
-    type: ActionsTypes.LIST_BUCKETS,
+  listBackupContainers: () => ({
+    type: ActionsTypes.LIST_BACKUP_CONTAINERS,
     payload: {},
   }),
-  listBucketsSuccess: (response, ajax) => ({
-    type: ActionsTypes.LIST_BUCKETS_SUCCESS,
-    payload: { response, ajax },
+  listBackupContainersSuccess: (response) => ({
+    type: ActionsTypes.LIST_BACKUP_CONTAINERS_SUCCESS,
+    payload: { response },
   }),
 };
 

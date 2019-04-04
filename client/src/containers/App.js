@@ -17,7 +17,7 @@ class App extends Component {
         <button
           type="button"
           className="btn btn-primary"
-          onClick={() => this.props.actions.listBuckets()}
+          onClick={() => this.props.actions.listBackupContainers()}
         >
           Primary
         </button>
