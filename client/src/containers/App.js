@@ -9,6 +9,12 @@ class App extends Component {
 
   componentDidMount() {
     this.props.actions.setupApp();
+    console.log(generateRestoreCmd({
+      name: 'etc',
+      target: '/restored-etc',
+      time: '20190404T130959Z',
+      only: 'ok',
+    }));
   }
 
   test = () => {
