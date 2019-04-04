@@ -1,15 +1,17 @@
-package main
+package routes
 
 import (
 	"net/http"
 
-	"enix.io/banana/src/routes"
 	"enix.io/banana/src/storage"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )
 
-func handleClientRequest(handler func(*gin.Context) (int, interface{})) func(context *gin.Context) {
+// RequestHandler : Shortand for func type that handle client requests
+type RequestHandler = func(*gin.Context) (int, interface{})
+
+func handleClientRequest(handler RequestHandler) func(context *gin.Context) {
 	return func(context *gin.Context) {
 		status, data := handler(context)
 
@@ -37,7 +39,7 @@ func InitializeRouter(store *storage.ObjectStorage) (*gin.Engine, error) {
 	router.Use(cors.Default())
 
 	router.GET("/ping", handleClientRequest(handlePingRequest))
-	router.GET("/buckets", handleClientRequest(routes.ServeBucketsList(store)))
+	router.GET("/buckets", handleClientRequest(ServeBucketsList(store)))
 
 	return router, nil
 }

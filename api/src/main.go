@@ -5,6 +5,7 @@ import (
 	"os"
 
 	"enix.io/banana/src/logger"
+	"enix.io/banana/src/routes"
 	"enix.io/banana/src/storage"
 	"github.com/aws/aws-sdk-go/aws/credentials"
 )
@@ -36,7 +37,7 @@ func openStorageAPIConnection() (*storage.ObjectStorage, error) {
 func main() {
 	store, err := openStorageAPIConnection()
 	Assert(err)
-	router, err := InitializeRouter(store)
+	router, err := routes.InitializeRouter(store)
 	Assert(err)
 	router.Run(":80")
 }
