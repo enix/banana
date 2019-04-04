@@ -1,4 +1,4 @@
-package main
+package storage
 
 import (
 	"github.com/aws/aws-sdk-go/aws"
