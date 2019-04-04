@@ -21,3 +21,14 @@ services:
     volumes:
       - ./api/src:/go/src/enix.io/banana/src
     restart: unless-stopped
+
+  vault:
+    image: vault:latest
+    ports:
+      - 7777:7777
+    restart: unless-stopped
+    cap_add:
+      - IPC_LOCK
+    environment:
+      - VAULT_DEV_LISTEN_ADDRESS=0.0.0.0:7777
+      - VAULT_DEV_ROOT_TOKEN_ID=myroot
