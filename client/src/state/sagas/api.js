@@ -24,9 +24,18 @@ function* listBackupContainers() {
   catch (_) {}
 }
 
+function* listBackupsInContainer({ payload: { containerName } }) {
+  try {
+    const response = yield fireAjax({ uri: `/backups/${containerName}` });
+    yield put(ActionsCreators.listBackupsInContainerSuccess(containerName, response))
+  }
+  catch (_) {}
+}
+
 const sagas = function* () {
   yield takeLatest(ActionsTypes.PING_API, pingApi);
   yield takeLatest(ActionsTypes.LIST_BACKUP_CONTAINERS, listBackupContainers);
+  yield takeLatest(ActionsTypes.LIST_BACKUPS_IN_CONTAINER, listBackupsInContainer);
 };
 
 export default sagas;

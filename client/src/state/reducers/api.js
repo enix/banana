@@ -12,8 +12,30 @@ const api = {
     },
   }),
   [ActionsTypes.LIST_BACKUP_CONTAINERS_SUCCESS]: (state, { response: { data }}) => update(state, {
-    buckets: { $set: data }
+    containers: { $set: data }
   }),
+  [ActionsTypes.LIST_BACKUPS_IN_CONTAINER_SUCCESS]: (state, { response: { data }, containerName }) => {
+    let updatedContainers;
+
+    if (Array.isArray(state.containers)) {
+      updatedContainers = state.containers.map(c => {
+        if (c.name === containerName) {
+          c.contents = data;
+        }
+        return c;
+      });
+    }
+    else {
+      updatedContainers = [{
+        name: containerName,
+        contents: data,
+      }]
+    }
+
+    return update(state, {
+      containers: { $set: updatedContainers },
+    });
+  },
 };
 
 export default api;

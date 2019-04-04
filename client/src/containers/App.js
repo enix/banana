@@ -3,12 +3,18 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux'
 
 import ActionCreators from '../state/actions';
+import { generateRestoreCmd } from '../helpers';
 
 class App extends Component {
 
   componentDidMount() {
     this.props.actions.setupApp();
   }
+
+  test = () => {
+    this.props.actions.listBackupContainers();
+    setTimeout(() => this.props.actions.listBackupsInContainer('banana-test2'), 1000);
+  };
 
   render() {
     return (
@@ -17,12 +23,12 @@ class App extends Component {
         <button
           type="button"
           className="btn btn-primary"
-          onClick={() => this.props.actions.listBackupContainers()}
+          onClick={this.test}
         >
           Primary
         </button>
         <br />
-        {JSON.stringify(this.props.buckets, null, 2)}
+        {JSON.stringify(this.props.containers, null, 2)}
       </div>
     );
   }
@@ -30,7 +36,7 @@ class App extends Component {
 
 const mapStateToProps = state => ({
   isSetup: state.app.isSetup,
-  buckets: state.buckets,
+  containers: state.containers,
 });
 
 const mapDispatchToProps = dispatch => ({

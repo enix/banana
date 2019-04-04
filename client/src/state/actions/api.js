@@ -18,6 +18,15 @@ const api = {
     type: ActionsTypes.LIST_BACKUP_CONTAINERS_SUCCESS,
     payload: { response },
   }),
+
+  listBackupsInContainer: (containerName) => ({
+    type: ActionsTypes.LIST_BACKUPS_IN_CONTAINER,
+    payload: { containerName },
+  }),
+  listBackupsInContainerSuccess: (containerName, response) => ({
+    type: ActionsTypes.LIST_BACKUPS_IN_CONTAINER_SUCCESS,
+    payload: { containerName, response },
+  }),
 };
 
 export default api;

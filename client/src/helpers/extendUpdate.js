@@ -1,6 +1,6 @@
 import deepmerge from 'deepmerge';
 
-export default function extendUpdate(update) {
+function extendUpdate(update) {
   update.extend('$auto', (value, object) => {
     return object
       ? update(object, { $merge: deepmerge(object, value) })
@@ -20,3 +20,5 @@ export default function extendUpdate(update) {
 
   return update;
 };
+
+export default extendUpdate;
