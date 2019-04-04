@@ -11,14 +11,24 @@ import (
 
 func handleClientRequest(handler func(*gin.Context) (int, interface{})) func(context *gin.Context) {
 	return func(context *gin.Context) {
-		context.JSON(handler(context))
+		status, data := handler(context)
+
+		if dataAsError, ok := data.(error); ok {
+			context.JSON(status, map[string]string{"error": dataAsError.Error()})
+			return
+		}
+
+		if dataAsString, ok := data.(string); ok {
+			context.JSON(status, map[string]string{"response": dataAsString})
+			return
+		}
+
+		context.JSON(status, data)
 	}
 }
 
 func handlePingRequest(context *gin.Context) (int, interface{}) {
-	return http.StatusOK, map[string]string{
-		"response": "pong",
-	}
+	return http.StatusOK, "pong"
 }
 
 // InitializeRouter : Initialize all server routes
