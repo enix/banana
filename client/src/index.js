@@ -9,10 +9,6 @@ import storeApp from './state/reducers';
 import sagas from './state/sagas';
 import registerServiceWorker from './registerServiceWorker';
 
-import './assets/vendor/bootstrap/css/bootstrap.css';
-import './assets/vendor/font-awesome/css/fontawesome-all.min.css';
-import './assets/css/front.css';
-
 const sagaMiddleware = createSagaMiddleware();
 const store = createStore(storeApp, applyMiddleware(sagaMiddleware));
 
