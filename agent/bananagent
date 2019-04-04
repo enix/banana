@@ -12,6 +12,49 @@ function checkForEnvVar {
   fi
 }
 
+function checkForCmd {
+  command -v $1 > /dev/null
+  if [ $? -ne 0 ]; then
+    echo "cannot find '$1' in your PATH"
+    exit 1
+  fi
+}
+
+function setIfEmpty {
+  if [ -z "$3" ]; then
+    export "$1"="$2"
+  fi
+}
+
+function retreiveFromVault {
+  vault kv get -field=$1 secret/${VAULT_SECRET_NAME}
+}
+
+function setup {
+  checkForEnvVar BUCKET_NAME "${BUCKET_NAME}"
+  checkForEnvVar VAULT_TOKEN "${VAULT_TOKEN}"
+  checkForEnvVar VAULT_ADDR "${VAULT_ADDR}"
+
+  checkForCmd duplicity
+  checkForCmd vault
+  
+  setIfEmpty PASSPHRASE "mySuperSecurePassword" "${PASSPHRASE}"
+  setIfEmpty VAULT_SECRET_NAME "storage_access" "${VAULT_SECRET_NAME}"
+  setIfEmpty AWS_ACCESS_KEY_ID $(retreiveFromVault AWS_ACCESS_KEY_ID) "${AWS_ACCESS_KEY_ID}"
+  setIfEmpty AWS_SECRET_ACCESS_KEY $(retreiveFromVault AWS_SECRET_ACCESS_KEY) "${AWS_SECRET_ACCESS_KEY}"
+  setIfEmpty API_ENDPOINT "object-storage.r1.nxs.enix.io" "${API_ENDPOINT}"
+  setIfEmpty ENDPOINT "s3://${API_ENDPOINT}/${BUCKET_NAME}/$1" "${ENDPOINT}"
+}
+
+function cleanup {
+  unset PASSPHRASE
+  unset VAULT_SECRET_NAME
+  unset AWS_ACCESS_KEY_ID
+  unset AWS_SECRET_ACCESS_KEY
+  unset API_ENDPOINT
+  unset ENDPOINT
+}
+
 function usage {
   echo "usage:"
   echo -e "\t$0 backup <name> <directory>"
@@ -21,15 +64,9 @@ function usage {
 
 if [ $# -lt 3 ]; then usage; fi
 
-checkForEnvVar API_ENDPOINT "${API_ENDPOINT}"
-checkForEnvVar BUCKET_NAME "${BUCKET_NAME}"
-checkForEnvVar AWS_ACCESS_KEY_ID "${AWS_ACCESS_KEY_ID}"
-checkForEnvVar AWS_SECRET_ACCESS_KEY "${AWS_SECRET_ACCESS_KEY}"
+setup $2
 
-export PASSPHRASE=mySuperSecurePassword
-export ENDPOINT="s3://${API_ENDPOINT}/${BUCKET_NAME}/$2"
-
-cmd=""
+cmd="usage"
 
 if [[ $1 == "backup" ]]; then
   cmd="duplicity --full-if-older-than 1W $3 ${ENDPOINT} ${@:4}"
@@ -42,5 +79,4 @@ fi
 
 run ${cmd}
 
-unset PASSPHRASE
-unset ENDPOINT
+cleanup
