@@ -30,7 +30,7 @@ const api = {
       };
     }
     else {
-      container.contents.upsert(data, t => t.name === treeName);
+      container.contents = container.contents.upsert(data, t => t.name === treeName);
     }
 
     const updatedContainers = state.containers.upsert(container, c => c.name === containerName);

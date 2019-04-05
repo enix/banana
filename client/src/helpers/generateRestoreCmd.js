@@ -1,9 +1,9 @@
 
-function generateRestoreCmd(config) {
-  let baseCmd = `bananagent restore ${config.name} ${config.time} ${config.target}`;
+function generateRestoreCmd({ name, time, target, only }) {
+  let baseCmd = `./bananagent restore ${name} ${time} ${target}`;
 
-  if (config.only) {
-    baseCmd += `/${config.only} --file-to-restore=${config.only}`;
+  if (only) {
+    baseCmd += `/${only} --file-to-restore=${only}`;
   }
 
   return baseCmd;

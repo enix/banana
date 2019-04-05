@@ -1,5 +1,6 @@
 
 function extendArray() {
+  // eslint-disable-next-line
   Array.prototype.upsert = function(newElem, comparisonFn) {
     let found = false;
 

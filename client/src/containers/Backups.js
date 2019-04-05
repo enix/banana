@@ -10,13 +10,13 @@ import ActionCreators from '../state/actions';
 class Backups extends Component {
 
   renderItem = (item) => (
-    <Link to={'backup/' + item.time}>
+    <Link to={window.location.pathname + '/restore/' + item.time}>
       <Carret />
       {item.time}
     </Link>
   )
 
-  isLoaded = () => this.props.tree;
+  isLoaded = () => this.props.tree && this.props.tree.contents;
 
   async componentDidMount() {
     if (!this.isLoaded()) {

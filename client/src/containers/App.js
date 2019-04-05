@@ -6,6 +6,7 @@ import { BrowserRouter as Router, Route } from 'react-router-dom';
 import Containers from '../containers/Containers';
 import Trees from '../containers/Trees';
 import Backups from '../containers/Backups';
+import Restore from '../containers/Restore';
 import ActionCreators from '../state/actions';
 
 class App extends Component {
@@ -21,6 +22,7 @@ class App extends Component {
           <Route exact path='/' component={Containers} />
           <Route exact path='/node/:name' component={Trees} />
           <Route exact path='/node/:name/tree/:treeName' component={Backups} />
+          <Route exact path='/node/:name/tree/:treeName/restore/:time' component={Restore} />
         </div>
       </Router>
     );
