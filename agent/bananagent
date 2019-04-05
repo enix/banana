@@ -27,7 +27,12 @@ function setIfEmpty {
 }
 
 function retreiveFromVault {
-  vault kv get -field=$1 secret/${VAULT_SECRET_NAME}
+  value=$(vault kv get -field=$1 secret/${VAULT_SECRET_NAME} 2> /dev/null)
+  if [ -z "${value}" ]; then
+    echo >&2 "storage access tokens not found in Vault"
+    kill -s INT $$
+  fi
+  echo ${value}
 }
 
 function setup {
