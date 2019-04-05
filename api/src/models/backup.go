@@ -4,15 +4,14 @@ import (
 	"errors"
 	"fmt"
 	"strings"
-	"time"
 
 	"github.com/aws/aws-sdk-go/service/s3"
 )
 
 // Backup : Client representation of a stored backup
 type Backup struct {
-	Time time.Time `json:"time"`
-	Type string    `json:"type"`
+	Time string `json:"time"`
+	Type string `json:"type"`
 }
 
 // NewBackup : Instanciate a backup from an AWS object
@@ -51,12 +50,12 @@ func NewBackup(obj *s3.Object) (*Backup, error) {
 		return nil, nil
 	}
 
-	date, err := time.Parse("20060102T150405Z", metadata[timeIndex])
-	if err != nil {
-		return nil, err
-	}
+	// date, err := time.Parse("20060102T150405Z", metadata[timeIndex])
+	// if err != nil {
+	// 	return nil, err
+	// }
 
-	backup.Time = date
+	backup.Time = metadata[timeIndex]
 	return backup, nil
 }
 
