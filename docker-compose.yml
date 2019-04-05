@@ -21,10 +21,8 @@ services:
     volumes:
       - ./api/src:/go/src/enix.io/banana/src
     restart: unless-stopped
-    environment:
-      - API_ACCESS_TOKEN=fc10d14e47a24edaab263898f767167e
-      - API_SECRET_TOKEN=aa8738c15450409f98a8727a9c3cd9e1
-      - API_ENDPOINT=https://object-storage.r1.nxs.enix.io
+    env_file:
+      - .env
 
   vault:
     image: vault:latest
