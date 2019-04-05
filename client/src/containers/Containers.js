@@ -4,14 +4,17 @@ import { connect } from 'react-redux'
 
 import Link from '../components/Link';
 import List from '../components/List';
+import Carret from '../components/Carret';
 import ActionCreators from '../state/actions';
 
 class Containers extends Component {
 
-  constructor({ match }) {
-    super();
-    console.log(match);
-  }
+  renderItem = (item) => (
+    <Link to={'/node/' + item.name}>
+      <Carret />
+      {item.name}
+    </Link>
+  )
 
   componentDidMount() {
     this.props.actions.listBackupContainers();
@@ -20,9 +23,10 @@ class Containers extends Component {
   render() {
     return (
       <div className="Containers">
+        <h2>Available nodes</h2>
         <List
           data={this.props.containers}
-          renderItem={item => <Link to={'/containers/' + item.name}>{item.name}</Link>}
+          renderItem={this.renderItem}
         />
       </div>
     );

@@ -15,21 +15,18 @@ const api = {
     containers: { $set: data }
   }),
   [ActionsTypes.LIST_BACKUPS_IN_CONTAINER_SUCCESS]: (state, { response: { data }, containerName }) => {
-    let updatedContainers;
+    let found = false;
+    const updatedContainers = state.containers.map(c => {
+      if (c.name === containerName) {
+        found = true;
+        return data;
+      }
 
-    if (Array.isArray(state.containers)) {
-      updatedContainers = state.containers.map(c => {
-        if (c.name === containerName) {
-          c.contents = data;
-        }
-        return c;
-      });
-    }
-    else {
-      updatedContainers = [{
-        name: containerName,
-        contents: data,
-      }]
+      return c;
+    });
+
+    if (!found) {
+      updatedContainers.push(data);
     }
 
     return update(state, {
