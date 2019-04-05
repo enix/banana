@@ -14,21 +14,26 @@ const api = {
   [ActionsTypes.LIST_BACKUP_CONTAINERS_SUCCESS]: (state, { response: { data }}) => update(state, {
     containers: { $set: data }
   }),
-  [ActionsTypes.LIST_BACKUPS_IN_CONTAINER_SUCCESS]: (state, { response: { data }, containerName }) => {
-    let found = false;
-    const updatedContainers = state.containers.map(c => {
-      if (c.name === containerName) {
-        found = true;
-        return data;
-      }
-
-      return c;
+  [ActionsTypes.LIST_TREES_IN_CONTAINER_SUCCESS]: (state, { response: { data }, containerName }) => {
+    const updatedContainers = state.containers.upsert(data, c => c.name === containerName);
+    return update(state, {
+      containers: { $set: updatedContainers },
     });
+  },
+  [ActionsTypes.LIST_BACKUPS_FOR_TREE_SUCCESS]: (state, { response: { data }, containerName, treeName }) => {
+    let container = { ...state.containers.find(c => c.name === containerName) };
 
-    if (!found) {
-      updatedContainers.push(data);
+    if (!container || !container.contents) {
+      container = {
+        name: containerName,
+        contents: [data]
+      };
+    }
+    else {
+      container.contents.upsert(data, t => t.name === treeName);
     }
 
+    const updatedContainers = state.containers.upsert(container, c => c.name === containerName);
     return update(state, {
       containers: { $set: updatedContainers },
     });

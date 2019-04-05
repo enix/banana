@@ -4,6 +4,7 @@ import { connect } from 'react-redux'
 import { BrowserRouter as Router, Route } from 'react-router-dom';
 
 import Containers from '../containers/Containers';
+import Trees from '../containers/Trees';
 import Backups from '../containers/Backups';
 import ActionCreators from '../state/actions';
 
@@ -18,7 +19,8 @@ class App extends Component {
       <Router>
         <div className="App">
           <Route exact path='/' component={Containers} />
-          <Route path='/node/:name' component={Backups} />
+          <Route exact path='/node/:name' component={Trees} />
+          <Route exact path='/node/:name/tree/:treeName' component={Backups} />
         </div>
       </Router>
     );

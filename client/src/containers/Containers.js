@@ -23,7 +23,7 @@ class Containers extends Component {
   render() {
     return (
       <div className="Containers">
-        <h2>Available nodes</h2>
+        <h2>Available containers</h2>
         <List
           data={this.props.containers}
           renderItem={this.renderItem}

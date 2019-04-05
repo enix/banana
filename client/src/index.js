@@ -8,10 +8,12 @@ import App from './containers/App';
 import storeApp from './state/reducers';
 import sagas from './state/sagas';
 import registerServiceWorker from './registerServiceWorker';
+import { extendArray } from './helpers';
 
 const sagaMiddleware = createSagaMiddleware();
 const store = createStore(storeApp, applyMiddleware(sagaMiddleware));
 
+extendArray();
 sagaMiddleware.run(sagas);
 ReactDOM.render(
   <Provider store={store}>

@@ -7,21 +7,21 @@ import List from '../components/List';
 import Carret from '../components/Carret';
 import ActionCreators from '../state/actions';
 
-class Backups extends Component {
+class Trees extends Component {
 
   renderItem = (item) => (
-    <Link to={'backup/' + item.time}>
+    <Link to={window.location.pathname + '/tree/' + item.name}>
       <Carret />
-      {item.time}
+      {item.name}
     </Link>
   )
 
-  isLoaded = () => this.props.tree;
+  isLoaded = () => this.props.container && this.props.container.contents;
 
   async componentDidMount() {
     if (!this.isLoaded()) {
-      const { name, treeName } = this.props.match.params;
-      this.props.actions.listBackupsForTree(name, treeName);
+      const { name } = this.props.match.params;
+      this.props.actions.listTreesInContainer(name);
     }
   }
 
@@ -31,10 +31,10 @@ class Backups extends Component {
     }
 
     return (
-      <div className="Backups">
-        <h2>Contents of {this.props.tree.name}</h2>
+      <div className="Trees">
+        <h2>Available fs trees for {this.props.container.name}</h2>
         <List
-          data={this.props.tree.contents}
+          data={this.props.container.contents}
           renderItem={this.renderItem}
         />
       </div>
@@ -42,19 +42,12 @@ class Backups extends Component {
   }
 }
 
-const mapStateToProps = (state, props) => {
-  const container = state.containers.find(c => c.name === props.match.params.name);
-  if (!container) {
-    return {};
-  }
-
-  return {
-    tree: container.contents.find(t => t.name === props.match.params.treeName),
-  };
-};
+const mapStateToProps = (state, props) => ({
+  container: state.containers.find(c => c.name === props.match.params.name),
+});
 
 const mapDispatchToProps = dispatch => ({
   actions: bindActionCreators(ActionCreators, dispatch),
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(Backups);
+export default connect(mapStateToProps, mapDispatchToProps)(Trees);

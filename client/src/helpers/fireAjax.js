@@ -4,8 +4,6 @@ const defaultAjaxConfig = {
   method: 'get',
   url: null,
   data: null,
-  onSuccess: null,
-  onFailure: null,
   headers: {
     'content-type': 'application/json',
     'accept': 'application/json',

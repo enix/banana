@@ -19,13 +19,22 @@ const api = {
     payload: { response },
   }),
 
-  listBackupsInContainer: (containerName) => ({
-    type: ActionsTypes.LIST_BACKUPS_IN_CONTAINER,
+  listTreesInContainer: (containerName) => ({
+    type: ActionsTypes.LIST_TREES_IN_CONTAINER,
     payload: { containerName },
   }),
-  listBackupsInContainerSuccess: (containerName, response) => ({
-    type: ActionsTypes.LIST_BACKUPS_IN_CONTAINER_SUCCESS,
+  listTreesInContainerSuccess: (containerName, response) => ({
+    type: ActionsTypes.LIST_TREES_IN_CONTAINER_SUCCESS,
     payload: { containerName, response },
+  }),
+
+  listBackupsForTree: (containerName, treeName) => ({
+    type: ActionsTypes.LIST_BACKUPS_FOR_TREE,
+    payload: { containerName, treeName },
+  }),
+  listBackupsForTreeSuccess: (containerName, treeName, response) => ({
+    type: ActionsTypes.LIST_BACKUPS_FOR_TREE_SUCCESS,
+    payload: { containerName, treeName, response },
   }),
 };
 
