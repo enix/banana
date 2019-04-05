@@ -1,6 +1,8 @@
 package models
 
 import (
+	"strings"
+
 	"github.com/aws/aws-sdk-go/service/s3"
 )
 
@@ -13,8 +15,9 @@ type BackupTree struct {
 
 // NewBackupTree : Instanciate a backup tree from an S3 prefix
 func NewBackupTree(name *string) *BackupTree {
+	trimmedName := strings.TrimSuffix(*name, "/")
 	return &BackupTree{
-		Name: name,
+		Name: &trimmedName,
 	}
 }
 
