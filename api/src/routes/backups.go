@@ -8,47 +8,49 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// ServeContainerList : Returns the list of containers (buckets)
-func ServeContainerList(store *storage.ObjectStorage) RequestHandler {
+// ServeBackupContainerList : Returns the list of containers (buckets)
+func ServeBackupContainerList(store *storage.ObjectStorage) RequestHandler {
 	return func(context *gin.Context) (int, interface{}) {
 		list, err := store.ListBuckets()
-
-		if err != nil {
-			return http.StatusInternalServerError, err
-		}
-
-		formattedList := make([]models.BackupContainer, len(list.Buckets))
-		for index, elem := range list.Buckets {
-			formattedList[index] = models.BackupContainer{
-				Name: elem.Name,
-			}
-		}
-
-		return http.StatusOK, formattedList
-	}
-}
-
-// ServeBackupTreeListFromContainer : Returns the list of available backups trees
-//																		in given bucket
-func ServeBackupTreeListFromContainer(store *storage.ObjectStorage) RequestHandler {
-	return func(context *gin.Context) (int, interface{}) {
-		name := context.Param("bucketName")
-		list, err := store.ListTopLevelObjectsInBucket(name)
 
 		if err != nil {
 			return http.StatusBadRequest, err
 		}
 
-		formattedList := make([]models.BackupTree, len(list.CommonPrefixes))
-		for index, elem := range list.CommonPrefixes {
-			formattedList[index] = models.BackupTree{
-				Name: elem.Prefix,
-			}
+		return http.StatusOK, models.NewBackupContainerList(list)
+	}
+}
+
+// ServeBackupContainer : Returns a container filled with his top level objects
+func ServeBackupContainer(store *storage.ObjectStorage) RequestHandler {
+	return func(context *gin.Context) (int, interface{}) {
+		name := context.Param("containerName")
+		list, err := store.ListTopLevelObjectsInBucket(&name)
+
+		if err != nil {
+			return http.StatusBadRequest, err
 		}
 
-		return http.StatusOK, models.BackupContainer{
-			Name:     &name,
-			Contents: formattedList,
+		return http.StatusOK, models.NewFilledBackupContainer(&name, models.NewBackupTreeList(list))
+	}
+}
+
+// ServeBackupTree : Returns a backup tree filled with his backups
+func ServeBackupTree(store *storage.ObjectStorage) RequestHandler {
+	return func(context *gin.Context) (int, interface{}) {
+		containerName := context.Param("containerName")
+		treeName := context.Param("treeName")
+
+		list, err := store.ListObjectsWithPrefixInBucket(&containerName, &treeName)
+		if err != nil {
+			return http.StatusBadRequest, err
 		}
+
+		backups, err := models.NewBackupList(list)
+		if err != nil {
+			return http.StatusBadRequest, err
+		}
+
+		return http.StatusOK, models.NewFilledBackupTree(&treeName, backups)
 	}
 }
