@@ -28,23 +28,27 @@ func ServeContainerList(store *storage.ObjectStorage) RequestHandler {
 	}
 }
 
-// ServeBackupListFromContainer : Returns the list of available backups
-//															in given bucket
-func ServeBackupListFromContainer(store *storage.ObjectStorage) RequestHandler {
+// ServeBackupTreeListFromContainer : Returns the list of available backups trees
+//																		in given bucket
+func ServeBackupTreeListFromContainer(store *storage.ObjectStorage) RequestHandler {
 	return func(context *gin.Context) (int, interface{}) {
-		list, err := store.ListTopLevelObjectsInBucket(context.Param("bucketName"))
+		name := context.Param("bucketName")
+		list, err := store.ListTopLevelObjectsInBucket(name)
 
 		if err != nil {
 			return http.StatusBadRequest, err
 		}
 
-		formattedList := make([]models.Backup, len(list.CommonPrefixes))
+		formattedList := make([]models.BackupTree, len(list.CommonPrefixes))
 		for index, elem := range list.CommonPrefixes {
-			formattedList[index] = models.Backup{
+			formattedList[index] = models.BackupTree{
 				Name: elem.Prefix,
 			}
 		}
 
-		return http.StatusOK, formattedList
+		return http.StatusOK, models.BackupContainer{
+			Name:     &name,
+			Contents: formattedList,
+		}
 	}
 }

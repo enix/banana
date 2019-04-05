@@ -40,7 +40,7 @@ func InitializeRouter(store *storage.ObjectStorage) (*gin.Engine, error) {
 
 	router.GET("/ping", handleClientRequest(handlePingRequest))
 	router.GET("/backups", handleClientRequest(ServeContainerList(store)))
-	router.GET("/backups/:bucketName", handleClientRequest(ServeBackupListFromContainer(store)))
+	router.GET("/backups/:bucketName", handleClientRequest(ServeBackupTreeListFromContainer(store)))
 
 	return router, nil
 }
