@@ -10,7 +10,7 @@ import (
 
 // ServeBackupContainerList : Returns the list of containers (buckets)
 func ServeBackupContainerList(store *storage.ObjectStorage) RequestHandler {
-	return func(context *gin.Context) (int, interface{}) {
+	return func(context *gin.Context, _ *RequestIssuer) (int, interface{}) {
 		list, err := store.ListBuckets()
 
 		if err != nil {
@@ -23,7 +23,7 @@ func ServeBackupContainerList(store *storage.ObjectStorage) RequestHandler {
 
 // ServeBackupContainer : Returns a container filled with his top level objects
 func ServeBackupContainer(store *storage.ObjectStorage) RequestHandler {
-	return func(context *gin.Context) (int, interface{}) {
+	return func(context *gin.Context, _ *RequestIssuer) (int, interface{}) {
 		name := context.Param("containerName")
 		list, err := store.ListTopLevelObjectsInBucket(&name)
 
@@ -37,7 +37,7 @@ func ServeBackupContainer(store *storage.ObjectStorage) RequestHandler {
 
 // ServeBackupTree : Returns a backup tree filled with his backups
 func ServeBackupTree(store *storage.ObjectStorage) RequestHandler {
-	return func(context *gin.Context) (int, interface{}) {
+	return func(context *gin.Context, _ *RequestIssuer) (int, interface{}) {
 		containerName := context.Param("containerName")
 		treeName := context.Param("treeName")
 
