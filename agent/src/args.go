@@ -6,21 +6,25 @@ import (
 	"github.com/pborman/getopt/v2"
 )
 
-// LaunchFlags : Filled on launch with command line flags
-type LaunchFlags struct {
-	DisplayHelp bool
-}
-
 // LaunchArgs : Filled on launch with parsed command line args
 type LaunchArgs struct {
-	Flags  LaunchFlags
-	Values []string
+	Flags       Config
+	Values      []string
+	DisplayHelp bool
+	ConfigPath  string
 }
 
 // LoadArguments : Load args from os.Args to a LaunchArgs struct
 func LoadArguments() *LaunchArgs {
-	var args LaunchArgs
-	getopt.FlagLong(&args.Flags.DisplayHelp, "help", 'h', "display this message")
+	args := LaunchArgs{
+		ConfigPath: "./banana.json",
+	}
+
+	getopt.FlagLong(&args.DisplayHelp, "help", 'h', "display this message")
+	getopt.FlagLong(&args.ConfigPath, "config", 'c', "path to config file", "banana.json")
+	getopt.FlagLong(&args.Flags.BucketName, "bucket", 'b', "target bucket name", "my-bucket-name")
+	getopt.FlagLong(&args.Flags.VaultAddr, "vault-addr", 0, "vault api URL", "http://localhost:7777")
+	getopt.FlagLong(&args.Flags.VaultToken, "vault-token", 0, "vault auth token", "myroot")
 
 	opts := getopt.CommandLine
 	opts.Parse(os.Args)
