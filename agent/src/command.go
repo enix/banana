@@ -1,14 +1,21 @@
 package main
 
+import "errors"
+
 // Command : Generic interface for all possible user commands
 //					 Filled from command line arguments
 type Command interface {
-	Execute(*Config)
+	Execute(*Config) error
 }
 
 // NewCommand : Instanciate the corresponding implementation of Command
 //							depending on loaded configuration
 //							If both return values are nil, the usage will be displayed
 func NewCommand(args *LaunchArgs) (Command, error) {
-	return NewBackupCmd(args)
+	switch args.Values[0] {
+	case "backup":
+		return NewBackupCmd(args)
+	default:
+		return nil, errors.New(args.Values[0] + ": no such command")
+	}
 }

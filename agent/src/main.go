@@ -2,13 +2,13 @@ package main
 
 import (
 	"fmt"
-	"log"
 	"os"
 	"reflect"
 )
 
 func logFatal(err error) {
-	log.Fatal(fmt.Errorf("error: %s", err.Error()))
+	fmt.Fprintf(os.Stderr, "%s\n", fmt.Errorf("error: %s", err.Error()).Error())
+	os.Exit(1)
 }
 
 func assert(err error) {
@@ -40,5 +40,6 @@ func main() {
 		os.Exit(1)
 	}
 
-	cmd.Execute(&config)
+	err = cmd.Execute(&config)
+	assert(err)
 }

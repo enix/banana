@@ -8,7 +8,7 @@ import (
 
 // LaunchArgs : Filled on launch with parsed command line args
 type LaunchArgs struct {
-	Flags       Config
+	Flags       CliConfig
 	Values      []string
 	DisplayHelp bool
 	ConfigPath  string
@@ -22,9 +22,12 @@ func LoadArguments() *LaunchArgs {
 
 	getopt.FlagLong(&args.DisplayHelp, "help", 'h', "display this message")
 	getopt.FlagLong(&args.ConfigPath, "config", 'c', "path to config file", "banana.json")
-	getopt.FlagLong(&args.Flags.BucketName, "bucket", 'b', "target bucket name", "my-bucket-name")
-	getopt.FlagLong(&args.Flags.VaultAddr, "vault-addr", 0, "vault api URL", "http://localhost:7777")
-	getopt.FlagLong(&args.Flags.VaultToken, "vault-token", 0, "vault auth token", "myroot")
+	getopt.FlagLong(&args.Flags.Backend, "backend", 'b', "backup engine to be used", "duplicity")
+	getopt.FlagLong(&args.Flags.BucketName, "bucket", 'k', "target bucket name", "my-bucket-name")
+	getopt.FlagLong(&args.Flags.StorageHost, "storage-host", 's', "storage API host", "object-storage.example.com")
+	getopt.FlagLong(&args.Flags.Vault.Addr, "vault-addr", 0, "vault API URL", "http://localhost:7777")
+	getopt.FlagLong(&args.Flags.Vault.Token, "vault-token", 0, "vault auth token", "myroot")
+	getopt.FlagLong(&args.Flags.Vault.SecretPath, "vault-secret", 0, "vault secret path where credentials are stored", "storage_access")
 
 	opts := getopt.CommandLine
 	opts.Parse(os.Args)

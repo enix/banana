@@ -1,17 +1,23 @@
 package main
 
-import "fmt"
-
 // BackupCmd : Command implementation for 'backup'
-type BackupCmd struct{}
+type BackupCmd struct {
+	Backend string
+}
 
 // NewBackupCmd : Creates backup command from command line args
 func NewBackupCmd(args *LaunchArgs) (*BackupCmd, error) {
-	return &BackupCmd{}, nil
+	return &BackupCmd{
+		Backend: args.Flags.Backend,
+	}, nil
 }
 
-// Execute : Start the backup using the config in 'this'
-func (cmd *BackupCmd) Execute(config *Config) {
-	fmt.Printf("command: %v\n", cmd)
-	fmt.Printf("config: %+v\n", config)
+// Execute : Start the backup using specified backend
+func (cmd *BackupCmd) Execute(config *Config) error {
+	backend, err := NewBackupBackend(cmd.Backend)
+	if err != nil {
+		return err
+	}
+
+	return backend.Backup(config, cmd)
 }
