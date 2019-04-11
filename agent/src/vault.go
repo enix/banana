@@ -51,34 +51,37 @@ func (vault *Vault) FetchSecret(key string) (map[string]string, error) {
 	return kv, nil
 }
 
-// CacheStorageAccess : Put storage credentials in memory cache
-func (vault *Vault) CacheStorageAccess() error {
+// GetStorageAccess : Put storage credentials in memory cache
+//										and returns the given key from the secret map
+func (vault *Vault) GetStorageAccess(key string) (string, error) {
 	if vault.StorageAccess == nil {
 		kv, err := vault.FetchSecret(vault.Path)
 		if err != nil {
-			return err
+			return "", err
 		}
 
 		vault.StorageAccess = &kv
 	}
 
-	return nil
+	val := (*vault.StorageAccess)[key]
+	if len(val) == 0 {
+		return "", fmt.Errorf("key %s not found within storage access secret", key)
+	}
+
+	return val, nil
 }
 
 // GetStorageAccessToken : Get storage access token, from memory cache if possible
 func (vault *Vault) GetStorageAccessToken() (string, error) {
-	err := vault.CacheStorageAccess()
-	if err != nil {
-		return "", err
-	}
-	return (*vault.StorageAccess)["AWS_ACCESS_KEY_ID"], nil
+	return vault.GetStorageAccess("AWS_ACCESS_KEY_ID")
 }
 
-// GetStorageSecretToken : Get storage access token, from memory cache if possible
+// GetStorageSecretToken : Get storage secret token, from memory cache if possible
 func (vault *Vault) GetStorageSecretToken() (string, error) {
-	err := vault.CacheStorageAccess()
-	if err != nil {
-		return "", err
-	}
-	return (*vault.StorageAccess)["AWS_SECRET_ACCESS_KEY"], nil
+	return vault.GetStorageAccess("AWS_SECRET_ACCESS_KEY")
+}
+
+// GetStoragePassphrase : Get storage secret token, from memory cache if possible
+func (vault *Vault) GetStoragePassphrase() (string, error) {
+	return vault.GetStorageAccess("PASSPHRASE")
 }

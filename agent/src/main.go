@@ -23,9 +23,12 @@ func loadCredentialsToEnv(config *VaultConfig) {
 	assert(err)
 	secretToken, err := vault.GetStorageSecretToken()
 	assert(err)
+	passphrase, err := vault.GetStoragePassphrase()
+	assert(err)
 
 	os.Setenv("AWS_ACCESS_KEY_ID", accessToken)
 	os.Setenv("AWS_SECRET_ACCESS_KEY", secretToken)
+	os.Setenv("PASSPHRASE", passphrase)
 }
 
 func unloadCredentialsFromEnv() {
