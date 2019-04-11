@@ -2,7 +2,6 @@ package models
 
 import (
 	"errors"
-	"fmt"
 	"strings"
 
 	"github.com/aws/aws-sdk-go/service/s3"
@@ -23,7 +22,6 @@ func NewBackup(obj *s3.Object) (*Backup, error) {
 	metadata := strings.Split(strings.Split(*obj.Key, "/")[1], ".")
 	var timeIndex int
 
-	fmt.Println(metadata)
 	if metadata[0] == "duplicity-full" {
 		if len(metadata) < 4 {
 			return nil, errors.New("invalid full backup name found")

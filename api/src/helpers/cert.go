@@ -48,7 +48,6 @@ func VerifySha256Signature(data []byte, base64sig, base64cert string) error {
 		return err
 	}
 
-	fmt.Println(base64sig)
 	signature, err := base64.StdEncoding.DecodeString(base64sig)
 	if err != nil {
 		return fmt.Errorf("failed to decode signature: %s", err)
