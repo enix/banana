@@ -42,4 +42,5 @@ func LoadArguments() *LaunchArgs {
 // Usage : Outputs getopt's generated help message
 func Usage() {
 	getopt.Usage()
+	os.Exit(1)
 }

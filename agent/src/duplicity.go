@@ -7,6 +7,6 @@ type DuplicityBackend struct{}
 
 // Backup : BackupBackend's Backup call implementation for duplicity
 func (d *DuplicityBackend) Backup(config *Config, cmd *BackupCmd) error {
-	fmt.Println("running duplicity!")
-	return nil
+	endpoint := fmt.Sprintf("s3://%s/%s/%s", config.StorageHost, config.BucketName, cmd.Name)
+	return Execute("duplicity", "--full-if-older-than", "1W", cmd.Target, endpoint)
 }

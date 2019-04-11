@@ -10,7 +10,6 @@ type Command interface {
 
 // NewCommand : Instanciate the corresponding implementation of Command
 //							depending on loaded configuration
-//							If both return values are nil, the usage will be displayed
 func NewCommand(args *LaunchArgs) (Command, error) {
 	switch args.Values[0] {
 	case "backup":

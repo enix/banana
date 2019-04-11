@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"os"
-	"reflect"
 )
 
 func logFatal(err error) {
@@ -23,7 +22,6 @@ func main() {
 	args := LoadArguments()
 	if args.DisplayHelp || len(args.Values) < 1 {
 		Usage()
-		return
 	}
 
 	LoadConfigDefaults(&config)
@@ -34,12 +32,6 @@ func main() {
 	assert(err)
 	cmd, err := NewCommand(args)
 	assert(err)
-
-	if cmd == nil || reflect.ValueOf(cmd).IsNil() {
-		Usage()
-		os.Exit(1)
-	}
-
 	err = cmd.Execute(&config)
 	assert(err)
 }
