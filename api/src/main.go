@@ -9,6 +9,7 @@ import (
 	"enix.io/banana/src/routes"
 	"enix.io/banana/src/storage"
 	"github.com/aws/aws-sdk-go/aws/credentials"
+	"github.com/go-redis/redis"
 )
 
 // Assert : Ensure that the given error is a nil pointer
@@ -18,6 +19,22 @@ func Assert(err error) {
 		logger.LogError(err)
 		os.Exit(1)
 	}
+}
+
+func openDatabaseConnection() (*redis.Client, error) {
+	client := redis.NewClient(&redis.Options{
+		Addr:     "redis:6379",
+		Password: "",
+		DB:       0,
+	})
+
+	pong, err := client.Ping().Result()
+	if err != nil || pong != "PONG" {
+		return nil, errors.New("failed to connect to redis database")
+	}
+
+	logger.Log("etablished connection with redis database")
+	return client, nil
 }
 
 func openStorageAPIConnection() (*storage.ObjectStorage, error) {
@@ -44,10 +61,13 @@ func openStorageAPIConnection() (*storage.ObjectStorage, error) {
 		return &store, errors.New("fatal: failed to list buckets from remote. configuration error?")
 	}
 
+	logger.Log("etablished connection with object storage")
 	return &store, nil
 }
 
 func main() {
+	_, err := openDatabaseConnection()
+	Assert(err)
 	store, err := openStorageAPIConnection()
 	Assert(err)
 	router, err := routes.InitializeRouter(store)
