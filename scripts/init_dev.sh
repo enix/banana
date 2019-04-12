@@ -90,6 +90,7 @@ echo >> ../security/ca/trusted-ca.pem
 cat ../security/ca/agents-ca.pem >> ../security/ca/trusted-ca.pem
 
 ./init_vault.sh
+./init_storage_access.sh
 
 cd - > /dev/null
 
