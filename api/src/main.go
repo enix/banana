@@ -4,6 +4,7 @@ import (
 	"errors"
 	"os"
 
+	"enix.io/banana/src/helpers"
 	"enix.io/banana/src/logger"
 	"enix.io/banana/src/routes"
 	"enix.io/banana/src/storage"
@@ -20,13 +21,25 @@ func Assert(err error) {
 }
 
 func openStorageAPIConnection() (*storage.ObjectStorage, error) {
+	vault, err := helpers.NewVaultClient(&helpers.VaultConfig{
+		Addr:       os.Getenv("VAULT_ADDR"),
+		Token:      os.Getenv("VAULT_TOKEN"),
+		SecretPath: "storage_access",
+	})
+
+	Assert(err)
+	accessToken, err := vault.GetStorageAccessToken()
+	Assert(err)
+	secretToken, err := vault.GetStorageSecretToken()
+	Assert(err)
+
 	var store storage.ObjectStorage
 	store.Connect(
 		os.Getenv("API_ENDPOINT"),
-		credentials.NewStaticCredentials(os.Getenv("API_ACCESS_TOKEN"), os.Getenv("API_SECRET_TOKEN"), ""),
+		credentials.NewStaticCredentials(accessToken, secretToken, ""),
 	)
 
-	_, err := store.ListBuckets()
+	_, err = store.ListBuckets()
 	if err != nil {
 		return &store, errors.New("fatal: failed to list buckets from remote. configuration error?")
 	}
