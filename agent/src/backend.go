@@ -6,6 +6,7 @@ import "errors"
 //								 such as duplicity, rsync, tar...
 type BackupBackend interface {
 	Backup(*Config, *BackupCmd) error
+	Restore(*Config, *RestoreCmd) error
 }
 
 // NewBackupBackend : Instanciate the corresponding backend from its name

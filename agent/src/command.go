@@ -12,8 +12,14 @@ type Command interface {
 //							depending on loaded configuration
 func NewCommand(args *LaunchArgs) (Command, error) {
 	switch args.Values[0] {
+	case "b":
+		fallthrough
 	case "backup":
 		return NewBackupCmd(args)
+	case "r":
+		fallthrough
+	case "restore":
+		return NewRestoreCmd(args)
 	default:
 		return nil, errors.New(args.Values[0] + ": no such command")
 	}
