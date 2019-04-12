@@ -1,4 +1,4 @@
-package main
+package helpers
 
 import (
 	"errors"
@@ -12,6 +12,13 @@ type Vault struct {
 	Client        *vault.Client
 	Path          string
 	StorageAccess *map[string]string
+}
+
+// VaultConfig : Configuration for vault API access
+type VaultConfig struct {
+	Addr       string `json:"address"`
+	Token      string `json:"token"`
+	SecretPath string `json:"secret_path"`
 }
 
 // NewVaultClient : Create and authenticate a vault client
@@ -45,7 +52,7 @@ func (vault *Vault) FetchSecret(key string) (map[string]string, error) {
 
 	kv := make(map[string]string)
 	for key, value := range kvInterface {
-		kv[fmt.Sprintf("%v", key)] = fmt.Sprintf("%v", value)
+		kv[key] = fmt.Sprintf("%v", value)
 	}
 
 	return kv, nil

@@ -6,14 +6,15 @@ import (
 	"io/ioutil"
 	"os"
 
+	"enix.io/banana/src/helpers"
 	"github.com/imdario/mergo"
 )
 
 // Config : Contains data such as credentials that will be used to execute commands
 type Config struct {
-	BucketName  string      `json:"bucket"`
-	StorageHost string      `json:"storage_host"`
-	Vault       VaultConfig `json:"vault"`
+	BucketName  string              `json:"bucket"`
+	StorageHost string              `json:"storage_host"`
+	Vault       helpers.VaultConfig `json:"vault"`
 }
 
 // CliConfig : Extended config struct for stuff that can be passed from cli only
@@ -22,19 +23,12 @@ type CliConfig struct {
 	Backend string
 }
 
-// VaultConfig : Configuration for vault API access
-type VaultConfig struct {
-	Addr       string `json:"address"`
-	Token      string `json:"token"`
-	SecretPath string `json:"secret_path"`
-}
-
 // LoadDefaults : Prepare some default values in configuration
 func (config *Config) LoadDefaults() {
 	*config = Config{
 		BucketName:  "backup-bucket",
 		StorageHost: "object-storage.example.com",
-		Vault: VaultConfig{
+		Vault: helpers.VaultConfig{
 			Addr:       "http://localhost:7777",
 			Token:      "myroot",
 			SecretPath: "storage_access",
@@ -64,7 +58,7 @@ func (config *Config) LoadFromEnv() error {
 	env := Config{
 		BucketName:  os.Getenv("BANANA_BUCKET_NAME"),
 		StorageHost: os.Getenv("BANANA_STORAGE_HOST"),
-		Vault: VaultConfig{
+		Vault: helpers.VaultConfig{
 			Addr:       os.Getenv("VAULT_ADDR"),
 			Token:      os.Getenv("VAULT_TOKEN"),
 			SecretPath: os.Getenv("BANANA_VAULT_SECRET_PATH"),

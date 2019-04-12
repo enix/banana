@@ -3,6 +3,8 @@ package main
 import (
 	"fmt"
 	"os"
+
+	"enix.io/banana/src/helpers"
 )
 
 func logFatal(err error) {
@@ -16,8 +18,8 @@ func assert(err error) {
 	}
 }
 
-func loadCredentialsToEnv(config *VaultConfig) {
-	vault, err := NewVaultClient(config)
+func loadCredentialsToEnv(config *helpers.VaultConfig) {
+	vault, err := helpers.NewVaultClient(config)
 	assert(err)
 	accessToken, err := vault.GetStorageAccessToken()
 	assert(err)
