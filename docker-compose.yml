@@ -48,3 +48,11 @@ services:
     volumes:
       - ./proxy:/etc/nginx/conf.d
       - ./security:/security
+
+  redis:
+    image: redis:5.0
+    ports:
+      - 7017:6379
+    restart: unless-stopped
+    # volumes:
+    #   - ./db:/db
