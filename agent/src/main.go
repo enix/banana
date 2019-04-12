@@ -37,24 +37,23 @@ func unloadCredentialsFromEnv() {
 }
 
 func main() {
-	var config Config
-
 	args := LoadArguments()
 	if args.DisplayHelp || len(args.Values) < 1 {
 		Usage()
 	}
 
-	LoadConfigDefaults(&config)
-	LoadConfigFromFile(&config, args.ConfigPath)
-	err := LoadConfigFromEnv(&config)
+	config := &Config{}
+	config.LoadDefaults()
+	config.LoadFromFile(args.ConfigPath)
+	err := config.LoadFromEnv()
 	assert(err)
-	err = LoadConfigFromArgs(&config, &args.Flags)
+	err = config.LoadFromArgs(&args.Flags)
 	assert(err)
 	cmd, err := NewCommand(args)
 	assert(err)
 
 	loadCredentialsToEnv(&config.Vault)
-	err = cmd.Execute(&config)
+	err = cmd.Execute(config)
 	assert(err)
 	unloadCredentialsFromEnv()
 }

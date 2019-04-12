@@ -29,8 +29,8 @@ type VaultConfig struct {
 	SecretPath string `json:"secret_path"`
 }
 
-// LoadConfigDefaults : Prepare some default values in configuration
-func LoadConfigDefaults(config *Config) {
+// LoadDefaults : Prepare some default values in configuration
+func (config *Config) LoadDefaults() {
 	*config = Config{
 		BucketName:  "backup-bucket",
 		StorageHost: "object-storage.example.com",
@@ -42,8 +42,8 @@ func LoadConfigDefaults(config *Config) {
 	}
 }
 
-// LoadConfigFromFile : Load configuration from given filename
-func LoadConfigFromFile(config *Config, path string) error {
+// LoadFromFile : Load configuration from given filename
+func (config *Config) LoadFromFile(path string) error {
 	bytes, err := ioutil.ReadFile(path)
 	if err != nil {
 		fmt.Println("warning: can't load config file " + path + ", using config from env and command-line only")
@@ -54,13 +54,13 @@ func LoadConfigFromFile(config *Config, path string) error {
 	return nil
 }
 
-// LoadConfigFromArgs : Load configuration from parsed command line arguments
-func LoadConfigFromArgs(config *Config, args *CliConfig) error {
+// LoadFromArgs : Load configuration from parsed command line arguments
+func (config *Config) LoadFromArgs(args *CliConfig) error {
 	return mergo.Merge(config, args.Config, mergo.WithOverride)
 }
 
-// LoadConfigFromEnv : Load configuration from env variables
-func LoadConfigFromEnv(config *Config) error {
+// LoadFromEnv : Load configuration from env variables
+func (config *Config) LoadFromEnv() error {
 	env := Config{
 		BucketName:  os.Getenv("BANANA_BUCKET_NAME"),
 		StorageHost: os.Getenv("BANANA_STORAGE_HOST"),
@@ -72,4 +72,9 @@ func LoadConfigFromEnv(config *Config) error {
 	}
 
 	return mergo.Merge(config, env, mergo.WithOverride)
+}
+
+// GetEndpoint : Returns the storage endpoint based on host, bucket and backup name
+func (config *Config) GetEndpoint(backupName string) string {
+	return fmt.Sprintf("s3://%s/%s/%s", config.StorageHost, config.BucketName, backupName)
 }
