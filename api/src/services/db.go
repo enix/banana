@@ -1,6 +1,7 @@
 package services
 
 import (
+	"encoding/json"
 	"errors"
 
 	"enix.io/banana/src/logger"
@@ -9,6 +10,23 @@ import (
 
 // Db : Use this API to interact with redis
 var Db *redis.Client
+
+// DbSet : Convenience function to avoid manual JSON encoding
+func DbSet(key string, value interface{}) error {
+	str, err := json.Marshal(value)
+	if err != nil {
+		return err
+	}
+
+	return Db.Set(key, str, 0).Err()
+}
+
+// DbGet : Convenience function to avoid manual JSON decoding
+func DbGet(key string) (out interface{}) {
+	str := Db.Get(key).Val()
+	json.Unmarshal([]byte(str), out)
+	return
+}
 
 // OpenDatabaseConnection : Connect to redis databae
 //													Calls such as DbGet and DbSet will crash if called before this

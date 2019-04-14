@@ -108,6 +108,7 @@ func InitializeRouter() (*gin.Engine, error) {
 	router.GET("/containers", handleClientRequest(ServeBackupContainerList))
 	router.GET("/containers/:containerName", handleClientRequest(ServeBackupContainer))
 	router.GET("/containers/:containerName/tree/:treeName", handleClientRequest(ServeBackupTree))
+	router.POST("/agents", handleClientRequest(ServeAgentList))
 
 	return router, nil
 }
