@@ -1,14 +1,18 @@
-package helpers
+package services
 
 import (
 	"errors"
 	"fmt"
+	"os"
 
 	vault "github.com/hashicorp/vault/api"
 )
 
-// Vault : Convenience wrapper of vault client
-type Vault struct {
+// Vault : Use this API to interact with Vault
+var Vault *VaultClient
+
+// VaultClient : Convenience wrapper of vault client
+type VaultClient struct {
 	Client        *vault.Client
 	Path          string
 	StorageAccess *map[string]string
@@ -22,21 +26,21 @@ type VaultConfig struct {
 }
 
 // NewVaultClient : Create and authenticate a vault client
-func NewVaultClient(config *VaultConfig) (*Vault, error) {
+func NewVaultClient(config *VaultConfig) (*VaultClient, error) {
 	client, err := vault.NewClient(&vault.Config{Address: config.Addr})
 	if err != nil {
 		return nil, err
 	}
 
 	client.SetToken(config.Token)
-	return &Vault{
+	return &VaultClient{
 		Client: client,
 		Path:   config.SecretPath,
 	}, nil
 }
 
 // FetchSecret : Retreive a secret map from the current set path
-func (vault *Vault) FetchSecret(key string) (map[string]string, error) {
+func (vault *VaultClient) FetchSecret(key string) (map[string]string, error) {
 	secret, err := vault.Client.Logical().Read("secret/data/" + key)
 	if err != nil {
 		return nil, err
@@ -60,7 +64,7 @@ func (vault *Vault) FetchSecret(key string) (map[string]string, error) {
 
 // GetStorageAccess : Put storage credentials in memory cache
 //										and returns the given key from the secret map
-func (vault *Vault) GetStorageAccess(key string) (string, error) {
+func (vault *VaultClient) GetStorageAccess(key string) (string, error) {
 	if vault.StorageAccess == nil {
 		kv, err := vault.FetchSecret(vault.Path)
 		if err != nil {
@@ -79,16 +83,30 @@ func (vault *Vault) GetStorageAccess(key string) (string, error) {
 }
 
 // GetStorageAccessToken : Get storage access token, from memory cache if possible
-func (vault *Vault) GetStorageAccessToken() (string, error) {
+func (vault *VaultClient) GetStorageAccessToken() (string, error) {
 	return vault.GetStorageAccess("AWS_ACCESS_KEY_ID")
 }
 
 // GetStorageSecretToken : Get storage secret token, from memory cache if possible
-func (vault *Vault) GetStorageSecretToken() (string, error) {
+func (vault *VaultClient) GetStorageSecretToken() (string, error) {
 	return vault.GetStorageAccess("AWS_SECRET_ACCESS_KEY")
 }
 
 // GetStoragePassphrase : Get storage secret token, from memory cache if possible
-func (vault *Vault) GetStoragePassphrase() (string, error) {
+func (vault *VaultClient) GetStoragePassphrase() (string, error) {
 	return vault.GetStorageAccess("PASSPHRASE")
+}
+
+// OpenVaultConnection : Etablish connection with vault
+//											 Other calls will crash if used before this
+func OpenVaultConnection() error {
+	var err error
+
+	Vault, err = NewVaultClient(&VaultConfig{
+		Addr:       os.Getenv("VAULT_ADDR"),
+		Token:      os.Getenv("VAULT_TOKEN"),
+		SecretPath: "storage_access",
+	})
+
+	return err
 }

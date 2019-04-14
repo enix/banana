@@ -4,9 +4,8 @@ import (
 	"fmt"
 	"net/http"
 
-	"enix.io/banana/src/helpers"
 	"enix.io/banana/src/logger"
-	"enix.io/banana/src/storage"
+	"enix.io/banana/src/services"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )
@@ -22,12 +21,12 @@ type RequestIssuer struct {
 type RequestHandler = func(*gin.Context, *RequestIssuer) (int, interface{})
 
 func authenticateClientRequest(context *gin.Context) (*RequestIssuer, error) {
-	cname, err := helpers.GetDNFieldValue(context, "CN")
+	cname, err := services.GetDNFieldValue(context, "CN")
 	if err != nil {
 		return nil, err
 	}
 
-	oname, err := helpers.GetDNFieldValue(context, "O")
+	oname, err := services.GetDNFieldValue(context, "O")
 	if err != nil {
 		return nil, err
 	}
@@ -79,7 +78,7 @@ func handleSignedRequest(handler RequestHandler) func(*gin.Context) {
 			return
 		}
 
-		err = helpers.VerifySha256Signature(rawData, signature, context.GetHeader("X-Client-Certificate"))
+		err = services.VerifySha256Signature(rawData, signature, context.GetHeader("X-Client-Certificate"))
 		if err != nil {
 			logger.LogError(err)
 			context.JSON(401, map[string]string{"error": "invalid signature"})
@@ -100,15 +99,15 @@ func handlePingRequest(context *gin.Context, issuer *RequestIssuer) (int, interf
 }
 
 // InitializeRouter : Initialize all server routes
-func InitializeRouter(store *storage.ObjectStorage) (*gin.Engine, error) {
+func InitializeRouter() (*gin.Engine, error) {
 	router := gin.Default()
 	router.Use(cors.Default())
 
 	router.GET("/ping", handleClientRequest(handlePingRequest))
 	router.POST("/ping", handleSignedRequest(handlePingRequest))
-	router.GET("/containers", handleClientRequest(ServeBackupContainerList(store)))
-	router.GET("/containers/:containerName", handleClientRequest(ServeBackupContainer(store)))
-	router.GET("/containers/:containerName/tree/:treeName", handleClientRequest(ServeBackupTree(store)))
+	router.GET("/containers", handleClientRequest(ServeBackupContainerList))
+	router.GET("/containers/:containerName", handleClientRequest(ServeBackupContainer))
+	router.GET("/containers/:containerName/tree/:treeName", handleClientRequest(ServeBackupTree))
 
 	return router, nil
 }
