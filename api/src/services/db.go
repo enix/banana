@@ -42,6 +42,44 @@ func DbSet(key string, value interface{}) error {
 	return result.Err()
 }
 
+// DbZAdd : Add given value to sorted set with the given score
+func DbZAdd(key string, score float64, value interface{}) error {
+	str, err := json.Marshal(value)
+	if err != nil {
+		return err
+	}
+
+	result := Db.ZAdd(key, redis.Z{
+		Score:  score,
+		Member: str,
+	})
+
+	return result.Err()
+}
+
+// DbZRange : Get given range from DB sorted set
+func DbZRange(key string, from, to int64, sample interface{}) ([]interface{}, error) {
+	result := Db.ZRange(key, from, to)
+	fmt.Println(result)
+	elems, err := result.Result()
+	if err != nil {
+		return nil, err
+	}
+
+	out := make([]interface{}, 0)
+	elemType := reflect.TypeOf(sample)
+	for _, elem := range elems {
+		newElem := reflect.New(elemType).Interface()
+		err = json.Unmarshal([]byte(elem), &newElem)
+		if err != nil {
+			return nil, err
+		}
+		out = append(out, newElem)
+	}
+
+	return out, nil
+}
+
 // OpenDatabaseConnection : Connect to redis databae
 // Calls such as DbGet and DbSet will crash if called before this
 func OpenDatabaseConnection() error {
