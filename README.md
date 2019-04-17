@@ -12,8 +12,10 @@ Example `.env`:
 
 ```ini
 API_ENDPOINT=https://object-storage.r1.nxs.enix.io
-API_ACCESS_TOKEN=xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-API_SECRET_TOKEN=xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+REDIS_ADDR=redis:6379
+REDIS_PASSWD=
+VAULT_ADDR=http://vault:7777
+VAULT_TOKEN=myroot
 ```
 
 #### Start the stack
