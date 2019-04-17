@@ -13,13 +13,17 @@ func RegisterAgent(context *gin.Context, issuer *RequestIssuer) (int, interface{
 	agent := models.NewAgent(issuer.Organization, issuer.Organization)
 	services.DbSet(agent.GetFullKey(), agent)
 
-	agents := services.DbGet("agents").([]models.Agent)
+	var agents []models.Agent
+	services.DbGet("agents", &agents)
 	agents = append(agents, *agent)
+
 	services.DbSet("agents", agents)
 	return http.StatusOK, agent
 }
 
 // ServeAgentList : Returns the agent list
 func ServeAgentList(context *gin.Context, issuer *RequestIssuer) (int, interface{}) {
-	return http.StatusOK, services.DbGet("agents")
+	var agents []models.Agent
+	services.DbGet("agents", &agents)
+	return http.StatusOK, agents
 }
