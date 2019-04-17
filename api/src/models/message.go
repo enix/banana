@@ -14,7 +14,10 @@ type Message struct {
 
 // NewMessage : Convenience function for creating a message
 func NewMessage(data map[string]interface{}) *Message {
-	return &Message{xid.New(), data}
+	return &Message{
+		ID:   xid.New(),
+		Data: data,
+	}
 }
 
 // GetFullKey : Generate the key that will be used to store within redis

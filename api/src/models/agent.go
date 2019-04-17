@@ -16,7 +16,12 @@ type Agent struct {
 
 // NewAgent : Convenience function for creating a message
 func NewAgent(orga, cn string) *Agent {
-	return &Agent{xid.New(), orga, cn, make([]xid.ID, 0)}
+	return &Agent{
+		ID:           xid.New(),
+		Organization: orga,
+		CommonName:   cn,
+		Messages:     make([]xid.ID, 0),
+	}
 }
 
 // GetFullKey : Generate the key that will be used to store within redis
