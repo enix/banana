@@ -98,17 +98,10 @@ func handlePingRequest(context *gin.Context, issuer *RequestIssuer) (int, interf
 	}
 }
 
-// InitializeRouter : Initialize all server routes
+// InitializeRouter : Initialize router and API endpoints
 func InitializeRouter() (*gin.Engine, error) {
 	router := gin.Default()
 	router.Use(cors.Default())
-
-	router.GET("/ping", handleClientRequest(handlePingRequest))
-	router.POST("/ping", handleSignedRequest(handlePingRequest))
-	router.GET("/containers", handleClientRequest(ServeBackupContainerList))
-	router.GET("/containers/:containerName", handleClientRequest(ServeBackupContainer))
-	router.GET("/containers/:containerName/tree/:treeName", handleClientRequest(ServeBackupTree))
-	router.POST("/agents", handleClientRequest(ServeAgentList))
-
+	InitializeRoutes(router)
 	return router, nil
 }
