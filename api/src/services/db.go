@@ -6,38 +6,44 @@ import (
 	"os"
 
 	"enix.io/banana/src/logger"
+	"enix.io/banana/src/models"
 	"github.com/go-redis/redis"
 )
 
 // Db : Use this API to interact with redis
 var Db *redis.Client
 
-// DbSet : Convenience function to avoid manual JSON encoding
+// DbGet : Convenience function to avoir JSON unmarshalling
+func DbGet(key string, out interface{}) error {
+	result := Db.Get(key)
+
+	err := result.Err()
+	if err != nil {
+		return err
+	}
+
+	bytes, err := result.Bytes()
+	if err != nil {
+		return err
+	}
+
+	json.Unmarshal(bytes, &out)
+	return err
+}
+
+// DbSet : Convenience function to avoir JSON marshalling
 func DbSet(key string, value interface{}) error {
 	str, err := json.Marshal(value)
 	if err != nil {
 		return err
 	}
 
-	return Db.Set(key, str, 0).Err()
-}
-
-// DbGet : Convenience function to avoid manual JSON decoding
-func DbGet(key string) (out interface{}) {
-	str := Db.Get(key).Val()
-
-	if str == "[]" {
-		// yes go does not handle that... https://stackoverflow.com/a/33183170
-		out = make([]interface{}, 0)
-		return
-	}
-
-	json.Unmarshal([]byte(str), out)
-	return
+	result := Db.Set(key, []byte(str), 0)
+	return result.Err()
 }
 
 // OpenDatabaseConnection : Connect to redis databae
-//													Calls such as DbGet and DbSet will crash if called before this
+// Calls such as DbGet and DbSet will crash if called before this
 func OpenDatabaseConnection() error {
 	Db = redis.NewClient(&redis.Options{
 		Addr:     os.Getenv("REDIS_ADDR"),
@@ -50,9 +56,10 @@ func OpenDatabaseConnection() error {
 		return errors.New("failed to connect to redis database")
 	}
 
-	agents := DbGet("agents")
-	if agents == nil {
-		DbSet("agents", make([]interface{}, 0))
+	var agents []models.Agent
+	err = DbGet("agents", agents)
+	if err == redis.Nil {
+		DbSet("agents", make([]models.Agent, 0))
 	}
 
 	logger.Log("etablished connection with redis database")
