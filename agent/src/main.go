@@ -90,14 +90,6 @@ func main() {
 
 	loadCredentialsToMem(config)
 	loadCredentialsToEnv(&config.Vault)
-	// msg := &models.Message{
-	// 	Version:   1,
-	// 	Timestamp: time.Now().Unix(),
-	// 	Data: map[string]interface{}{
-	// 		"foo": "bar45",
-	// 	},
-	// }
-	// SendMessageToMonitor(config, msg)
 	err = cmd.Execute(config)
 	assert(err)
 	unloadCredentialsFromEnv()

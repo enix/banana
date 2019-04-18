@@ -4,7 +4,6 @@ import "errors"
 
 // RestoreCmd : Command implementation for 'backup'
 type RestoreCmd struct {
-	Backend         string
 	Name            string
 	TargetTime      string
 	TargetDirectory string
@@ -23,7 +22,6 @@ func NewRestoreCmd(args *LaunchArgs) (*RestoreCmd, error) {
 	}
 
 	return &RestoreCmd{
-		Backend:         args.Flags.Backend,
 		Name:            args.Values[1],
 		TargetTime:      args.Values[2],
 		TargetDirectory: args.Values[3],
@@ -32,7 +30,7 @@ func NewRestoreCmd(args *LaunchArgs) (*RestoreCmd, error) {
 
 // Execute : Start the backup using specified backend
 func (cmd *RestoreCmd) Execute(config *Config) error {
-	backend, err := NewBackupBackend(cmd.Backend)
+	backend, err := NewBackupBackend(config.Backend)
 	if err != nil {
 		return err
 	}

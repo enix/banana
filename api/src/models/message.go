@@ -19,8 +19,9 @@ type Message struct {
 	Version   int8                   `json:"version"`
 	Timestamp int64                  `json:"timestamp"`
 	SenderID  string                 `json:"sender_id"`
-	Signature string                 `json:"signature,omitempty"`
+	Type      string                 `json:"type"`
 	Data      map[string]interface{} `json:"data"`
+	Signature string                 `json:"signature,omitempty"`
 }
 
 // GetSortedSetScore : Generate the score that will be used to store within redis sorted set

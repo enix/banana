@@ -6,8 +6,11 @@ import (
 	"crypto/x509"
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
+	"os"
 	"strings"
+	"time"
 
 	"enix.io/banana/src/models"
 	"enix.io/banana/src/services"
@@ -21,9 +24,9 @@ type APICredentials struct {
 	CaCert     *x509.Certificate
 }
 
-// SendMessageToMonitor : Sign given message and POST it to the monitor API
-func SendMessageToMonitor(config *Config, message *models.Message) error {
-	fmt.Println("sending summary to monitor...")
+// SendToMonitor : Sign given message and POST it to the monitor API
+func SendToMonitor(config *Config, message *models.Message) error {
+	fmt.Print("waiting for monitor... ")
 
 	tlsConfig := &tls.Config{
 		Certificates: []tls.Certificate{
@@ -56,5 +59,23 @@ func SendMessageToMonitor(config *Config, message *models.Message) error {
 	defer res.Body.Close()
 
 	fmt.Println(res.Status)
+	if res.StatusCode != 200 {
+		os.Exit(1)
+	}
 	return nil
+}
+
+// SendMessageToMonitor : Convenience function to create and send a message
+func SendMessageToMonitor(typ string, config *Config) {
+	msg := &models.Message{
+		Version:   1,
+		Timestamp: time.Now().Unix(),
+		Type:      typ,
+		Data:      config.JSONMap(),
+	}
+
+	err := SendToMonitor(config, msg)
+	if err != nil {
+		log.Fatal(err)
+	}
 }

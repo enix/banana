@@ -10,7 +10,7 @@ import (
 	"github.com/imdario/mergo"
 )
 
-// Config : Contains data such as credentials that will be used to execute commands
+// Config : Contains full confugration will be used to execute commands
 type Config struct {
 	MonitorURL  string               `json:"monitor_url"`
 	Backend     string               `json:"backend"`
@@ -85,4 +85,11 @@ func (config *Config) LoadFromEnv() error {
 // GetEndpoint : Returns the storage endpoint based on host, bucket and backup name
 func (config *Config) GetEndpoint(backupName string) string {
 	return fmt.Sprintf("s3://%s/%s/%s", config.StorageHost, config.BucketName, backupName)
+}
+
+// JSONMap : Convert struct to an anonymous map with given JSON keys
+func (config *Config) JSONMap() (out map[string]interface{}) {
+	raw, _ := json.Marshal(config)
+	json.Unmarshal(raw, &out)
+	return
 }
