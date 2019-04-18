@@ -40,7 +40,7 @@ func (config *Config) LoadDefaults() {
 		Vault: services.VaultConfig{
 			Addr:       "http://localhost:7777",
 			Token:      "myroot",
-			SecretPath: "storage_access",
+			SecretPath: "banana",
 		},
 	}
 }

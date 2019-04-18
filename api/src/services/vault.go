@@ -105,7 +105,7 @@ func OpenVaultConnection() error {
 	Vault, err = NewVaultClient(&VaultConfig{
 		Addr:       os.Getenv("VAULT_ADDR"),
 		Token:      os.Getenv("VAULT_TOKEN"),
-		SecretPath: "storage_access",
+		SecretPath: "banana",
 	})
 
 	return err

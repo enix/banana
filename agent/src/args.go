@@ -31,7 +31,7 @@ func LoadArguments() *LaunchArgs {
 	getopt.FlagLong(&args.Flags.CaCertPath, "cacert", 0, "CA certificate location", "/etc/banana/cacert.pem")
 	getopt.FlagLong(&args.Flags.Vault.Addr, "vault-addr", 0, "vault API URL", "http://localhost:7777")
 	getopt.FlagLong(&args.Flags.Vault.Token, "vault-token", 0, "vault auth token", "myroot")
-	getopt.FlagLong(&args.Flags.Vault.SecretPath, "vault-secret", 0, "vault secret path where credentials are stored", "storage_access")
+	getopt.FlagLong(&args.Flags.Vault.SecretPath, "vault-secret", 0, "vault secret path where credentials are stored", "banana")
 
 	opts := getopt.CommandLine
 	opts.Parse(os.Args)

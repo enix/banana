@@ -18,7 +18,7 @@ token=$(echo "${access}" | awk '{ print $2 }')
 echo "your access token is:" ${id}
 echo "your secret token is:" ${token}
 
-vault kv put secret/storage_access \
+vault kv put secret/banana \
   AWS_ACCESS_KEY_ID=${id} \
   AWS_SECRET_ACCESS_KEY=${token} \
   PASSPHRASE=mySuperPassphrase
