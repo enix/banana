@@ -1,7 +1,6 @@
 package routes
 
 import (
-	"fmt"
 	"net/http"
 
 	"enix.io/banana/src/logger"
@@ -44,11 +43,10 @@ func handleClientRequest(handler RequestHandler) func(*gin.Context) {
 	return func(context *gin.Context) {
 		client, err := authenticateClientRequest(context)
 		if err != nil {
-			fmt.Println(err)
 			context.JSON(401, map[string]string{"error": "invalid authentication data"})
 			return
 		}
-		logger.Log("Hello, %s from %s\n", client.CommonName, client.Organization)
+		logger.Log("Hello, %s from %s", client.CommonName, client.Organization)
 
 		status, data := handler(context, client)
 		if dataAsError, ok := data.(error); ok {
