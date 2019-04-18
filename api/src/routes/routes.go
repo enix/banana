@@ -11,5 +11,6 @@ func InitializeRoutes(router *gin.Engine) {
 	router.GET("/containers/:containerName/tree/:treeName", handleClientRequest(ServeBackupTree))
 	router.GET("/agents", handleClientRequest(ServeAgentList))
 	router.POST("/agents", handleClientRequest(RegisterAgent))
-	router.POST("/agents/:id/notify", handleClientRequest(ReceiveAgentMesssage))
+	router.POST("/agents/notify", handleClientRequest(ReceiveAgentMesssage))
+	router.GET("/agents/:id/messages", handleClientRequest(ServeAgentMesssages))
 }

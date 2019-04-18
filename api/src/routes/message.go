@@ -1,6 +1,7 @@
 package routes
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
 
@@ -11,24 +12,21 @@ import (
 
 // ReceiveAgentMesssage : Check and store an agent's message
 func ReceiveAgentMesssage(context *gin.Context, issuer *RequestIssuer) (int, interface{}) {
-	body := services.ParseJSONFromStream(context.Request.Body)
-	msg := models.NewMessage(body)
-	services.DbSet(msg.GetFullKey(), msg)
+	body := services.ReadBytesFromStream(context.Request.Body)
+	msg := models.Message{}
+	msg.SenderID = fmt.Sprintf("%s:%s", issuer.Organization, issuer.CommonName)
+	json.Unmarshal(body, &msg)
+	services.DbZAdd(msg.GetFullKey(), msg.GetSortedSetScore(), msg)
 	return http.StatusOK, "ok"
 }
 
 // ServeAgentMesssages : Returns the last messages from a given agent
-// TODO: maybe handle this better cause .Keys() is O(N)
-// and the for loop can probably be avoided by a .GetAll() call or
-// someting similar
 func ServeAgentMesssages(context *gin.Context, issuer *RequestIssuer) (int, interface{}) {
-	pattern := fmt.Sprintf("message:%s:%s", issuer.Organization, issuer.CommonName)
-	messages := services.Db.Keys(pattern).Val()
-	response := make([]models.Message, 0, len(messages))
-
-	for _, elem := range messages {
-		response = append(response, services.DbGet(elem).(models.Message))
+	zkey := fmt.Sprintf("messages:%s", context.Param("id"))
+	messages, err := services.DbZRange(zkey, 0, 10, models.Message{})
+	if err != nil {
+		return http.StatusInternalServerError, err
 	}
 
-	return http.StatusOK, response
+	return http.StatusOK, messages
 }

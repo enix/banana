@@ -10,15 +10,19 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// ParseJSONFromStream : Consume all bytes in the ReadCloser to a buffer and returns it
-//							 parsed ad JSON
+// ParseJSONFromStream : Consume all bytes in the ReadCloser to a buffer and returns it parsed as JSON
 func ParseJSONFromStream(reader io.ReadCloser) map[string]interface{} {
+	bytes := ReadBytesFromStream(reader)
+	data := make(map[string]interface{})
+	json.Unmarshal(bytes, &data)
+	return data
+}
+
+// ReadBytesFromStream : Consume all bytes in the ReadCloser to a buffer
+func ReadBytesFromStream(reader io.ReadCloser) []byte {
 	buf := new(bytes.Buffer)
 	buf.ReadFrom(reader)
-
-	data := make(map[string]interface{})
-	json.Unmarshal(buf.Bytes(), &data)
-	return data
+	return buf.Bytes()
 }
 
 // GetDNFieldValue : Read value from distinguished name in X-Client-Subject-DN header

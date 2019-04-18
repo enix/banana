@@ -2,25 +2,31 @@ package models
 
 import (
 	"fmt"
-
-	"github.com/rs/xid"
 )
 
 // Message : Representation of an agent's notification
 type Message struct {
-	ID   xid.ID                 `json:"id"`
-	Data map[string]interface{} `json:"data"`
+	SenderID  string                 `json:"sender_id"`
+	Version   string                 `json:"version"`
+	Timestamp int64                  `json:"timestamp"`
+	Data      map[string]interface{} `json:"data"`
 }
 
 // NewMessage : Convenience function for creating a message
-func NewMessage(data map[string]interface{}) *Message {
+func NewMessage(timestamp int64, data map[string]interface{}) *Message {
 	return &Message{
-		ID:   xid.New(),
-		Data: data,
+		Version:   "1",
+		Timestamp: timestamp,
+		Data:      data,
 	}
 }
 
-// GetFullKey : Generate the key that will be used to store within redis
+// GetSortedSetScore : Generate the score that will be used to store within redis sorted set
+func (msg *Message) GetSortedSetScore() float64 {
+	return float64(msg.Timestamp)
+}
+
+// GetFullKey : Get the key to be used within redis
 func (msg *Message) GetFullKey() string {
-	return fmt.Sprintf("message:%s", msg.ID)
+	return fmt.Sprintf("messages:%s", msg.SenderID)
 }
