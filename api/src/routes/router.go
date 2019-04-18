@@ -13,7 +13,7 @@ import (
 type RequestIssuer struct {
 	CommonName   string
 	Organization string
-	Signature    string
+	Certificate  string
 }
 
 // RequestHandler : Shorthand for func type that handle client requests
@@ -33,7 +33,7 @@ func authenticateClientRequest(context *gin.Context) (*RequestIssuer, error) {
 	client := &RequestIssuer{
 		CommonName:   cname,
 		Organization: oname,
-		Signature:    context.GetHeader("X-Signature"),
+		Certificate:  context.GetHeader("X-Client-Certificate"),
 	}
 
 	return client, nil
@@ -62,36 +62,10 @@ func handleClientRequest(handler RequestHandler) func(*gin.Context) {
 	}
 }
 
-func handleSignedRequest(handler RequestHandler) func(*gin.Context) {
-	return func(context *gin.Context) {
-		rawData, err := context.GetRawData()
-		if err != nil {
-			context.JSON(400, map[string]string{"error": err.Error()})
-			return
-		}
-
-		signature := context.GetHeader("X-Signature")
-		if len(signature) == 0 {
-			context.JSON(400, map[string]string{"error": "missing X-Signature header"})
-			return
-		}
-
-		err = services.VerifySha256Signature(rawData, signature, context.GetHeader("X-Client-Certificate"))
-		if err != nil {
-			logger.LogError(err)
-			context.JSON(401, map[string]string{"error": "invalid signature"})
-			return
-		}
-
-		handleClientRequest(handler)(context)
-	}
-}
-
 func handlePingRequest(context *gin.Context, issuer *RequestIssuer) (int, interface{}) {
 	return http.StatusOK, map[string]string{
 		"issuer":       issuer.CommonName,
 		"organization": issuer.Organization,
-		"signature":    issuer.Signature,
 		"data":         "pong",
 	}
 }

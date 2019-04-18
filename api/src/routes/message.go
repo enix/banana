@@ -2,6 +2,7 @@ package routes
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 
@@ -12,9 +13,18 @@ import (
 
 // ReceiveAgentMesssage : Check and store an agent's message
 func ReceiveAgentMesssage(context *gin.Context, issuer *RequestIssuer) (int, interface{}) {
-	body := services.ReadBytesFromStream(context.Request.Body)
 	msg := models.Message{}
+	body := services.ReadBytesFromStream(context.Request.Body)
 	json.Unmarshal(body, &msg)
+
+	err := msg.VerifySignature(issuer.Certificate)
+	if err != nil {
+		return http.StatusForbidden, err
+	}
+	if msg.SenderID != fmt.Sprintf("%s:%s", issuer.Organization, issuer.CommonName) {
+		return http.StatusForbidden, errors.New("sender_id / certificate DN mismatch")
+	}
+
 	msg.SenderID = fmt.Sprintf("%s:%s", issuer.Organization, issuer.CommonName)
 	services.DbZAdd(msg.GetFullKey(), msg.GetSortedSetScore(), msg)
 	return http.StatusOK, "ok"
