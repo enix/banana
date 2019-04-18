@@ -6,42 +6,33 @@ import { fireAjax } from '../../helpers';
 
 function* pingApi() {
   try {
-    yield fireAjax({ url: 'http://localhost:8080/ping' });
+    yield fireAjax({ uri: '/ping' });
   }
   catch (error) {
     yield put(ActionsCreators.pingApiFailure(error))
   };
 }
 
-function* listBackupContainers() {
+function* listAgents() {
   try {
-    const response = yield fireAjax({ uri: '/containers' });
-    yield put(ActionsCreators.listBackupContainersSuccess(response))
+    const response = yield fireAjax({ uri: '/agents' });
+    yield put(ActionsCreators.listAgentsSuccess({}, response))
   }
   catch (_) {}
 }
 
-function* listTreesInContainer({ payload: { containerName } }) {
+function* getAgent({ payload: { org, cn } }) {
   try {
-    const response = yield fireAjax({ uri: `/containers/${containerName}` });
-    yield put(ActionsCreators.listTreesInContainerSuccess(containerName, response))
-  }
-  catch (_) {}
-}
-
-function* listBackupsForTree({ payload: { containerName, treeName } }) {
-  try {
-    const response = yield fireAjax({ uri: `/containers/${containerName}/tree/${treeName}` });
-    yield put(ActionsCreators.listBackupsForTreeSuccess(containerName, treeName, response))
+    const response = yield fireAjax({ uri: `/agents/${org}:${cn}` });
+    yield put(ActionsCreators.getAgentSuccess({ org, cn }, response))
   }
   catch (_) {}
 }
 
 const sagas = function* () {
   yield takeLatest(ActionsTypes.PING_API, pingApi);
-  yield takeLatest(ActionsTypes.LIST_BACKUP_CONTAINERS, listBackupContainers);
-  yield takeLatest(ActionsTypes.LIST_TREES_IN_CONTAINER, listTreesInContainer);
-  yield takeLatest(ActionsTypes.LIST_BACKUPS_FOR_TREE, listBackupsForTree);
+  yield takeLatest(ActionsTypes.LIST_AGENTS, listAgents);
+  yield takeLatest(ActionsTypes.GET_AGENT, getAgent);
 };
 
 export default sagas;

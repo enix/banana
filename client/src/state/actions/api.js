@@ -10,31 +10,22 @@ const api = {
     payload: { error },
   }),
 
-  listBackupContainers: () => ({
-    type: ActionsTypes.LIST_BACKUP_CONTAINERS,
+  listAgents: () => ({
+    type: ActionsTypes.LIST_AGENTS,
     payload: {},
   }),
-  listBackupContainersSuccess: (response) => ({
-    type: ActionsTypes.LIST_BACKUP_CONTAINERS_SUCCESS,
-    payload: { response },
+  listAgentsSuccess: (request, response) => ({
+    type: ActionsTypes.LIST_AGENTS_SUCCESS,
+    payload: { request, response },
   }),
 
-  listTreesInContainer: (containerName) => ({
-    type: ActionsTypes.LIST_TREES_IN_CONTAINER,
-    payload: { containerName },
+  getAgent: (org, cn) => ({
+    type: ActionsTypes.GET_AGENT,
+    payload: { org, cn },
   }),
-  listTreesInContainerSuccess: (containerName, response) => ({
-    type: ActionsTypes.LIST_TREES_IN_CONTAINER_SUCCESS,
-    payload: { containerName, response },
-  }),
-
-  listBackupsForTree: (containerName, treeName) => ({
-    type: ActionsTypes.LIST_BACKUPS_FOR_TREE,
-    payload: { containerName, treeName },
-  }),
-  listBackupsForTreeSuccess: (containerName, treeName, response) => ({
-    type: ActionsTypes.LIST_BACKUPS_FOR_TREE_SUCCESS,
-    payload: { containerName, treeName, response },
+  getAgentSuccess: (request, response) => ({
+    type: ActionsTypes.GET_AGENT_SUCCESS,
+    payload: { request, response },
   }),
 };
 

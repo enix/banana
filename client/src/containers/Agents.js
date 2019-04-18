@@ -5,27 +5,32 @@ import { connect } from 'react-redux'
 import Link from '../components/Link';
 import List from '../components/List';
 import Carret from '../components/Carret';
+import Loading from '../components/Loading';
 import ActionCreators from '../state/actions';
 
-class Containers extends Component {
+class Agents extends Component {
 
   renderItem = (item) => (
-    <Link to={'/node/' + item.name}>
+    <Link to={`/agent/${item.organization}/${item.cn}`}>
       <Carret />
-      {item.name}
+      <b>{item.organization}</b> / {item.cn}
     </Link>
   )
 
   componentDidMount() {
-    this.props.actions.listBackupContainers();
+    this.props.actions.listAgents();
   }
 
   render() {
+    if (!this.props.agents) {
+      return <Loading />
+    }
+
     return (
-      <div className="Containers">
-        <h2>Available containers</h2>
+      <div className="Agents">
+        <h2>Available agents</h2>
         <List
-          data={this.props.containers}
+          data={this.props.agents}
           renderItem={this.renderItem}
         />
       </div>
@@ -34,11 +39,11 @@ class Containers extends Component {
 }
 
 const mapStateToProps = state => ({
-  containers: state.containers,
+  agents: state.agentList,
 });
 
 const mapDispatchToProps = dispatch => ({
   actions: bindActionCreators(ActionCreators, dispatch),
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(Containers);
+export default connect(mapStateToProps, mapDispatchToProps)(Agents);

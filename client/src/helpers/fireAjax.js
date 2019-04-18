@@ -14,7 +14,7 @@ async function fireAjax(config) {
   return await axios({
     ...defaultAjaxConfig,
     ...config,
-    url: `http://localhost:8080${config.uri}`
+    url: `https://api.banana.enix.io${config.uri}`
   });
 }
 

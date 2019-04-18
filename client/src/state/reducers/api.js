@@ -11,33 +11,18 @@ const api = {
       isSetup: { $set: false },
     },
   }),
-  [ActionsTypes.LIST_BACKUP_CONTAINERS_SUCCESS]: (state, { response: { data }}) => update(state, {
-    containers: { $set: data }
+  [ActionsTypes.LIST_AGENTS_SUCCESS]: (state, { response: { data } }) => update(state, {
+    agentList: { $set: data }
   }),
-  [ActionsTypes.LIST_TREES_IN_CONTAINER_SUCCESS]: (state, { response: { data }, containerName }) => {
-    const updatedContainers = state.containers.upsert(data, c => c.name === containerName);
-    return update(state, {
-      containers: { $set: updatedContainers },
-    });
-  },
-  [ActionsTypes.LIST_BACKUPS_FOR_TREE_SUCCESS]: (state, { response: { data }, containerName, treeName }) => {
-    let container = { ...state.containers.find(c => c.name === containerName) };
-
-    if (!container || !container.contents) {
-      container = {
-        name: containerName,
-        contents: [data]
-      };
-    }
-    else {
-      container.contents = container.contents.upsert(data, t => t.name === treeName);
-    }
-
-    const updatedContainers = state.containers.upsert(container, c => c.name === containerName);
-    return update(state, {
-      containers: { $set: updatedContainers },
-    });
-  },
+  [ActionsTypes.GET_AGENT_SUCCESS]: (state, { request: { org, cn }, response: { data } }) => update(state, {
+    agents: {
+      $set: {
+        [org]: {
+          [cn]: data
+        }
+      }
+    },
+  }),
 };
 
 export default api;

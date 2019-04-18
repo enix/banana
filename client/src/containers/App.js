@@ -3,10 +3,8 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux'
 import { BrowserRouter as Router, Route } from 'react-router-dom';
 
-import Containers from '../containers/Containers';
-import Trees from '../containers/Trees';
-import Backups from '../containers/Backups';
-import Restore from '../containers/Restore';
+import Agents from '../containers/Agents';
+import Agent from '../containers/Agent';
 import ActionCreators from '../state/actions';
 
 class App extends Component {
@@ -19,10 +17,8 @@ class App extends Component {
     return (
       <Router>
         <div className="App">
-          <Route exact path='/' component={Containers} />
-          <Route exact path='/node/:name' component={Trees} />
-          <Route exact path='/node/:name/tree/:treeName' component={Backups} />
-          <Route exact path='/node/:name/tree/:treeName/restore/:time' component={Restore} />
+          <Route exact path='/' component={Agents} />
+          <Route exact path='/agent/:org/:cn' component={Agent} />
         </div>
       </Router>
     );

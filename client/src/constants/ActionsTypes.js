@@ -6,14 +6,11 @@ const ActionsTypes = keyMirror({
   PING_API: null,
   PING_API_FAILURE: null,
 
-  LIST_BACKUP_CONTAINERS: null,
-  LIST_BACKUP_CONTAINERS_SUCCESS: null,
+  LIST_AGENTS: null,
+  LIST_AGENTS_SUCCESS: null,
 
-  LIST_TREES_IN_CONTAINER: null,
-  LIST_TREES_IN_CONTAINER_SUCCESS: null,
-
-  LIST_BACKUPS_FOR_TREE: null,
-  LIST_BACKUPS_FOR_TREE_SUCCESS: null,
+  GET_AGENT: null,
+  GET_AGENT_SUCCESS: null,
 });
 
 export default ActionsTypes;
