@@ -12,5 +12,6 @@ func InitializeRoutes(router *gin.Engine) {
 	router.GET("/agents", handleClientRequest(ServeAgentList))
 	router.POST("/agents", handleClientRequest(RegisterAgent))
 	router.POST("/agents/notify", handleClientRequest(ReceiveAgentMesssage))
+	router.GET("/agents/:id", handleClientRequest(ServeAgent))
 	router.GET("/agents/:id/messages", handleClientRequest(ServeAgentMesssages))
 }
