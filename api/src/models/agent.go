@@ -6,9 +6,8 @@ import (
 
 // Agent : Representation of an agent
 type Agent struct {
-	Organization string                 `json:"organization"`
-	CommonName   string                 `json:"cn"`
-	Config       map[string]interface{} `json:"config"`
+	Organization string `json:"organization"`
+	CommonName   string `json:"cn"`
 }
 
 // NewAgent : Convenience function for creating an agent
@@ -16,15 +15,6 @@ func NewAgent(orga, cn string) *Agent {
 	return &Agent{
 		Organization: orga,
 		CommonName:   cn,
-	}
-}
-
-// NewAgentWithConfig : Convenience function for creating a full agent
-func NewAgentWithConfig(orga, cn string, config map[string]interface{}) *Agent {
-	return &Agent{
-		Organization: orga,
-		CommonName:   cn,
-		Config:       config,
 	}
 }
 
