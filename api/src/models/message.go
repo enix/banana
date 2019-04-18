@@ -7,7 +7,7 @@ import (
 // Message : Representation of an agent's notification
 type Message struct {
 	SenderID  string                 `json:"sender_id"`
-	Version   string                 `json:"version"`
+	Version   int8                   `json:"version"`
 	Timestamp int64                  `json:"timestamp"`
 	Data      map[string]interface{} `json:"data"`
 }
@@ -15,7 +15,7 @@ type Message struct {
 // NewMessage : Convenience function for creating a message
 func NewMessage(timestamp int64, data map[string]interface{}) *Message {
 	return &Message{
-		Version:   "1",
+		Version:   1,
 		Timestamp: timestamp,
 		Data:      data,
 	}
