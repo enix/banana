@@ -27,6 +27,15 @@ const api = {
     type: ActionsTypes.GET_AGENT_SUCCESS,
     payload: { request, response },
   }),
+
+  getAgentMessages: (org, cn) => ({
+    type: ActionsTypes.GET_AGENT_MESSAGES,
+    payload: { org, cn },
+  }),
+  getAgentMessagesSuccess: (request, response) => ({
+    type: ActionsTypes.GET_AGENT_MESSAGES_SUCCESS,
+    payload: { request, response },
+  }),
 };
 
 export default api;

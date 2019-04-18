@@ -11,6 +11,9 @@ const ActionsTypes = keyMirror({
 
   GET_AGENT: null,
   GET_AGENT_SUCCESS: null,
+
+  GET_AGENT_MESSAGES: null,
+  GET_AGENT_MESSAGES_SUCCESS: null,
 });
 
 export default ActionsTypes;

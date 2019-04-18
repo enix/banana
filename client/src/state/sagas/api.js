@@ -29,10 +29,19 @@ function* getAgent({ payload: { org, cn } }) {
   catch (_) {}
 }
 
+function* getAgentMessages({ payload: { org, cn } }) {
+  try {
+    const response = yield fireAjax({ uri: `/agents/${org}:${cn}/messages` });
+    yield put(ActionsCreators.getAgentMessagesSuccess({ org, cn }, response))
+  }
+  catch (_) {}
+}
+
 const sagas = function* () {
   yield takeLatest(ActionsTypes.PING_API, pingApi);
   yield takeLatest(ActionsTypes.LIST_AGENTS, listAgents);
   yield takeLatest(ActionsTypes.GET_AGENT, getAgent);
+  yield takeLatest(ActionsTypes.GET_AGENT_MESSAGES, getAgentMessages);
 };
 
 export default sagas;

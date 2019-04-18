@@ -23,6 +23,16 @@ const api = {
       }
     },
   }),
+  [ActionsTypes.GET_AGENT_MESSAGES_SUCCESS]: (state, { request: { org, cn }, response: { data } }) => update(state, {
+    agentsMessages: {
+      $set: {
+        [org]: {
+          [cn]: data
+        }
+      }
+    },
+  }),
+
 };
 
 export default api;
