@@ -43,7 +43,7 @@ services:
     image: nginx:latest
     ports:
       - 7080:80
-      - 7443:443
+      - 443:443
     restart: unless-stopped
     volumes:
       - ./proxy:/etc/nginx/conf.d
