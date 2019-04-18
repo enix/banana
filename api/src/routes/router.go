@@ -20,12 +20,13 @@ type RequestIssuer struct {
 type RequestHandler = func(*gin.Context, *RequestIssuer) (int, interface{})
 
 func authenticateClientRequest(context *gin.Context) (*RequestIssuer, error) {
-	cname, err := services.GetDNFieldValue(context, "CN")
+	dn := context.GetHeader("X-Client-Subject-DN")
+	cname, err := services.GetDNFieldValue(dn, "CN")
 	if err != nil {
 		return nil, err
 	}
 
-	oname, err := services.GetDNFieldValue(context, "O")
+	oname, err := services.GetDNFieldValue(dn, "O")
 	if err != nil {
 		return nil, err
 	}

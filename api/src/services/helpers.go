@@ -6,8 +6,6 @@ import (
 	"errors"
 	"io"
 	"strings"
-
-	"github.com/gin-gonic/gin"
 )
 
 // ParseJSONFromStream : Consume all bytes in the ReadCloser to a buffer and returns it parsed as JSON
@@ -26,9 +24,8 @@ func ReadBytesFromStream(reader io.ReadCloser) []byte {
 }
 
 // GetDNFieldValue : Read value from distinguished name in X-Client-Subject-DN header
-func GetDNFieldValue(context *gin.Context, key string) (string, error) {
-	issuer := context.GetHeader("X-Client-Subject-DN")
-	entries := strings.Split(issuer, ",")
+func GetDNFieldValue(dn, key string) (string, error) {
+	entries := strings.Split(dn, ",")
 
 	for _, elem := range entries {
 		kv := strings.Split(elem, "=")
@@ -37,5 +34,5 @@ func GetDNFieldValue(context *gin.Context, key string) (string, error) {
 		}
 	}
 
-	return "", errors.New(key + " missing in X-Client-Subject-DN header")
+	return "", errors.New(key + " missing in certificate DN")
 }
