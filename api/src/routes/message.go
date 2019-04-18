@@ -14,8 +14,8 @@ import (
 func ReceiveAgentMesssage(context *gin.Context, issuer *RequestIssuer) (int, interface{}) {
 	body := services.ReadBytesFromStream(context.Request.Body)
 	msg := models.Message{}
-	msg.SenderID = fmt.Sprintf("%s:%s", issuer.Organization, issuer.CommonName)
 	json.Unmarshal(body, &msg)
+	msg.SenderID = fmt.Sprintf("%s:%s", issuer.Organization, issuer.CommonName)
 	services.DbZAdd(msg.GetFullKey(), msg.GetSortedSetScore(), msg)
 	return http.StatusOK, "ok"
 }
