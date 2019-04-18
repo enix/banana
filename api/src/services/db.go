@@ -4,16 +4,16 @@ import (
 	"encoding/json"
 	"errors"
 	"os"
+	"reflect"
 
 	"enix.io/banana/src/logger"
-	"enix.io/banana/src/models"
 	"github.com/go-redis/redis"
 )
 
 // Db : Use this API to interact with redis
 var Db *redis.Client
 
-// DbGet : Convenience function to avoir JSON unmarshalling
+// DbGet : Convenience function to avoid JSON unmarshalling
 func DbGet(key string, out interface{}) error {
 	result := Db.Get(key)
 
@@ -27,11 +27,11 @@ func DbGet(key string, out interface{}) error {
 		return err
 	}
 
-	json.Unmarshal(bytes, &out)
+	json.Unmarshal(bytes, out)
 	return err
 }
 
-// DbSet : Convenience function to avoir JSON marshalling
+// DbSet : Convenience function to avoid JSON marshalling
 func DbSet(key string, value interface{}) error {
 	str, err := json.Marshal(value)
 	if err != nil {
@@ -57,20 +57,37 @@ func DbZAdd(key string, score float64, value interface{}) error {
 	return result.Err()
 }
 
-// DbZRange : Get given range from DB sorted set
+// DbZRange : Get given keys
 func DbZRange(key string, from, to int64, sample interface{}) ([]interface{}, error) {
-	result := Db.ZRange(key, from, to)
-	fmt.Println(result)
-	elems, err := result.Result()
+	elems, err := Db.ZRange(key, from, to).Result()
 	if err != nil {
 		return nil, err
 	}
 
 	out := make([]interface{}, 0)
-	elemType := reflect.TypeOf(sample)
+	newElem := reflect.New(reflect.TypeOf(sample)).Interface()
 	for _, elem := range elems {
-		newElem := reflect.New(elemType).Interface()
-		err = json.Unmarshal([]byte(elem), &newElem)
+		err := json.Unmarshal([]byte(elem), &newElem)
+		if err != nil {
+			return nil, err
+		}
+		out = append(out, newElem)
+	}
+
+	return out, nil
+}
+
+// DbMGet : Get given keys
+func DbMGet(keys []string, sample interface{}) ([]interface{}, error) {
+	elems, err := Db.MGet(keys...).Result()
+	if err != nil {
+		return nil, err
+	}
+
+	out := make([]interface{}, 0)
+	newElem := reflect.New(reflect.TypeOf(sample)).Interface()
+	for _, elem := range elems {
+		err := json.Unmarshal([]byte(elem.(string)), &newElem)
 		if err != nil {
 			return nil, err
 		}
@@ -92,12 +109,6 @@ func OpenDatabaseConnection() error {
 	pong, err := Db.Ping().Result()
 	if err != nil || pong != "PONG" {
 		return errors.New("failed to connect to redis database")
-	}
-
-	var agents []models.Agent
-	err = DbGet("agents", agents)
-	if err == redis.Nil {
-		DbSet("agents", make([]models.Agent, 0))
 	}
 
 	logger.Log("etablished connection with redis database")
