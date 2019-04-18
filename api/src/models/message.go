@@ -5,10 +5,8 @@ import (
 	"crypto/rand"
 	"crypto/rsa"
 	"crypto/sha256"
-	"crypto/x509"
 	"encoding/base64"
 	"encoding/json"
-	"encoding/pem"
 	"errors"
 	"fmt"
 
@@ -50,16 +48,11 @@ func (msg *Message) VerifySignature(cert string) error {
 }
 
 // Sign : Marshal the struct and generate signature from the result
-func (msg *Message) Sign(pemEncodedPrivateKey string) error {
+func (msg *Message) Sign(privkey *rsa.PrivateKey) error {
 	rawMessage, _ := json.Marshal(msg)
 	hash := sha256.New()
 	hash.Write(rawMessage)
 	digest := hash.Sum(nil)
-	block, _ := pem.Decode([]byte(pemEncodedPrivateKey))
-	privkey, err := x509.ParsePKCS1PrivateKey(block.Bytes)
-	if err != nil {
-		return fmt.Errorf("failed to load private key: %s", err)
-	}
 	sig, err := rsa.SignPKCS1v15(rand.Reader, privkey, crypto.SHA256, digest)
 	if err != nil {
 		return err
