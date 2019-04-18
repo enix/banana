@@ -1,6 +1,7 @@
 package routes
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
 
@@ -11,7 +12,9 @@ import (
 
 // RegisterAgent : Add a new agent to the agent list
 func RegisterAgent(context *gin.Context, issuer *RequestIssuer) (int, interface{}) {
+	body := services.ReadBytesFromStream(context.Request.Body)
 	agent := models.NewAgent(issuer.Organization, issuer.CommonName)
+	json.Unmarshal(body, &agent.Config)
 	services.DbSet(agent.GetFullKeyFor("info"), agent)
 	return http.StatusOK, agent
 }
