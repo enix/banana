@@ -7,6 +7,7 @@
     "deepmerge": "^2.1.0",
     "immutability-helper": "^2.7.0",
     "key-mirror": "^1.0.1",
+    "moment": "^2.24.0",
     "prop-types": "^15.7.2",
     "react": "^16.3.2",
     "react-dom": "^16.3.2",

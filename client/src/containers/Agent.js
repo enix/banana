@@ -1,17 +1,36 @@
 import React, { Component } from 'react';
 import { bindActionCreators } from 'redux';
-import { connect } from 'react-redux'
+import { connect } from 'react-redux';
 
 import List from '../components/List';
 import Loading from '../components/Loading';
 import ActionCreators from '../state/actions';
+import { formatDate } from '../helpers';
 
 class Agent extends Component {
 
-  renderMessage = (message) => (
-    <pre style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>
-      {JSON.stringify(message, null, 2)}
-    </pre>
+  renderMessage = (message, key) => (
+    <div>
+      <h4 style={{ display: 'inline-block', marginRight: 20 }}>
+        {formatDate(message.timestamp)} -
+        <b> {message.type}</b>
+      </h4>
+      <a
+        href={`#collapseExample-${key}`}
+        data-toggle='collapse'
+        aria-expanded='false'
+        aria-controls={`collapseExample-${key}`}
+      >
+        Toggle details
+      </a>
+      <div className='collapse' id={`collapseExample-${key}`}>
+        <div class='card card-body'>
+          <pre style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>
+            {JSON.stringify(message, null, 2)}
+          </pre>
+        </div>
+      </div>
+    </div>
   )
 
   componentDidMount() {
@@ -26,7 +45,7 @@ class Agent extends Component {
     }
 
     return (
-      <div className="Agent">
+      <div className='Agent'>
         <h2>Actions history for {this.props.agent.cn} from {this.props.agent.organization}</h2>
         {!this.props.agentMessages ? <Loading /> : (
           <List

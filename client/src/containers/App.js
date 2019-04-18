@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux'
-import { BrowserRouter as Router, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Link } from 'react-router-dom';
 
 import Agents from '../containers/Agents';
 import Agent from '../containers/Agent';
@@ -17,6 +17,9 @@ class App extends Component {
     return (
       <Router>
         <div className="App" style={{ padding: 20 }}>
+          <Link to='/'>
+            <h1>Banana</h1>
+          </Link>
           <Route exact path='/' component={Agents} />
           <Route exact path='/agent/:org/:cn' component={Agent} />
         </div>
