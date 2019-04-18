@@ -16,7 +16,7 @@ class App extends Component {
   render() {
     return (
       <Router>
-        <div className="App">
+        <div className="App" style={{ padding: 20 }}>
           <Route exact path='/' component={Agents} />
           <Route exact path='/agent/:org/:cn' component={Agent} />
         </div>
