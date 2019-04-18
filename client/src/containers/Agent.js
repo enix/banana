@@ -25,10 +25,7 @@ class Agent extends Component {
 
     return (
       <div className="Agent">
-        <h2>Agent {this.props.agent.cn} from {this.props.agent.organization}</h2>
-        <h4>Configuration</h4>
-        <pre>{JSON.stringify(this.props.agent.config, null, 2)}</pre>
-        <h4>Actions history</h4>
+        <h2>Actions history for {this.props.agent.cn} from {this.props.agent.organization}</h2>
         {!this.props.agentMessages ? <Loading /> : (
           <List
             data={this.props.agentMessages}
