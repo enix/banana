@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	"enix.io/banana/src/helpers"
+	"enix.io/banana/src/services"
 )
 
 func logFatal(err error) {
@@ -18,8 +18,8 @@ func assert(err error) {
 	}
 }
 
-func loadCredentialsToEnv(config *helpers.VaultConfig) {
-	vault, err := helpers.NewVaultClient(config)
+func loadCredentialsToEnv(config *services.VaultConfig) {
+	vault, err := services.NewVaultClient(config)
 	assert(err)
 	accessToken, err := vault.GetStorageAccessToken()
 	assert(err)
