@@ -2,7 +2,6 @@ package routes
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
 	"net/http"
 
@@ -21,8 +20,9 @@ func ReceiveAgentMesssage(context *gin.Context, issuer *RequestIssuer) (int, int
 	if err != nil {
 		return http.StatusForbidden, err
 	}
-	if msg.SenderID != fmt.Sprintf("%s:%s", issuer.Organization, issuer.CommonName) {
-		return http.StatusForbidden, errors.New("sender_id / certificate DN mismatch")
+	issuerID := fmt.Sprintf("%s:%s", issuer.Organization, issuer.CommonName)
+	if msg.SenderID != issuerID {
+		return http.StatusForbidden, fmt.Errorf("sender_id / certificate DN mismatch : [%s] vs [%s]", msg.SenderID, issuerID)
 	}
 
 	msg.SenderID = fmt.Sprintf("%s:%s", issuer.Organization, issuer.CommonName)
@@ -33,7 +33,7 @@ func ReceiveAgentMesssage(context *gin.Context, issuer *RequestIssuer) (int, int
 // ServeAgentMesssages : Returns the last messages from a given agent
 func ServeAgentMesssages(context *gin.Context, issuer *RequestIssuer) (int, interface{}) {
 	zkey := fmt.Sprintf("messages:%s", context.Param("id"))
-	messages, err := services.DbZRange(zkey, 0, 10, models.Message{})
+	messages, err := services.DbZRevRange(zkey, 0, 10, models.Message{})
 	if err != nil {
 		return http.StatusInternalServerError, err
 	}

@@ -57,16 +57,16 @@ func DbZAdd(key string, score float64, value interface{}) error {
 	return result.Err()
 }
 
-// DbZRange : Get given keys
-func DbZRange(key string, from, to int64, sample interface{}) ([]interface{}, error) {
-	elems, err := Db.ZRange(key, from, to).Result()
+// DbZRevRange : Get given keys
+func DbZRevRange(key string, from, to int64, sample interface{}) ([]interface{}, error) {
+	elems, err := Db.ZRevRange(key, from, to).Result()
 	if err != nil {
 		return nil, err
 	}
 
 	out := make([]interface{}, 0)
-	newElem := reflect.New(reflect.TypeOf(sample)).Interface()
 	for _, elem := range elems {
+		newElem := reflect.New(reflect.TypeOf(sample)).Interface()
 		err := json.Unmarshal([]byte(elem), &newElem)
 		if err != nil {
 			return nil, err
@@ -85,8 +85,8 @@ func DbMGet(keys []string, sample interface{}) ([]interface{}, error) {
 	}
 
 	out := make([]interface{}, 0)
-	newElem := reflect.New(reflect.TypeOf(sample)).Interface()
 	for _, elem := range elems {
+		newElem := reflect.New(reflect.TypeOf(sample)).Interface()
 		err := json.Unmarshal([]byte(elem.(string)), &newElem)
 		if err != nil {
 			return nil, err
