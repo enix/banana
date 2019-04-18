@@ -9,15 +9,6 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// RegisterAgent : Add a new agent to the agent list
-func RegisterAgent(context *gin.Context, issuer *RequestIssuer) (int, interface{}) {
-	// body := services.ReadBytesFromStream(context.Request.Body)
-	agent := models.NewAgent(issuer.Organization, issuer.CommonName)
-	// json.Unmarshal(body, &agent.Config)
-	services.DbSet(agent.GetFullKeyFor("info"), agent)
-	return http.StatusOK, agent
-}
-
 // ServeAgent : Returns informations about a specific agent
 func ServeAgent(context *gin.Context, issuer *RequestIssuer) (int, interface{}) {
 	var agent models.Agent
