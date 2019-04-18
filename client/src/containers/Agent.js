@@ -9,7 +9,9 @@ import ActionCreators from '../state/actions';
 class Agent extends Component {
 
   renderMessage = (message) => (
-    <pre>{JSON.stringify(message, null, 2)}</pre>
+    <pre style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>
+      {JSON.stringify(message, null, 2)}
+    </pre>
   )
 
   componentDidMount() {
