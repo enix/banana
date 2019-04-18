@@ -2,29 +2,23 @@ package models
 
 import (
 	"fmt"
-
-	"github.com/rs/xid"
 )
 
 // Agent : Representation of an agent
 type Agent struct {
-	ID           xid.ID   `json:"id"`
-	Organization string   `json:"organization"`
-	CommonName   string   `json:"cn"`
-	Messages     []xid.ID `json:"messages"`
+	Organization string `json:"organization"`
+	CommonName   string `json:"cn"`
 }
 
-// NewAgent : Convenience function for creating a message
+// NewAgent : Convenience function for creating an agent
 func NewAgent(orga, cn string) *Agent {
 	return &Agent{
-		ID:           xid.New(),
 		Organization: orga,
 		CommonName:   cn,
-		Messages:     make([]xid.ID, 0),
 	}
 }
 
-// GetFullKey : Generate the key that will be used to store within redis
-func (agent *Agent) GetFullKey() string {
-	return fmt.Sprintf("agent:%s", agent.ID)
+// GetFullKeyFor : Generate the key that will be used to store within redis
+func (agent *Agent) GetFullKeyFor(field string) string {
+	return fmt.Sprintf("agent:%s:%s:%s", field, agent.Organization, agent.CommonName)
 }
