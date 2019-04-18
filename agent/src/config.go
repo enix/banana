@@ -12,6 +12,11 @@ import (
 
 // Config : Contains data such as credentials that will be used to execute commands
 type Config struct {
+	MonitorURL  string               `json:"monitor_url"`
+	Backend     string               `json:"backend"`
+	PrivKeyPath string               `json:"private_key_path"`
+	CertPath    string               `json:"client_cert_path"`
+	CaCertPath  string               `json:"ca_cert_path"`
 	BucketName  string               `json:"bucket"`
 	StorageHost string               `json:"storage_host"`
 	Vault       services.VaultConfig `json:"vault"`
@@ -20,14 +25,18 @@ type Config struct {
 // CliConfig : Extended config struct for stuff that can be passed from cli only
 type CliConfig struct {
 	Config
-	Backend string
 }
 
 // LoadDefaults : Prepare some default values in configuration
 func (config *Config) LoadDefaults() {
 	*config = Config{
+		MonitorURL:  "https://api.banana.enix.io",
+		Backend:     "duplicity",
+		PrivKeyPath: "/etc/banana/privkey.pem",
+		CertPath:    "/etc/banana/cert.pem",
+		CaCertPath:  "/etc/banana/cacert.pem",
 		BucketName:  "backup-bucket",
-		StorageHost: "object-storage.example.com",
+		StorageHost: "object-storage.r1.nxs.enix.io",
 		Vault: services.VaultConfig{
 			Addr:       "http://localhost:7777",
 			Token:      "myroot",
@@ -56,6 +65,11 @@ func (config *Config) LoadFromArgs(args *CliConfig) error {
 // LoadFromEnv : Load configuration from env variables
 func (config *Config) LoadFromEnv() error {
 	env := Config{
+		MonitorURL:  os.Getenv("BANANA_MONITOR_URL"),
+		Backend:     os.Getenv("BANANA_BACKEND"),
+		PrivKeyPath: os.Getenv("BANANA_PRIVATE_KEY_PATH"),
+		CertPath:    os.Getenv("BANANA_CLIENT_CERT_PATH"),
+		CaCertPath:  os.Getenv("BANANA_CA_CERT_PATH"),
 		BucketName:  os.Getenv("BANANA_BUCKET_NAME"),
 		StorageHost: os.Getenv("BANANA_STORAGE_HOST"),
 		Vault: services.VaultConfig{
