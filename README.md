@@ -64,10 +64,10 @@ open security/out/king.kong.p12
 
 #### Test your setup
 
-- For user access, open your browser on [https://api.banana.enix.io:7443](https://api.banana.enix.io:7443/ping)
+- For user access, open your browser on [https://banana.enix.io](https://banana.enix.io)
 - For agent access:
 
 ```bash
-echo -n '{"foo": "bar"}' > payload.json
-./scripts/sign_and_post.sh '/ping' payload.json 'the.agent'
+cd agent
+go run ./src backup test42 /etc
 ```
