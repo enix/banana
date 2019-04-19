@@ -6,6 +6,7 @@ import { Table, Divider, Tag } from 'antd';
 
 import Loading from '../components/Loading';
 import ActionCreators from '../state/actions';
+import { formatSnakeCase, getTagColor } from '../helpers';
 
 class Agents extends Component {
 
@@ -22,13 +23,11 @@ class Agents extends Component {
       key: 'organization',
     },
     {
-      title: 'Status',
-      dataIndex: 'status',
-      key: 'status',
-      render: tags => (
-        <span>
-          {tags.map((tag, key) => <Tag color={tag.color} key={key}>{tag.message.toUpperCase()}</Tag>)}
-        </span>
+      title: 'Last message',
+      dataIndex: 'last_message',
+      key: 'last_message',
+      render: msg => (
+        <Tag color={getTagColor(msg.type)} key={msg.key}>{formatSnakeCase(msg.type)}</Tag>
       ),
     },
   ]
@@ -53,12 +52,7 @@ class Agents extends Component {
 }
 
 const mapStateToProps = state => ({
-  agents: state.agentList && state.agentList.map((agent, key) => ({ ...agent, key, status: [
-    {
-      color: 'green',
-      message: 'up',
-    },
-  ]})),
+  agents: state.agentList && state.agentList.map((agent, key) => ({ ...agent, key })),
 });
 
 const mapDispatchToProps = dispatch => ({

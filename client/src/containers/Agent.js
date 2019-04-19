@@ -7,7 +7,12 @@ import JsonTable from '../components/JsonTable';
 import Code from '../components/Code';
 import Loading from '../components/Loading';
 import ActionCreators from '../state/actions';
-import { formatDate, generateRestoreCmd } from '../helpers';
+import {
+  formatDate,
+  formatSnakeCase,
+  getTagColor,
+  generateRestoreCmd,
+} from '../helpers';
 
 class Agent extends Component {
 
@@ -23,7 +28,11 @@ class Agent extends Component {
       title: 'Type',
       dataIndex: 'type',
       key: 'type',
-      render: (type) => <Tag color={this.getColorByType(type)} key={type}>{type.toUpperCase().replace(/_/g, ' ')}</Tag>,
+      render: (type) => (
+        <Tag color={getTagColor(type)} key={type}>
+          {formatSnakeCase(type)}
+        </Tag>
+      ),
     },
     {
       title: `Time (${localStorage.getItem('dateFormat')})`,
@@ -74,22 +83,6 @@ class Agent extends Component {
   showLogs = detailsIndex => this.setState({ detailsIndex, logsVisible: true })
 
   showRestore = detailsIndex => this.setState({ detailsIndex, restoreVisible: true })
-
-  getColorByType = (type) => {
-    if (/.*_start/.test(type)) {
-      return 'orange';
-    }
-
-    if (/.*_done/.test(type)) {
-      return 'green';
-    }
-
-    if (/(.*_failed)|(.*_crashed)/.test(type)) {
-      return 'volcano';
-    }
-
-    return 'grey';
-  }
 
   componentDidMount() {
     const { org, cn } = this.props.match.params;
