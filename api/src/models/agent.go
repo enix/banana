@@ -6,15 +6,17 @@ import (
 
 // Agent : Representation of an agent
 type Agent struct {
-	Organization string `json:"organization"`
-	CommonName   string `json:"cn"`
+	Organization string  `json:"organization"`
+	CommonName   string  `json:"cn"`
+	LastMessage  Message `json:"last_message"`
 }
 
 // NewAgent : Convenience function for creating an agent
-func NewAgent(orga, cn string) *Agent {
+func NewAgent(orga, cn string, lastMsg Message) *Agent {
 	return &Agent{
 		Organization: orga,
 		CommonName:   cn,
+		LastMessage:  lastMsg,
 	}
 }
 

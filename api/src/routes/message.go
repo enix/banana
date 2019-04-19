@@ -12,9 +12,6 @@ import (
 
 // ReceiveAgentMesssage : Check and store an agent's message
 func ReceiveAgentMesssage(context *gin.Context, issuer *RequestIssuer) (int, interface{}) {
-	agent := models.NewAgent(issuer.Organization, issuer.CommonName)
-	services.DbSet(agent.GetFullKeyFor("info"), agent)
-
 	msg := models.Message{}
 	body := services.ReadBytesFromStream(context.Request.Body)
 	json.Unmarshal(body, &msg)
@@ -30,6 +27,9 @@ func ReceiveAgentMesssage(context *gin.Context, issuer *RequestIssuer) (int, int
 
 	msg.SenderID = fmt.Sprintf("%s:%s", issuer.Organization, issuer.CommonName)
 	services.DbZAdd(msg.GetFullKey(), msg.GetSortedSetScore(), msg)
+
+	agent := models.NewAgent(issuer.Organization, issuer.CommonName, msg)
+	services.DbSet(agent.GetFullKeyFor("info"), agent)
 	return http.StatusOK, "ok"
 }
 
