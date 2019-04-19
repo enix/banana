@@ -1,6 +1,9 @@
 package main
 
-import "errors"
+import (
+	"encoding/json"
+	"errors"
+)
 
 // RestoreCmd : Command implementation for 'backup'
 type RestoreCmd struct {
@@ -35,5 +38,13 @@ func (cmd *RestoreCmd) Execute(config *Config) error {
 		return err
 	}
 
-	return backend.Restore(config, cmd)
+	_, err = backend.Restore(config, cmd)
+	return err
+}
+
+// JSONMap : Convert struct to an anonymous map with given JSON keys
+func (cmd *RestoreCmd) JSONMap() (out map[string]interface{}) {
+	raw, _ := json.Marshal(cmd)
+	json.Unmarshal(raw, &out)
+	return
 }

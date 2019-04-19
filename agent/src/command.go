@@ -1,11 +1,14 @@
 package main
 
-import "errors"
+import (
+	"errors"
+)
 
 // Command : Generic interface for all possible user commands
 //					 Filled from command line arguments
 type Command interface {
 	Execute(*Config) error
+	JSONMap() map[string]interface{}
 }
 
 // NewCommand : Instanciate the corresponding implementation of Command

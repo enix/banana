@@ -1,14 +1,17 @@
 package main
 
 import (
-	"os"
+	"fmt"
 	"os/exec"
 )
 
 // Execute : Execute binaries using our own stdio
-func Execute(cmd string, args ...string) error {
+func Execute(cmd string, args ...string) ([]byte, error) {
 	process := exec.Command(cmd, args...)
-	process.Stdout = os.Stdout
-	process.Stderr = os.Stderr
-	return process.Run()
+	output, err := process.CombinedOutput()
+	if err != nil {
+		return nil, err
+	}
+	fmt.Println(string(output))
+	return output, nil
 }

@@ -1,14 +1,15 @@
 package main
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 )
 
 // BackupCmd : Command implementation for 'backup'
 type BackupCmd struct {
-	Name   string
-	Target string
+	Name   string `json:"name"`
+	Target string `json:"target"`
 }
 
 // NewBackupCmd : Creates backup command from command line args
@@ -33,13 +34,22 @@ func (cmd *BackupCmd) Execute(config *Config) error {
 		return err
 	}
 
-	SendMessageToMonitor("backup_start", config)
+	SendMessageToMonitor("backup_start", config, cmd, "")
 	fmt.Printf("running %s, see you on the other side\n", config.Backend)
-	err = backend.Backup(config, cmd)
+	logs, err := backend.Backup(config, cmd)
 	if err != nil {
+		SendMessageToMonitor("agent_crashed", config, cmd, err.Error())
 		return err
 	}
-	SendMessageToMonitor("backup_done", config)
+
+	SendMessageToMonitor("backup_done", config, cmd, string(logs))
 	fmt.Println("backup done, everything OK")
 	return nil
+}
+
+// JSONMap : Convert struct to an anonymous map with given JSON keys
+func (cmd *BackupCmd) JSONMap() (out map[string]interface{}) {
+	raw, _ := json.Marshal(cmd)
+	json.Unmarshal(raw, &out)
+	return
 }

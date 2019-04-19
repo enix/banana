@@ -66,12 +66,14 @@ func SendToMonitor(config *Config, message *models.Message) error {
 }
 
 // SendMessageToMonitor : Convenience function to create and send a message
-func SendMessageToMonitor(typ string, config *Config) {
+func SendMessageToMonitor(typ string, config *Config, cmd Command, logs string) {
 	msg := &models.Message{
 		Version:   1,
 		Timestamp: time.Now().Unix(),
 		Type:      typ,
-		Data:      config.JSONMap(),
+		Config:    config.JSONMap(),
+		Command:   cmd.JSONMap(),
+		Logs:      logs,
 	}
 
 	err := SendToMonitor(config, msg)
