@@ -1,38 +1,50 @@
 import React, { Component } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
+import { Table, Tag, Modal } from 'antd';
 
-import List from '../components/List';
-import Table from '../components/Table';
 import Loading from '../components/Loading';
 import ActionCreators from '../state/actions';
 import { formatDate } from '../helpers';
 
 class Agent extends Component {
 
-  renderMessage = (message, key) => (
-    <div>
-      <h4 style={{ display: 'inline-block', marginRight: 20 }}>
-        {formatDate(message.timestamp)} -
-        <b> {message.type}</b>
-      </h4>
-      <a
-        href={`#collapseExample-${key}`}
-        data-toggle='collapse'
-        aria-expanded='false'
-        aria-controls={`collapseExample-${key}`}
-      >
-        Toggle details
-      </a>
-      <div className='collapse' id={`collapseExample-${key}`}>
-        <div class='card card-body'>
-          <pre style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>
-            {JSON.stringify(message, null, 2)}
-          </pre>
-        </div>
-      </div>
-    </div>
-  )
+  state = {
+    detailsIndex: 0,
+    detailsVisible: false,
+  }
+
+  columns = [
+    {
+      title: 'Type',
+      dataIndex: 'type',
+      key: 'type',
+      render: (type) => <Tag color={this.getColorByType(type)} key={type}>{type.toUpperCase()}</Tag>,
+    },
+    {
+      title: 'UTC Date',
+      dataIndex: 'timestamp',
+      key: 'timestamp',
+      render: formatDate,
+    },
+    {
+      title: 'Actions',
+      key: 'action',
+      render: (_, item) => (
+        <a onClick={() => this.setState({ detailsIndex: item.key, detailsVisible: true })}>
+          Show details
+        </a>
+      ),
+    }
+  ]
+
+  getColorByType = (type) => {
+    switch (type) {
+      case 'backup_start': return 'orange';
+      case 'backup_done': return 'green';
+      default: return 'volcano';
+    }
+  }
 
   componentDidMount() {
     const { org, cn } = this.props.match.params;
@@ -49,11 +61,20 @@ class Agent extends Component {
       <div className='Agent'>
         <h2>Actions history for {this.props.agent.cn} from {this.props.agent.organization}</h2>
         {!this.props.agentMessages ? <Loading /> : (
-          // <List
-          //   data={this.props.agentMessages}
-          //   renderItem={this.renderMessage}
-          // />
-          <Table />
+          <div>
+            <Table columns={this.columns} dataSource={this.props.agentMessages} />
+            {this.props.agentMessages.length > 1 && (
+              <Modal
+                title='Action details'
+                visible={this.state.detailsVisible}
+                footer={null}
+                onCancel={() => this.setState({ detailsVisible: false })}
+                width='80%'
+              >
+                <pre>{JSON.stringify(this.props.agentMessages[this.state.detailsIndex], null, 2)}</pre>
+              </Modal>
+            )}
+          </div>
         )}
       </div>
     );
@@ -68,8 +89,8 @@ const mapStateToProps = (state, props) => {
     loaded.agent = state.agents[org][cn];
   }
 
-  if (state.agentsMessages && state.agentsMessages[org]) {
-    loaded.agentMessages = state.agentsMessages[org][cn];
+  if (state.agentsMessages && state.agentsMessages[org] && state.agentsMessages[org][cn]) {
+    loaded.agentMessages = state.agentsMessages[org][cn].map((msg, key) => ({ ...msg, key }));
   }
 
   return loaded;

@@ -5,7 +5,7 @@ import { BrowserRouter as Router, Route } from 'react-router-dom';
 import { Layout } from 'antd';
 
 import Agents from '../containers/Agents';
-// import Agent from '../containers/Agent';
+import Agent from '../containers/Agent';
 import Header from './Header';
 import ActionCreators from '../state/actions';
 
@@ -25,7 +25,7 @@ class App extends Component {
             <Header />
             <Content style={{ padding: '40px', background: '#fff' }}>
               <Route exact path='/' component={Agents} />
-              {/* <Route exact path='/agent/:org/:cn' component={Agent} /> */}
+              <Route exact path='/agent/:org/:cn' component={Agent} />
             </Content>
           </Layout>
         </div>
