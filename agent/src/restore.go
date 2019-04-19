@@ -3,13 +3,14 @@ package main
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 )
 
 // RestoreCmd : Command implementation for 'backup'
 type RestoreCmd struct {
-	Name            string
-	TargetTime      string
-	TargetDirectory string
+	Name            string `json:"name"`
+	TargetTime      string `json:"target_timestamp"`
+	TargetDirectory string `json:"target_directory"`
 }
 
 // NewRestoreCmd : Creates backup command from command line args
@@ -38,7 +39,19 @@ func (cmd *RestoreCmd) Execute(config *Config) error {
 		return err
 	}
 
-	_, err = backend.Restore(config, cmd)
+	SendMessageToMonitor("restore_start", config, cmd, "")
+	fmt.Printf("running %s, see you on the other side\n", config.Backend)
+	logs, err := backend.Restore(config, cmd)
+	if logs == nil {
+		SendMessageToMonitor("agent_crashed", config, cmd, err.Error())
+		return err
+	}
+	if err != nil {
+		SendMessageToMonitor("restore_failed", config, cmd, string(logs))
+		return err
+	}
+	SendMessageToMonitor("restore_done", config, cmd, string(logs))
+
 	return err
 }
 
