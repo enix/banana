@@ -3,6 +3,7 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 
 import List from '../components/List';
+import Table from '../components/Table';
 import Loading from '../components/Loading';
 import ActionCreators from '../state/actions';
 import { formatDate } from '../helpers';
@@ -48,10 +49,11 @@ class Agent extends Component {
       <div className='Agent'>
         <h2>Actions history for {this.props.agent.cn} from {this.props.agent.organization}</h2>
         {!this.props.agentMessages ? <Loading /> : (
-          <List
-            data={this.props.agentMessages}
-            renderItem={this.renderMessage}
-          />
+          // <List
+          //   data={this.props.agentMessages}
+          //   renderItem={this.renderMessage}
+          // />
+          <Table />
         )}
       </div>
     );

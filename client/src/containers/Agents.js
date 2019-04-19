@@ -2,9 +2,6 @@ import React, { Component } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux'
 
-import Link from '../components/Link';
-import List from '../components/List';
-import Carret from '../components/Carret';
 import Loading from '../components/Loading';
 import ActionCreators from '../state/actions';
 

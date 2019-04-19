@@ -5,10 +5,13 @@ WORKDIR /app
 ENV PATH /app/node_modules/.bin:$PATH
 
 COPY package.json /app
-COPY src /app/src
-COPY res/public /app/public
 
 RUN yarn
+# COPY node_modules /app/node_modules
+
+COPY config-overrides.js /app
+COPY src /app/src
+COPY res/public /app/public
 
 CMD ["bash", "-c", "cd /app && yarn start"]
 
