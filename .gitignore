@@ -60,8 +60,9 @@ typings/
 # next.js build output
 .next
 
-# server executable
+# executables
 banana
+bananactl
 
 # certs & keys
 /security

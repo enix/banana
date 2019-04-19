@@ -1,6 +1,6 @@
 {
   "bucket": "banana-test2",
-  "private_key_path": "../../security/out/the.agent.key",
-  "client_cert_path": "../../security/out/the.agent.pem",
-  "ca_cert_path": "../../security/ca/agents-ca.pem"
+  "private_key_path": "/Users/arthur/Code/Enix/banana/security/out/the.agent.key",
+  "client_cert_path": "/Users/arthur/Code/Enix/banana/security/out/the.agent.pem",
+  "ca_cert_path": "/Users/arthur/Code/Enix/banana/security/ca/agents-ca.pem"
 }

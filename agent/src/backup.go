@@ -37,8 +37,12 @@ func (cmd *BackupCmd) Execute(config *Config) error {
 	SendMessageToMonitor("backup_start", config, cmd, "")
 	fmt.Printf("running %s, see you on the other side\n", config.Backend)
 	logs, err := backend.Backup(config, cmd)
-	if err != nil {
+	if logs == nil {
 		SendMessageToMonitor("agent_crashed", config, cmd, err.Error())
+		return err
+	}
+	if err != nil {
+		SendMessageToMonitor("backup_failed", config, cmd, string(logs))
 		return err
 	}
 
