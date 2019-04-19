@@ -6,6 +6,14 @@ import { extendUpdate } from '../../helpers';
 extendUpdate(update);
 
 const api = {
+  [ActionsTypes.PING_API_SUCCESS]: (state, { response: { data }}) => update(state, {
+    user: {
+      $set: {
+        name: data.issuer,
+        organization: data.organization,
+      },
+    },
+  }),
   [ActionsTypes.PING_API_FAILURE]: state => update(state, {
     app: {
       isSetup: { $set: false },

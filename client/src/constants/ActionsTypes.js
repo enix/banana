@@ -4,6 +4,7 @@ const ActionsTypes = keyMirror({
   SETUP_APP: null,
 
   PING_API: null,
+  PING_API_SUCCESS: null,
   PING_API_FAILURE: null,
 
   LIST_AGENTS: null,
@@ -14,6 +15,8 @@ const ActionsTypes = keyMirror({
 
   GET_AGENT_MESSAGES: null,
   GET_AGENT_MESSAGES_SUCCESS: null,
+
+  AJAX_FAILURE: null,
 });
 
 export default ActionsTypes;

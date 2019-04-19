@@ -1,40 +1,64 @@
 import { put, takeLatest } from 'redux-saga/effects';
+import { notification } from 'antd';
 
 import ActionsCreators from '../actions';
 import ActionsTypes from '../../constants/ActionsTypes';
 import { fireAjax } from '../../helpers';
 
 function* pingApi() {
+  const request = { uri: '/ping' };
+
   try {
-    yield fireAjax({ uri: '/ping' });
+    const response = yield fireAjax(request);
+    yield put(ActionsCreators.pingApiSuccess(request, response))
   }
   catch (error) {
     yield put(ActionsCreators.pingApiFailure(error))
+    yield put(ActionsCreators.ajaxFailure(request, error))
   };
 }
 
 function* listAgents() {
+  const request = { uri: '/agents' };
+
   try {
-    const response = yield fireAjax({ uri: '/agents' });
-    yield put(ActionsCreators.listAgentsSuccess({}, response))
+    const response = yield fireAjax(request);
+    yield put(ActionsCreators.listAgentsSuccess(request, response))
   }
-  catch (_) {}
+  catch (error) {
+    yield put(ActionsCreators.ajaxFailure(request, error))
+  }
 }
 
 function* getAgent({ payload: { org, cn } }) {
+  const request = { uri: `/agents/${org}:${cn}`, org, cn };
+  
   try {
-    const response = yield fireAjax({ uri: `/agents/${org}:${cn}` });
-    yield put(ActionsCreators.getAgentSuccess({ org, cn }, response))
+    const response = yield fireAjax(request);
+    yield put(ActionsCreators.getAgentSuccess(request, response))
   }
-  catch (_) {}
+  catch (error) {
+    yield put(ActionsCreators.ajaxFailure(request, error))
+  }
 }
 
 function* getAgentMessages({ payload: { org, cn } }) {
+  const request = { uri: `/agents/${org}:${cn}/messages`, org, cn };
+
   try {
-    const response = yield fireAjax({ uri: `/agents/${org}:${cn}/messages` });
-    yield put(ActionsCreators.getAgentMessagesSuccess({ org, cn }, response))
+    const response = yield fireAjax(request);
+    yield put(ActionsCreators.getAgentMessagesSuccess(request, response))
   }
-  catch (_) {}
+  catch (error) {
+    yield put(ActionsCreators.ajaxFailure(request, error))
+  }
+}
+
+function ajaxDidFail({ payload: { request, error } }) {
+  notification.error({
+    message: error.message,
+    description: `${request.method || 'GET'} ${request.uri}`,
+  });
 }
 
 const sagas = function* () {
@@ -42,6 +66,7 @@ const sagas = function* () {
   yield takeLatest(ActionsTypes.LIST_AGENTS, listAgents);
   yield takeLatest(ActionsTypes.GET_AGENT, getAgent);
   yield takeLatest(ActionsTypes.GET_AGENT_MESSAGES, getAgentMessages);
+  yield takeLatest(ActionsTypes.AJAX_FAILURE, ajaxDidFail);
 };
 
 export default sagas;

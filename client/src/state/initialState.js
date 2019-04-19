@@ -5,6 +5,7 @@ const initialState = {
     isSetup: false,
   },
   containers: [],
+  user: {},
 };
 
 export default initialState;

@@ -1,46 +1,49 @@
 import React, { Component } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux'
-import { Button } from 'antd';
+import { Layout, Menu, Icon } from 'antd';
 
+import Loading from '../components/Loading';
 import ActionCreators from '../state/actions';
+
+import './Header.less';
+
+const { Header: AntHeader } = Layout;
 
 class Header extends Component {
 
+  componentDidMount() {
+    this.props.actions.pingApi();
+  }
+
   render() {
     return (
-      <Button>ok</Button>
-      // <Layout>
-      //   <Header style={{ position: 'fixed', zIndex: 1, width: '100%' }}>
-      //     <div className="logo" />
-      //     <Menu
-      //       theme="dark"
-      //       mode="horizontal"
-      //       defaultSelectedKeys={['2']}
-      //       style={{ lineHeight: '64px' }}
-      //     >
-      //       <Menu.Item key="1">nav 1</Menu.Item>
-      //       <Menu.Item key="2">nav 2</Menu.Item>
-      //       <Menu.Item key="3">nav 3</Menu.Item>
-      //     </Menu>
-      //   </Header>
-      //   <Content style={{ padding: '0 50px', marginTop: 64 }}>
-      //     <Breadcrumb style={{ margin: '16px 0' }}>
-      //       <Breadcrumb.Item>Home</Breadcrumb.Item>
-      //       <Breadcrumb.Item>List</Breadcrumb.Item>
-      //       <Breadcrumb.Item>App</Breadcrumb.Item>
-      //     </Breadcrumb>
-      //     <div style={{ background: '#fff', padding: 24, minHeight: 380 }}>Content</div>
-      //   </Content>
-      //   <Footer style={{ textAlign: 'center' }}>
-      //     Ant Design ©2018 Created by Ant UED
-      //   </Footer>
-      // </Layout>
+      <AntHeader className='Header'>
+        <img src='/img/logo.svg' className='logo' alt='logo' />
+        <div className='loggedAs'>
+          {!this.props.user.name ? <Loading /> : (
+            <span>
+              <Icon type="user" />
+              <span> {this.props.user.organization} / {this.props.user.name}</span>
+            </span>
+          )}
+        </div>
+        <Menu
+          theme='dark'
+          mode='horizontal'
+          defaultSelectedKeys={['1']}
+          style={{ lineHeight: '64px' }}
+        >
+          <Menu.Item key='1'>Dashboard</Menu.Item>
+        </Menu>
+      </AntHeader>
     );
   }
 }
 
-const mapStateToProps = state => ({});
+const mapStateToProps = state => ({
+  user: state.user,
+});
 
 const mapDispatchToProps = dispatch => ({
   actions: bindActionCreators(ActionCreators, dispatch),

@@ -5,6 +5,10 @@ const api = {
     type: ActionsTypes.PING_API,
     payload: {},
   }),
+  pingApiSuccess: (request, response) => ({
+    type: ActionsTypes.PING_API_SUCCESS,
+    payload: { request, response },
+  }),
   pingApiFailure: (error) => ({
     type: ActionsTypes.PING_API_FAILURE,
     payload: { error },
@@ -35,6 +39,11 @@ const api = {
   getAgentMessagesSuccess: (request, response) => ({
     type: ActionsTypes.GET_AGENT_MESSAGES_SUCCESS,
     payload: { request, response },
+  }),
+
+  ajaxFailure: (request, error) => ({
+    type: ActionsTypes.AJAX_FAILURE,
+    payload: { request, error },
   }),
 };
 

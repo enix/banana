@@ -12,6 +12,8 @@ services:
       - 80
     volumes:
       - ./client/src:/app/src
+      - ./client/res/public:/app/public
+      - ./client/config-overrides.js:/app/config-overrides.js
     restart: unless-stopped
 
   api:
