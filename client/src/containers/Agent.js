@@ -38,17 +38,29 @@ class Agent extends Component {
         <div>
           <a onClick={() => this.showConfig(item.key)}>Show config</a>
           <Divider type='vertical' />
-          <a onClick={() => this.showCommand(item.key)}>Show command</a>
-          <Divider type='vertical' />
-          <a onClick={() => this.showLogs(item.key)}>Show logs</a>
-          <Divider type='vertical' />
-          <a href={`https://console.nxs.enix.io/project/containers/container/${item.config.bucket}/${item.command.name}`} target='_blank'>
-            <Icon type='link' /> View on storage
-          </a>
+          <a href={null} onClick={() => this.showCommand(item.key)}>Show command</a>
+          
+          {item.logs && (
+            <span>
+              <Divider type='vertical' />
+              <a onClick={() => this.showLogs(item.key)}>Show logs</a>
+            </span>
+          )}
+          
           {item.type === 'backup_done' && (
-            <Button style={{ float: 'right' }} onClick={() => this.showRestore(item.key)}>
-              Restore
-            </Button>
+            <span>
+              <Divider type='vertical' />
+              <a
+                href={`https://console.nxs.enix.io/project/containers/container/${item.config.bucket}/${item.command.name}`}
+                target='_blank'
+                rel='noopener noreferrer'
+              >
+                <Icon type='link' /> View on storage
+              </a>
+              <Button style={{ float: 'right' }} onClick={() => this.showRestore(item.key)}>
+                Restore
+              </Button>
+            </span>
           )}
         </div>
       ),
@@ -64,12 +76,19 @@ class Agent extends Component {
   showRestore = detailsIndex => this.setState({ detailsIndex, restoreVisible: true })
 
   getColorByType = (type) => {
-    switch (type) {
-      case 'backup_start': return 'orange';
-      case 'backup_done': return 'green';
-      case 'agent_crashed': return 'volcano';
-      default: return 'volcano';
+    if (/.*_start/.test(type)) {
+      return 'orange';
     }
+
+    if (/.*_done/.test(type)) {
+      return 'green';
+    }
+
+    if (/(.*_failed)|(.*_crashed)/.test(type)) {
+      return 'volcano';
+    }
+
+    return 'grey';
   }
 
   componentDidMount() {

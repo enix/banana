@@ -24,10 +24,6 @@ class JsonTable extends Component {
   ]
 
   getDataSource = () => {
-    console.log(Object.keys(this.props.data).map(key => ({
-      key,
-      value: this.props.data[key],
-    })))
     return Object.keys(this.props.data).map(key => ({
       key,
       value: this.props.data[key],
