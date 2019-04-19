@@ -107,7 +107,10 @@ func OpenDatabaseConnection() error {
 	})
 
 	pong, err := Db.Ping().Result()
-	if err != nil || pong != "PONG" {
+	if err != nil {
+		return err
+	}
+	if pong != "PONG" {
 		return errors.New("failed to connect to redis database")
 	}
 
