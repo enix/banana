@@ -43,7 +43,7 @@ class Agents extends Component {
     }
 
     return (
-      <div className="Agents">
+      <div className='Agents'>
         <h1>Agents</h1>
         <Divider />
         <Table columns={this.columns} dataSource={this.props.agents} />

@@ -26,7 +26,7 @@ class Agent extends Component {
       render: (type) => <Tag color={this.getColorByType(type)} key={type}>{type.toUpperCase().replace(/_/g, ' ')}</Tag>,
     },
     {
-      title: 'UTC Date',
+      title: `Time (${localStorage.getItem('dateFormat')})`,
       dataIndex: 'timestamp',
       key: 'timestamp',
       render: formatDate,

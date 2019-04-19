@@ -1,7 +1,13 @@
 import moment from 'moment';
 
 function formatDate(timestamp) {
-  return moment.unix(timestamp).format('MMMM Do YYYY, h:mm:ss a');
+  let date = moment.unix(timestamp);
+
+  if (localStorage.getItem('dateFormat') === 'UTC') {
+    date = date.utc();
+  }
+
+  return date.format('MMMM Do YYYY, h:mm:ss a');
 };
 
 export default formatDate;

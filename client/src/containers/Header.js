@@ -38,6 +38,9 @@ class Header extends Component {
           <Menu.Item key='1'>
             <Link to='/'>Dashboard</Link>
           </Menu.Item>
+          <Menu.Item key='2'>
+            <Link to='/settings'>Settings</Link>
+          </Menu.Item>
         </Menu>
       </AntHeader>
     );
