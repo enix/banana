@@ -1,13 +1,13 @@
 import React, { Component } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { Table, Tag, Modal, Divider, Icon } from 'antd';
-import { Link } from 'react-router-dom';
+import { Table, Tag, Modal, Divider, Icon, Button } from 'antd';
 
 import JsonTable from '../components/JsonTable';
+import Code from '../components/Code';
 import Loading from '../components/Loading';
 import ActionCreators from '../state/actions';
-import { formatDate } from '../helpers';
+import { formatDate, generateRestoreCmd } from '../helpers';
 
 class Agent extends Component {
 
@@ -15,6 +15,7 @@ class Agent extends Component {
     detailsIndex: 0,
     configVisible: false,
     logsVisible: false,
+    restoreVisible: false,
   }
 
   columns = [
@@ -44,6 +45,11 @@ class Agent extends Component {
           <a href={`https://console.nxs.enix.io/project/containers/container/${item.config.bucket}/${item.command.name}`} target='_blank'>
             <Icon type='link' /> View on storage
           </a>
+          {item.type === 'backup_done' && (
+            <Button style={{ float: 'right' }} onClick={() => this.showRestore(item.key)}>
+              Restore
+            </Button>
+          )}
         </div>
       ),
     }
@@ -54,6 +60,8 @@ class Agent extends Component {
   showCommand = detailsIndex => this.setState({ detailsIndex, commandVisible: true })
 
   showLogs = detailsIndex => this.setState({ detailsIndex, logsVisible: true })
+
+  showRestore = detailsIndex => this.setState({ detailsIndex, restoreVisible: true })
 
   getColorByType = (type) => {
     switch (type) {
@@ -110,9 +118,19 @@ class Agent extends Component {
                   onCancel={() => this.setState({ logsVisible: false })}
                   width='80%'
                 >
-                  <pre className='log'>
+                  <Code dark>
                     {this.props.agentMessages[this.state.detailsIndex].logs}
-                  </pre>
+                  </Code>
+                </Modal>
+                <Modal
+                  title='Restore backup'
+                  visible={this.state.restoreVisible}
+                  footer={null}
+                  onCancel={() => this.setState({ restoreVisible: false })}
+                >
+                  <Code dark>
+                    {generateRestoreCmd(this.props.agentMessages[this.state.detailsIndex])}                    
+                  </Code>
                 </Modal>
               </div>
             )}

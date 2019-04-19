@@ -1,12 +1,6 @@
 
-function generateRestoreCmd({ name, time, target, only }) {
-  let baseCmd = `./bananagent restore ${name} ${time} ${target}`;
-
-  if (only) {
-    baseCmd += `/${only} --file-to-restore=${only}`;
-  }
-
-  return baseCmd;
+function generateRestoreCmd({ command: { name, target }, timestamp}) {
+  return `bananactl restore ${name} ${timestamp} ${target}`;
 }
 
 export default generateRestoreCmd;

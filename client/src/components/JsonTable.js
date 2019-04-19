@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import PropsType from 'prop-types';
 import { Table } from 'antd';
 
-import './JsonTable.less';
+import Code from './Code';
 
 class JsonTable extends Component {
 
@@ -17,10 +17,8 @@ class JsonTable extends Component {
       title: 'Value',
       dataIndex: 'value',
       key: 'value',
-      render: value => (
-        <pre className='JsonTable__value'>
-          {typeof value === 'object' ? JSON.stringify(value, null, 2) : value}
-        </pre>
+      render: value => typeof value !== 'object' ? <Code>{value}</Code> : (
+        <Code dark>{JSON.stringify(value, null, 2)}</Code>
       ),
     },
   ]
