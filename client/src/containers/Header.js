@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import { bindActionCreators } from 'redux';
-import { connect } from 'react-redux'
+import { connect } from 'react-redux';
 import { Layout, Menu, Icon } from 'antd';
+import { Link } from 'react-router-dom';
 
 import Loading from '../components/Loading';
 import ActionCreators from '../state/actions';
@@ -34,7 +35,9 @@ class Header extends Component {
           defaultSelectedKeys={['1']}
           style={{ lineHeight: '64px' }}
         >
-          <Menu.Item key='1'>Dashboard</Menu.Item>
+          <Menu.Item key='1'>
+            <Link to='/'>Dashboard</Link>
+          </Menu.Item>
         </Menu>
       </AntHeader>
     );

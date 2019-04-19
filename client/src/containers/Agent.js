@@ -1,8 +1,10 @@
 import React, { Component } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { Table, Tag, Modal } from 'antd';
+import { Table, Tag, Modal, Divider, Icon } from 'antd';
+import { Link } from 'react-router-dom';
 
+import JsonTable from '../components/JsonTable';
 import Loading from '../components/Loading';
 import ActionCreators from '../state/actions';
 import { formatDate } from '../helpers';
@@ -11,7 +13,8 @@ class Agent extends Component {
 
   state = {
     detailsIndex: 0,
-    detailsVisible: false,
+    configVisible: false,
+    logsVisible: false,
   }
 
   columns = [
@@ -19,7 +22,7 @@ class Agent extends Component {
       title: 'Type',
       dataIndex: 'type',
       key: 'type',
-      render: (type) => <Tag color={this.getColorByType(type)} key={type}>{type.toUpperCase()}</Tag>,
+      render: (type) => <Tag color={this.getColorByType(type)} key={type}>{type.toUpperCase().replace(/_/g, ' ')}</Tag>,
     },
     {
       title: 'UTC Date',
@@ -31,17 +34,32 @@ class Agent extends Component {
       title: 'Actions',
       key: 'action',
       render: (_, item) => (
-        <a onClick={() => this.setState({ detailsIndex: item.key, detailsVisible: true })}>
-          Show details
-        </a>
+        <div>
+          <a onClick={() => this.showConfig(item.key)}>Show config</a>
+          <Divider type='vertical' />
+          <a onClick={() => this.showCommand(item.key)}>Show command</a>
+          <Divider type='vertical' />
+          <a onClick={() => this.showLogs(item.key)}>Show logs</a>
+          <Divider type='vertical' />
+          <a href={`https://console.nxs.enix.io/project/containers/container/${item.config.bucket}/${item.command.name}`} target='_blank'>
+            <Icon type='link' /> View on storage
+          </a>
+        </div>
       ),
     }
   ]
+
+  showConfig = detailsIndex => this.setState({ detailsIndex, configVisible: true })
+
+  showCommand = detailsIndex => this.setState({ detailsIndex, commandVisible: true })
+
+  showLogs = detailsIndex => this.setState({ detailsIndex, logsVisible: true })
 
   getColorByType = (type) => {
     switch (type) {
       case 'backup_start': return 'orange';
       case 'backup_done': return 'green';
+      case 'agent_crashed': return 'volcano';
       default: return 'volcano';
     }
   }
@@ -62,17 +80,41 @@ class Agent extends Component {
         <h2>Actions history for {this.props.agent.cn} from {this.props.agent.organization}</h2>
         {!this.props.agentMessages ? <Loading /> : (
           <div>
-            <Table columns={this.columns} dataSource={this.props.agentMessages} />
+            <Table
+              columns={this.columns}
+              dataSource={this.props.agentMessages}
+            />
             {this.props.agentMessages.length > 1 && (
-              <Modal
-                title='Action details'
-                visible={this.state.detailsVisible}
-                footer={null}
-                onCancel={() => this.setState({ detailsVisible: false })}
-                width='80%'
-              >
-                <pre>{JSON.stringify(this.props.agentMessages[this.state.detailsIndex], null, 2)}</pre>
-              </Modal>
+              <div>
+                <Modal
+                  title='Action config'
+                  visible={this.state.configVisible}
+                  footer={null}
+                  onCancel={() => this.setState({ configVisible: false })}
+                  width='80%'
+                >
+                  <JsonTable data={this.props.agentMessages[this.state.detailsIndex].config} />
+                </Modal>
+                <Modal
+                  title='Action command'
+                  visible={this.state.commandVisible}
+                  footer={null}
+                  onCancel={() => this.setState({ commandVisible: false })}
+                >
+                  <JsonTable data={this.props.agentMessages[this.state.detailsIndex].command} />
+                </Modal>
+                <Modal
+                  title='Action logs'
+                  visible={this.state.logsVisible}
+                  footer={null}
+                  onCancel={() => this.setState({ logsVisible: false })}
+                  width='80%'
+                >
+                  <pre className='log'>
+                    {this.props.agentMessages[this.state.detailsIndex].logs}
+                  </pre>
+                </Modal>
+              </div>
             )}
           </div>
         )}
