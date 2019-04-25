@@ -36,7 +36,7 @@ func ReceiveAgentMesssage(context *gin.Context, issuer *RequestIssuer) (int, int
 // ServeAgentMesssages : Returns the last messages from a given agent
 func ServeAgentMesssages(context *gin.Context, issuer *RequestIssuer) (int, interface{}) {
 	zkey := fmt.Sprintf("messages:%s", context.Param("id"))
-	messages, err := services.DbZRevRange(zkey, 0, 10, models.Message{})
+	messages, err := services.DbZRevRange(zkey, 0, 100, models.Message{})
 	if err != nil {
 		return http.StatusInternalServerError, err
 	}
