@@ -13,7 +13,7 @@ import (
 )
 
 // SendToMonitor : Sign given message and POST it to the monitor API
-func SendToMonitor(config *Config, message *models.Message) error {
+func SendToMonitor(config *Config, message *models.AgentMessage) error {
 	fmt.Print("waiting for monitor... ")
 
 	dn := Credentials.Cert.Subject.ToRDNSequence().String()
@@ -39,7 +39,7 @@ func SendToMonitor(config *Config, message *models.Message) error {
 
 // SendMessageToMonitor : Convenience function to create and send a message
 func SendMessageToMonitor(typ string, config *Config, cmd Command, logs string) {
-	msg := &models.Message{
+	msg := &models.AgentMessage{
 		Version:   1,
 		Timestamp: time.Now().Unix(),
 		Type:      typ,

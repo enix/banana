@@ -16,10 +16,15 @@ import (
 
 // Message : Representation of an agent's notification
 type Message struct {
-	Version   int8                   `json:"version"`
-	Timestamp int64                  `json:"timestamp"`
-	SenderID  string                 `json:"sender_id"`
-	Type      string                 `json:"type"`
+	Version   int8   `json:"version"`
+	Timestamp int64  `json:"timestamp"`
+	SenderID  string `json:"sender_id"`
+	Type      string `json:"type"`
+}
+
+// AgentMessage : Representation of an agent's notification
+type AgentMessage struct {
+	Info      Message                `json:"info"`
 	Config    Config                 `json:"config"`
 	Command   map[string]interface{} `json:"command"`
 	Logs      string                 `json:"logs"`
@@ -37,7 +42,7 @@ func (msg *Message) GetFullKey() string {
 }
 
 // VerifySignature : Verify that the signature match the message's content
-func (msg *Message) VerifySignature(cert string) error {
+func (msg *AgentMessage) VerifySignature(cert string) error {
 	sig := msg.Signature
 	msg.Signature = ""
 	rawMessage, _ := json.Marshal(msg)
@@ -51,7 +56,7 @@ func (msg *Message) VerifySignature(cert string) error {
 }
 
 // Sign : Marshal the struct and generate signature from the result
-func (msg *Message) Sign(privkey *rsa.PrivateKey) error {
+func (msg *AgentMessage) Sign(privkey *rsa.PrivateKey) error {
 	rawMessage, _ := json.Marshal(msg)
 	hash := sha256.New()
 	hash.Write(rawMessage)
