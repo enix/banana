@@ -10,9 +10,6 @@ import (
 	"enix.io/banana/src/services"
 )
 
-// Credentials : Used to sign messages and authenticate with Vault/Monitor API
-var Credentials *APICredentials
-
 func logFatal(err error) {
 	fmt.Fprintf(os.Stderr, "%s\n", fmt.Sprintf("error: %s", err.Error()))
 	os.Exit(1)
@@ -58,7 +55,7 @@ func loadCredentialsToMem(config *Config) error {
 	cacert, err := x509.ParseCertificate(cacertBlock.Bytes)
 	assert(err)
 
-	Credentials = &APICredentials{
+	services.Credentials = &services.APICredentials{
 		PrivateKey: privkey,
 		Cert:       cert,
 		CaCert:     cacert,
