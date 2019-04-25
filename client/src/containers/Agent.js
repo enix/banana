@@ -136,6 +136,7 @@ class Agent extends Component {
                 </Modal>
                 <Modal
                   title='Restore backup'
+                  width='40%'
                   visible={this.state.restoreVisible}
                   footer={null}
                   onCancel={() => this.setState({ restoreVisible: false })}
