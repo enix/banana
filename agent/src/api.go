@@ -28,6 +28,9 @@ type APICredentials struct {
 func SendToMonitor(config *Config, message *models.Message) error {
 	fmt.Print("waiting for monitor... ")
 
+	caCertPool := x509.NewCertPool()
+	caCertPool.AddCert(Credentials.CaCert)
+
 	tlsConfig := &tls.Config{
 		Certificates: []tls.Certificate{
 			tls.Certificate{
@@ -35,11 +38,9 @@ func SendToMonitor(config *Config, message *models.Message) error {
 				PrivateKey:  Credentials.PrivateKey,
 			},
 		},
+		RootCAs: caCertPool,
 	}
 	tlsConfig.BuildNameToCertificate()
-
-	caCertPool := x509.NewCertPool()
-	caCertPool.AddCert(Credentials.CaCert)
 
 	transport := &http.Transport{TLSClientConfig: tlsConfig}
 	httpClient := &http.Client{Transport: transport}
