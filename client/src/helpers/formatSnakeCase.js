@@ -1,5 +1,9 @@
 
 function formatSnakeCase(string, fullUpperCase = false) {
+  if (!string) {
+    return '';
+  }
+
   const strWithSpaces = string.replace(/_/g, ' ')
 
   if (fullUpperCase) {

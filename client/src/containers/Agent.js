@@ -56,7 +56,7 @@ class Agent extends Component {
             </span>
           )}
           
-          {item.type === 'backup_done' && (
+          {item.info.type === 'backup_done' && (
             <span>
               <Divider type='vertical' />
               <a
