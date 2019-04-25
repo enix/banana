@@ -8,7 +8,7 @@ import (
 	"github.com/gorilla/websocket"
 )
 
-var houseKeeperEvents = make(chan models.Message)
+var houseKeeperEvents = make(chan models.HouseKeeperMessage)
 
 var wsUpgrader = websocket.Upgrader{
 	ReadBufferSize:  1024,

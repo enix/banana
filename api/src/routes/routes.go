@@ -14,17 +14,13 @@ func InitializeRoutes(router *gin.Engine) {
 	router.POST("/agents/notify", handleClientRequest(ReceiveAgentMesssage))
 	router.GET("/housekeeper/ws", handleHouseKeeperConnection)
 	router.GET("/test", func(context *gin.Context) {
-		msg := models.Message{
-			SenderID: "test",
+		msg := models.HouseKeeperMessage{
+			Config: models.Config{
+				TTL: 3,
+			},
 		}
 
-		// select {
 		houseKeeperEvents <- msg
-		// 	fmt.Println("sent message", msg)
-		// default:
-		// 	fmt.Println("no message sent")
-		// }
-
 		context.JSON(200, msg)
 	})
 }
