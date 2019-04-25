@@ -20,7 +20,7 @@ type Message struct {
 	Timestamp int64                  `json:"timestamp"`
 	SenderID  string                 `json:"sender_id"`
 	Type      string                 `json:"type"`
-	Config    map[string]interface{} `json:"config"`
+	Config    Config                 `json:"config"`
 	Command   map[string]interface{} `json:"command"`
 	Logs      string                 `json:"logs"`
 	Signature string                 `json:"signature,omitempty"`
