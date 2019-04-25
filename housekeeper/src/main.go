@@ -8,11 +8,14 @@ import (
 	"io/ioutil"
 	"net/url"
 	"os"
+	"time"
 
 	"enix.io/banana/src/models"
 	"enix.io/banana/src/services"
 	"github.com/gorilla/websocket"
 )
+
+var pending = make(map[string]*models.Config)
 
 func logFatal(err error) {
 	fmt.Fprintf(os.Stderr, "%s\n", fmt.Sprintf("error: %s", err.Error()))
@@ -66,7 +69,7 @@ func openSocketConnection() *websocket.Conn {
 }
 
 func listenForMessages(conn *websocket.Conn) {
-	msg := models.Message{}
+	msg := models.HouseKeeperMessage{}
 
 	for {
 		err := conn.ReadJSON(&msg)
@@ -75,8 +78,34 @@ func listenForMessages(conn *websocket.Conn) {
 	}
 }
 
-func handleMessage(msg *models.Message) {
-	fmt.Println(msg)
+func handleMessage(msg *models.HouseKeeperMessage) {
+	pending[msg.Signature] = &msg.Config
+	fmt.Printf("new backup added to pending, TTL: %d\n", msg.Config.TTL)
+}
+
+func watchPendingBackups() {
+	now := time.Now()
+
+	for {
+		fmt.Println("checking for expired TTLs...")
+
+		delta := int64(time.Since(now).Seconds())
+		now = time.Now()
+		for key, value := range pending {
+			value.TTL -= delta
+
+			if value.TTL <= 0 {
+				removeFromStorage(value)
+				delete(pending, key)
+			}
+		}
+
+		time.Sleep(time.Millisecond * 1000)
+	}
+}
+
+func removeFromStorage(config *models.Config) {
+	fmt.Printf("removing %+v\n", config)
 }
 
 func main() {
@@ -84,5 +113,6 @@ func main() {
 	conn := openSocketConnection()
 	defer conn.Close()
 
+	go watchPendingBackups()
 	listenForMessages(conn)
 }
