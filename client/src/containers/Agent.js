@@ -26,7 +26,7 @@ class Agent extends Component {
   columns = [
     {
       title: 'Type',
-      dataIndex: 'type',
+      dataIndex: 'info.type',
       key: 'type',
       render: (type) => (
         <Tag color={getTagColor(type)} key={type}>
@@ -35,8 +35,8 @@ class Agent extends Component {
       ),
     },
     {
-      title: `Time (${localStorage.getItem('dateFormat')})`,
-      dataIndex: 'timestamp',
+      title: `Time (${localStorage.getItem('dateFormat') || 'UTC'})`,
+      dataIndex: 'info.timestamp',
       key: 'timestamp',
       render: formatDate,
     },

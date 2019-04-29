@@ -7,12 +7,12 @@ function trimSlash(str) {
   return str;
 }
 
-function generateRestoreCmd({ command: { name, target }, timestamp}) {
+function generateRestoreCmd({ command: { name, target }, config: { opaque_id }}) {
   if (!target) {
     return;
   }
 
-  return `bananactl restore ${name} ${timestamp} ${trimSlash(target)}.bak`;
+  return `bananactl restore ${name} ${opaque_id} ${trimSlash(target)}.bak`;
 }
 
 export default generateRestoreCmd;
