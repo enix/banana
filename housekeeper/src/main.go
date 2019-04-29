@@ -1,21 +1,14 @@
 package main
 
 import (
-	"crypto/tls"
 	"crypto/x509"
 	"encoding/pem"
 	"fmt"
 	"io/ioutil"
-	"net/url"
 	"os"
-	"time"
 
-	"enix.io/banana/src/models"
 	"enix.io/banana/src/services"
-	"github.com/gorilla/websocket"
 )
-
-var pending = make(map[string]*models.Config)
 
 func logFatal(err error) {
 	fmt.Fprintf(os.Stderr, "%s\n", fmt.Sprintf("error: %s", err.Error()))
@@ -54,65 +47,20 @@ func loadCredentialsToMem() {
 	}
 }
 
-func openSocketConnection() *websocket.Conn {
-	url := &url.URL{
-		Scheme: "ws",
-		Host:   "api.banana.enix.io:443",
-		Path:   "/housekeeper/ws",
-	}
-	socket, err := tls.Dial("tcp", url.Host, services.GetTLSConfig())
-	assert(err)
-	conn, _, err := websocket.NewClient(socket, url, nil, 1024, 1024)
-	assert(err)
-
-	return conn
-}
-
-func listenForMessages(conn *websocket.Conn) {
-	msg := models.HouseKeeperMessage{}
-
-	for {
-		err := conn.ReadJSON(&msg)
-		assert(err)
-		handleMessage(&msg)
-	}
-}
-
-func handleMessage(msg *models.HouseKeeperMessage) {
-	pending[msg.Signature] = &msg.Config
-	fmt.Printf("new backup added to pending, TTL: %d\n", msg.Config.TTL)
-}
-
-func watchPendingBackups() {
-	now := time.Now()
-
-	for {
-		fmt.Println("checking for expired TTLs...")
-
-		delta := int64(time.Since(now).Seconds())
-		now = time.Now()
-		for key, value := range pending {
-			value.TTL -= delta
-
-			if value.TTL <= 0 {
-				removeFromStorage(value)
-				delete(pending, key)
-			}
-		}
-
-		time.Sleep(time.Millisecond * 1000)
-	}
-}
-
-func removeFromStorage(config *models.Config) {
-	fmt.Printf("removing %+v\n", config)
-}
-
 func main() {
-	loadCredentialsToMem()
-	conn := openSocketConnection()
-	defer conn.Close()
+	err := services.OpenVaultConnection()
+	assert(err)
+	err = services.OpenStorageConnection()
+	assert(err)
 
-	go watchPendingBackups()
-	listenForMessages(conn)
+	bucket := "banana-test2"
+	object := "etc/duplicity-full-signatures.20190404T130959Z.sigtar.gpg"
+	services.Storage.DeleteObject(&bucket, &object)
+
+	// loadCredentialsToMem()
+	// conn := openSocketConnection()
+	// defer conn.Close()
+
+	// go watchPendingBackups()
+	// listenForMessages(conn)
 }
