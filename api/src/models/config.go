@@ -39,6 +39,7 @@ func (config *Config) LoadDefaults() {
 		CaCertPath:  "/etc/banana/cacert.pem",
 		BucketName:  "backup-bucket",
 		StorageHost: "object-storage.r1.nxs.enix.io",
+		TTL:         3600,
 		Vault: services.VaultConfig{
 			Addr:       "http://localhost:7777",
 			Token:      "myroot",
