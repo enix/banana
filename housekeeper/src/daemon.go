@@ -81,7 +81,26 @@ func handleMessage(msg *models.HouseKeeperMessage) {
 	logger.Log("new backup added to pending, TTL: %d", msg.Config.TTL)
 }
 
+// this function was hard-coded for duplicity-formatted backups
 func removeFromStorage(msg *models.HouseKeeperMessage) {
-	logger.Log("%+v", msg)
-	// services.DeleteObject(msg.Config.BucketName, fmt.Sprintf("%s/%s", msg.Command.Name, msg.C))
+	manifestFilename := fmt.Sprintf("%s/duplicity-full.%s.manifest.gpg", msg.Command["name"], msg.Config.OpaqueID)
+	diffFilename := fmt.Sprintf("%s/duplicity-full.%s.vol1.difftar.gpg", msg.Command["name"], msg.Config.OpaqueID)
+	sigFilename := fmt.Sprintf("%s/duplicity-full-signatures.%s.sigtar.gpg", msg.Command["name"], msg.Config.OpaqueID)
+
+	fmt.Println()
+	logger.Log("deleting backup %s from %s in bucket %s", msg.Config.OpaqueID, msg.Command["name"], msg.Config.BucketName)
+	logger.Log("the following files will be deleted: \n\t* %s\n\t* %s\n\t* %s\n", manifestFilename, diffFilename, sigFilename)
+
+	_, err := services.Storage.DeleteObject(&msg.Config.BucketName, &manifestFilename)
+	if err != nil {
+		logger.Log("backup could not be deleted, this is not normal (error: %s)", err.Error())
+	}
+	_, err = services.Storage.DeleteObject(&msg.Config.BucketName, &diffFilename)
+	if err != nil {
+		logger.Log("backup could not be deleted, this is not normal (error: %s)", err.Error())
+	}
+	_, err = services.Storage.DeleteObject(&msg.Config.BucketName, &sigFilename)
+	if err != nil {
+		logger.Log("backup could not be deleted, this is not normal (error: %s)", err.Error())
+	}
 }
