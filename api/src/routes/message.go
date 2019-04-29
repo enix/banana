@@ -32,7 +32,7 @@ func ReceiveAgentMesssage(context *gin.Context, issuer *RequestIssuer) (int, int
 	services.DbSet(agent.GetFullKeyFor("info"), agent)
 
 	if msg.Info.Type == "backup_done" {
-		sendHousekeeperEvent(&msg, issuer)
+		sendHouseKeeperEvent(&msg, issuer)
 	}
 
 	return http.StatusOK, "ok"

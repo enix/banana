@@ -3,6 +3,7 @@ package routes
 import (
 	"fmt"
 
+	"enix.io/banana/src/logger"
 	"enix.io/banana/src/models"
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
@@ -31,12 +32,17 @@ func handleHouseKeeperConnection(context *gin.Context) {
 	}
 }
 
-func sendHousekeeperEvent(msg *models.AgentMessage, issuer *RequestIssuer) {
+func sendHouseKeeperEvent(msg *models.AgentMessage, issuer *RequestIssuer) {
 	event := models.HouseKeeperMessage{
 		Info:      msg.Info,
 		Config:    msg.Config,
-		Signature: "",
+		Command:   msg.Command,
+		Signature: msg.Signature,
 	}
 
-	houseKeeperStreams[issuer.Organization] <- event
+	select {
+	case houseKeeperStreams[issuer.Organization] <- event:
+	default:
+		logger.Log("warning: no housekeeper was listening for last backup")
+	}
 }
