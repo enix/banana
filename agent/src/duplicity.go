@@ -1,6 +1,10 @@
 package main
 
-import "errors"
+import (
+	"errors"
+
+	"enix.io/banana/src/models"
+)
 
 // DuplicityBackend : BackupBackend implementation for duplicity
 type DuplicityBackend struct{}
@@ -11,18 +15,26 @@ func checkForWarnings() bool {
 	return err == nil
 }
 
+func getBackupID() string {
+	idRegExp := "'s/\\.[^.]*\\.(?:[^.]*\\.)?(?:[^.]*\\.)?([^.a-z]*)\\.(?:vol1\\.)?[^.]*\\.gpg/\\1/g'"
+	id, _ := Execute("sh", "-c", "grep Writing /tmp/backup.log | tail -n 1 | perl -pe "+idRegExp)
+	return string(id)[:len(id)-1]
+}
+
 // Backup : BackupBackend's Backup call implementation for duplicity
-func (d *DuplicityBackend) Backup(config *Config, cmd *BackupCmd) ([]byte, error) {
-	output, err := Execute("duplicity", "--log-file", "/tmp/backup.log", "--full-if-older-than", "1W", cmd.Target, config.GetEndpoint(cmd.Name))
+func (d *DuplicityBackend) Backup(config *models.Config, cmd *BackupCmd) ([]byte, error) {
+	output, err := Execute("duplicity", "-v8", "--log-file", "/tmp/backup.log", "--full-if-older-than", "1W", cmd.Target, config.GetEndpoint(cmd.Name))
+	config.OpaqueID = getBackupID()
 
 	if checkForWarnings() {
 		return output, errors.New("backup finished with warnings")
 	}
+
 	return output, err
 }
 
 // Restore : BackupBackend's Restore call implementation for duplicity
-func (d *DuplicityBackend) Restore(config *Config, cmd *RestoreCmd) ([]byte, error) {
+func (d *DuplicityBackend) Restore(config *models.Config, cmd *RestoreCmd) ([]byte, error) {
 	output, err := Execute("duplicity", "--log-file", "/tmp/backup.log", "--restore-time", cmd.TargetTime, config.GetEndpoint(cmd.Name), cmd.TargetDirectory)
 
 	if checkForWarnings() {
