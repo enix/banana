@@ -19,6 +19,7 @@ type Config struct {
 	CaCertPath  string               `json:"ca_cert_path"`
 	BucketName  string               `json:"bucket"`
 	StorageHost string               `json:"storage_host"`
+	OpaqueID    string               `json:"opaque_id"`
 	TTL         int64                `json:"ttl"`
 	Vault       services.VaultConfig `json:"vault"`
 }
@@ -86,11 +87,4 @@ func (config *Config) LoadFromEnv() error {
 // GetEndpoint : Returns the storage endpoint based on host, bucket and backup name
 func (config *Config) GetEndpoint(backupName string) string {
 	return fmt.Sprintf("s3://%s/%s/%s", config.StorageHost, config.BucketName, backupName)
-}
-
-// JSONMap : Convert struct to an anonymous map with given JSON keys
-func (config *Config) JSONMap() (out map[string]interface{}) {
-	raw, _ := json.Marshal(config)
-	json.Unmarshal(raw, &out)
-	return
 }
