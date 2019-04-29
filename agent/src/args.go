@@ -3,12 +3,13 @@ package main
 import (
 	"os"
 
+	"enix.io/banana/src/models"
 	"github.com/pborman/getopt/v2"
 )
 
 // LaunchArgs : Filled on launch with parsed command line args
 type LaunchArgs struct {
-	Flags       CliConfig
+	Flags       models.CliConfig
 	Values      []string
 	DisplayHelp bool
 	ConfigPath  string

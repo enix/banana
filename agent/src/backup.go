@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+
+	"enix.io/banana/src/models"
 )
 
 // BackupCmd : Command implementation for 'backup'
@@ -28,7 +30,7 @@ func NewBackupCmd(args *LaunchArgs) (*BackupCmd, error) {
 }
 
 // Execute : Start the backup using specified backend
-func (cmd *BackupCmd) Execute(config *Config) error {
+func (cmd *BackupCmd) Execute(config *models.Config) error {
 	backend, err := NewBackupBackend(config.Backend)
 	if err != nil {
 		return err

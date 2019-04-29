@@ -13,14 +13,15 @@ import (
 )
 
 // SendToMonitor : Sign given message and POST it to the monitor API
-func SendToMonitor(config *Config, message *models.AgentMessage) error {
+func SendToMonitor(config *models.Config, message *models.AgentMessage) error {
 	fmt.Print("waiting for monitor... ")
 
-	dn := Credentials.Cert.Subject.ToRDNSequence().String()
+	httpClient := services.GetHTTPClient()
+	dn := services.Credentials.Cert.Subject.ToRDNSequence().String()
 	oname, _ := services.GetDNFieldValue(dn, "O")
 	cname, _ := services.GetDNFieldValue(dn, "CN")
-	message.SenderID = fmt.Sprintf("%s:%s", oname, cname)
-	message.Sign(Credentials.PrivateKey)
+	message.Info.SenderID = fmt.Sprintf("%s:%s", oname, cname)
+	message.Sign(services.Credentials.PrivateKey)
 
 	url := fmt.Sprintf("%s/agents/notify", config.MonitorURL)
 	rawMessage, _ := json.Marshal(message)
@@ -38,14 +39,16 @@ func SendToMonitor(config *Config, message *models.AgentMessage) error {
 }
 
 // SendMessageToMonitor : Convenience function to create and send a message
-func SendMessageToMonitor(typ string, config *Config, cmd Command, logs string) {
+func SendMessageToMonitor(typ string, config *models.Config, cmd Command, logs string) {
 	msg := &models.AgentMessage{
-		Version:   1,
-		Timestamp: time.Now().Unix(),
-		Type:      typ,
-		Config:    config.JSONMap(),
-		Command:   cmd.JSONMap(),
-		Logs:      logs,
+		Info: models.Message{
+			Version:   1,
+			Timestamp: time.Now().Unix(),
+			Type:      typ,
+		},
+		Config:  *config,
+		Command: cmd.JSONMap(),
+		Logs:    logs,
 	}
 
 	err := SendToMonitor(config, msg)

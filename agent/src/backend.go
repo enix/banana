@@ -1,12 +1,16 @@
 package main
 
-import "errors"
+import (
+	"errors"
+
+	"enix.io/banana/src/models"
+)
 
 // BackupBackend : Interface for communicatin with backends
 //								 such as duplicity, rsync, tar...
 type BackupBackend interface {
-	Backup(*Config, *BackupCmd) ([]byte, error)
-	Restore(*Config, *RestoreCmd) ([]byte, error)
+	Backup(*models.Config, *BackupCmd) ([]byte, error)
+	Restore(*models.Config, *RestoreCmd) ([]byte, error)
 }
 
 // NewBackupBackend : Instanciate the corresponding backend from its name

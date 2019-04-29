@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"os"
 
+	"enix.io/banana/src/models"
 	"enix.io/banana/src/services"
 )
 
@@ -36,7 +37,7 @@ func loadCredentialsToEnv(config *services.VaultConfig) {
 	os.Setenv("PASSPHRASE", passphrase)
 }
 
-func loadCredentialsToMem(config *Config) error {
+func loadCredentialsToMem(config *models.Config) error {
 	privkeyBytes, err := ioutil.ReadFile(config.PrivKeyPath)
 	assert(err)
 	privkeyBlock, _ := pem.Decode([]byte(privkeyBytes))
@@ -75,7 +76,7 @@ func main() {
 		Usage()
 	}
 
-	config := &Config{}
+	config := &models.Config{}
 	config.LoadDefaults()
 	config.LoadFromFile(args.ConfigPath)
 	err := config.LoadFromEnv()

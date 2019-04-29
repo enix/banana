@@ -2,12 +2,14 @@ package main
 
 import (
 	"errors"
+
+	"enix.io/banana/src/models"
 )
 
 // Command : Generic interface for all possible user commands
 //					 Filled from command line arguments
 type Command interface {
-	Execute(*Config) error
+	Execute(*models.Config) error
 	JSONMap() map[string]interface{}
 }
 
