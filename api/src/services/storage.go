@@ -62,6 +62,14 @@ func (o *ObjectStorage) ListObjectsWithPrefixInBucket(bucket *string, prefix *st
 	return o.Client.ListObjects(listObjectInput)
 }
 
+// DeleteObject : Deletes the given object
+func (o *ObjectStorage) DeleteObject(bucket *string, object *string) (*s3.DeleteObjectOutput, error) {
+	return o.Client.DeleteObject(&s3.DeleteObjectInput{
+		Bucket: bucket,
+		Key:    object,
+	})
+}
+
 // OpenStorageConnection : Initialize and test connection with object storage
 func OpenStorageConnection() error {
 	accessToken, err := Vault.GetStorageAccessToken()
@@ -75,7 +83,7 @@ func OpenStorageConnection() error {
 
 	Storage = &ObjectStorage{}
 	Storage.Connect(
-		os.Getenv("API_ENDPOINT"),
+		os.Getenv("STORAGE_API_ENDPOINT"),
 		credentials.NewStaticCredentials(accessToken, secretToken, ""),
 	)
 
