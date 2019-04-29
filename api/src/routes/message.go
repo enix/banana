@@ -40,11 +40,40 @@ func ReceiveAgentMesssage(context *gin.Context, issuer *RequestIssuer) (int, int
 
 // ServeAgentMesssages : Returns the last messages from a given agent
 func ServeAgentMesssages(context *gin.Context, issuer *RequestIssuer) (int, interface{}) {
-	zkey := fmt.Sprintf("messages:%s", context.Param("id"))
-	messages, err := services.DbZRevRange(zkey, 0, 100, models.AgentMessage{})
+	messages, err := getLastMessages(fmt.Sprintf("messages:%s", context.Param("id")))
 	if err != nil {
 		return http.StatusInternalServerError, err
 	}
 
 	return http.StatusOK, messages
+}
+
+// ServeAgentBackups : Returns the backup_done messages from a given agent
+func ServeAgentBackups(context *gin.Context, issuer *RequestIssuer) (int, interface{}) {
+	keys, err := services.Db.Keys(fmt.Sprintf("messages:%s*", context.Param("id"))).Result()
+	if err != nil {
+		return http.StatusInternalServerError, err
+	}
+
+	backupMsg := make([]*models.AgentMessage, 0)
+	for _, key := range keys {
+		messages, err := getLastMessages(key)
+		if err != nil {
+			return http.StatusInternalServerError, err
+		}
+
+		fmt.Println(messages)
+		for _, msg := range messages {
+			typedMsg := msg.(*models.AgentMessage)
+			if typedMsg.Info.Type == "backup_done" {
+				backupMsg = append(backupMsg, typedMsg)
+			}
+		}
+	}
+
+	return http.StatusOK, backupMsg
+}
+
+func getLastMessages(id string) ([]interface{}, error) {
+	return services.DbZRevRange(id, 0, 100, models.AgentMessage{})
 }

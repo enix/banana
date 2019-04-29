@@ -33,9 +33,10 @@ type AgentMessage struct {
 
 // HouseKeeperMessage : Representation of a housekeeper event
 type HouseKeeperMessage struct {
-	Info      Message `json:"info"`
-	Config    Config  `json:"config"`
-	Signature string  `json:"signature,omitempty"`
+	Info      Message                `json:"info"`
+	Config    Config                 `json:"config"`
+	Command   map[string]interface{} `json:"command"`
+	Signature string                 `json:"signature,omitempty"`
 }
 
 // GetSortedSetScore : Generate the score that will be used to store within redis sorted set
