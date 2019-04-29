@@ -22,8 +22,6 @@ func main() {
 	Assert(err)
 	err = services.OpenDatabaseConnection()
 	Assert(err)
-	err = services.OpenStorageConnection()
-	Assert(err)
 	router, err := routes.InitializeRouter()
 	Assert(err)
 	router.Run(":80")
