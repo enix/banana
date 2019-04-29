@@ -2,6 +2,7 @@ package main
 
 import (
 	"crypto/tls"
+	"encoding/json"
 	"fmt"
 	"net/url"
 	"time"
@@ -12,23 +13,19 @@ import (
 	"github.com/gorilla/websocket"
 )
 
-var pending = make(map[string]*models.Config)
+var pending = make(map[string]*models.HouseKeeperMessage)
 
 func watchPendingBackups() {
 	for {
-		now := time.Now()
 		time.Sleep(time.Millisecond * 1000)
 		if len(pending) == 0 {
 			continue
 		}
 
 		logger.Log("checking for expired TTLs...")
-		delta := int64(time.Since(now).Seconds())
-		now = time.Now()
+		now := time.Now().UTC().Unix()
 		for key, value := range pending {
-			value.TTL -= delta
-
-			if value.TTL <= 0 {
+			if now-value.Info.Timestamp > value.Config.TTL {
 				removeFromStorage(value)
 				delete(pending, key)
 			}
@@ -50,6 +47,25 @@ func openSocketConnection() *websocket.Conn {
 	return conn
 }
 
+func synchroniseBackups() {
+	dn := services.Credentials.Cert.Subject.ToRDNSequence().String()
+	org, err := services.GetDNFieldValue(dn, "O")
+	assert(err)
+	url := fmt.Sprintf("%s/agents/%s/backups", "https://api.banana.enix.io", org)
+	httpClient := services.GetHTTPClient()
+	res, err := httpClient.Get(url)
+	assert(err)
+	defer res.Body.Close()
+
+	messages := make([]models.HouseKeeperMessage, 0)
+	err = json.Unmarshal(services.ReadBytesFromStream(res.Body), &messages)
+	assert(err)
+
+	for index := range messages {
+		handleMessage(&messages[index])
+	}
+}
+
 func listenForMessages(conn *websocket.Conn) {
 	msg := models.HouseKeeperMessage{}
 
@@ -61,10 +77,11 @@ func listenForMessages(conn *websocket.Conn) {
 }
 
 func handleMessage(msg *models.HouseKeeperMessage) {
-	pending[msg.Signature] = &msg.Config
-	fmt.Printf("new backup added to pending, TTL: %d\n", msg.Config.TTL)
+	pending[msg.Signature] = msg
+	logger.Log("new backup added to pending, TTL: %d", msg.Config.TTL)
 }
 
-func removeFromStorage(config *models.Config) {
-	logger.Log("removing %+v\n", config)
+func removeFromStorage(msg *models.HouseKeeperMessage) {
+	logger.Log("%+v", msg)
+	// services.DeleteObject(msg.Config.BucketName, fmt.Sprintf("%s/%s", msg.Command.Name, msg.C))
 }
