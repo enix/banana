@@ -15,9 +15,8 @@ import (
 var pending = make(map[string]*models.Config)
 
 func watchPendingBackups() {
-	now := time.Now()
-
 	for {
+		now := time.Now()
 		time.Sleep(time.Millisecond * 1000)
 		if len(pending) == 0 {
 			continue

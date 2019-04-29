@@ -53,14 +53,10 @@ func main() {
 	err = services.OpenStorageConnection()
 	assert(err)
 
-	bucket := "banana-test2"
-	object := "etc/duplicity-full-signatures.20190404T130959Z.sigtar.gpg"
-	services.Storage.DeleteObject(&bucket, &object)
+	loadCredentialsToMem()
+	conn := openSocketConnection()
+	defer conn.Close()
 
-	// loadCredentialsToMem()
-	// conn := openSocketConnection()
-	// defer conn.Close()
-
-	// go watchPendingBackups()
-	// listenForMessages(conn)
+	go watchPendingBackups()
+	listenForMessages(conn)
 }
