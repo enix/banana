@@ -8,7 +8,7 @@ import (
 	"github.com/gorilla/websocket"
 )
 
-var houseKeeperEvents = make(chan models.HouseKeeperMessage)
+var houseKeeperStreams = make(map[string]chan models.HouseKeeperMessage)
 
 var wsUpgrader = websocket.Upgrader{
 	ReadBufferSize:  1024,
@@ -23,7 +23,20 @@ func handleHouseKeeperConnection(context *gin.Context) {
 		return
 	}
 
+	issuer, err := authenticateClientRequest(context)
+	houseKeeperStreams[issuer.Organization] = make(chan models.HouseKeeperMessage)
+
 	for {
-		conn.WriteJSON(<-houseKeeperEvents)
+		conn.WriteJSON(<-houseKeeperStreams[issuer.Organization])
 	}
+}
+
+func sendHousekeeperEvent(msg *models.AgentMessage, issuer *RequestIssuer) {
+	event := models.HouseKeeperMessage{
+		Info:      msg.Info,
+		Config:    msg.Config,
+		Signature: "",
+	}
+
+	houseKeeperStreams[issuer.Organization] <- event
 }

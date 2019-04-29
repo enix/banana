@@ -30,6 +30,11 @@ func ReceiveAgentMesssage(context *gin.Context, issuer *RequestIssuer) (int, int
 
 	agent := models.NewAgent(issuer.Organization, issuer.CommonName, msg)
 	services.DbSet(agent.GetFullKeyFor("info"), agent)
+
+	if msg.Info.Type == "backup_done" {
+		sendHousekeeperEvent(&msg, issuer)
+	}
+
 	return http.StatusOK, "ok"
 }
 
