@@ -28,6 +28,7 @@ func watchPendingBackups() {
 			if now-value.Info.Timestamp > value.Config.TTL {
 				removeFromStorage(value)
 				delete(pending, key)
+				logger.Log("%d remaining backup(s)", len(pending))
 			}
 		}
 	}
