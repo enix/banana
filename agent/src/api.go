@@ -21,7 +21,6 @@ func SendToMonitor(config *models.Config, message *models.AgentMessage) error {
 	oname, _ := services.GetDNFieldValue(dn, "O")
 	cname, _ := services.GetDNFieldValue(dn, "CN")
 	message.Info.SenderID = fmt.Sprintf("%s:%s", oname, cname)
-	message.Sign(services.Credentials.PrivateKey)
 
 	url := fmt.Sprintf("%s/agents/notify", config.MonitorURL)
 	rawMessage, _ := json.Marshal(message)
@@ -51,6 +50,7 @@ func SendMessageToMonitor(typ string, config *models.Config, cmd Command, logs s
 		Logs:    logs,
 	}
 
+	msg.Signature, _ = msg.Config.Sign(services.Credentials.PrivateKey)
 	err := SendToMonitor(config, msg)
 	if err != nil {
 		log.Fatal(err)

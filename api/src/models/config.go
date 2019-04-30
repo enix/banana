@@ -1,6 +1,11 @@
 package models
 
 import (
+	"crypto"
+	"crypto/rand"
+	"crypto/rsa"
+	"crypto/sha256"
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -88,4 +93,27 @@ func (config *Config) LoadFromEnv() error {
 // GetEndpoint : Returns the storage endpoint based on host, bucket and backup name
 func (config *Config) GetEndpoint(backupName string) string {
 	return fmt.Sprintf("s3://%s/%s/%s", config.StorageHost, config.BucketName, backupName)
+}
+
+// VerifySignature : Verify that the signature match the struct content
+func (config *Config) VerifySignature(cert, sig string) error {
+	rawConfig, _ := json.Marshal(config)
+	return services.VerifySha256Signature(rawConfig, sig, cert)
+}
+
+// Sign : Marshal the struct and generate signature from the result
+func (config *Config) Sign(privkey *rsa.PrivateKey) (string, error) {
+	rawConfig, _ := json.Marshal(config)
+	hash := sha256.New()
+	hash.Write(rawConfig)
+	digest := hash.Sum(nil)
+
+	sig, err := rsa.SignPKCS1v15(rand.Reader, privkey, crypto.SHA256, digest)
+	if err != nil {
+		return "", err
+	}
+
+	base64sig := make([]byte, base64.StdEncoding.EncodedLen(len(sig)))
+	base64.StdEncoding.Encode(base64sig, sig)
+	return string(base64sig), err
 }

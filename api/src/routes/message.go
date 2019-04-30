@@ -16,7 +16,7 @@ func ReceiveAgentMesssage(context *gin.Context, issuer *RequestIssuer) (int, int
 	body := services.ReadBytesFromStream(context.Request.Body)
 	json.Unmarshal(body, &msg)
 
-	err := msg.VerifySignature(issuer.Certificate)
+	err := msg.Config.VerifySignature(issuer.Certificate, msg.Signature)
 	if err != nil {
 		return http.StatusForbidden, err
 	}
