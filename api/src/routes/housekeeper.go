@@ -5,6 +5,7 @@ import (
 
 	"enix.io/banana/src/logger"
 	"enix.io/banana/src/models"
+	"enix.io/banana/src/services"
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
 )
@@ -24,11 +25,31 @@ func handleHouseKeeperConnection(context *gin.Context) {
 		return
 	}
 
+	res := make(map[string]string)
 	issuer, err := authenticateClientRequest(context)
 	houseKeeperStreams[issuer.Organization] = make(chan models.HouseKeeperMessage)
 
+	go func() {
+		keys, _ := services.Db.Keys(fmt.Sprintf("messages:%s*", issuer.Organization)).Result()
+		for _, key := range keys {
+			messages, _ := getLastMessages(key)
+			for _, msg := range messages {
+				typedMsg := msg.(*models.AgentMessage)
+				if typedMsg.Info.Type == "backup_done" {
+					sendHouseKeeperEvent(typedMsg, issuer)
+				}
+			}
+		}
+	}()
+
 	for {
-		conn.WriteJSON(<-houseKeeperStreams[issuer.Organization])
+		msg := <-houseKeeperStreams[issuer.Organization]
+		conn.WriteJSON(msg)
+		conn.ReadJSON(&res)
+
+		if len(res["error"]) > 0 {
+			services.SendAlert("arthur.chaloin@enix.fr", res["error"])
+		}
 	}
 }
 
