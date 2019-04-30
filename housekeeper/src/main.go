@@ -54,7 +54,6 @@ func main() {
 	assert(err)
 
 	loadCredentialsToMem()
-	synchroniseBackups()
 	conn := openSocketConnection()
 	defer conn.Close()
 

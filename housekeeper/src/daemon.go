@@ -3,6 +3,7 @@ package main
 import (
 	"crypto/tls"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/url"
 	"time"
@@ -40,8 +41,13 @@ func openSocketConnection() *websocket.Conn {
 		Host:   "api.banana.enix.io:443",
 		Path:   "/housekeeper/ws",
 	}
+
 	socket, err := tls.Dial("tcp", url.Host, services.GetTLSConfig())
-	assert(err)
+	if err != nil {
+		logger.LogError(err)
+		time.Sleep(3 * time.Second)
+		return openSocketConnection()
+	}
 	conn, _, err := websocket.NewClient(socket, url, nil, 1024, 1024)
 	assert(err)
 
@@ -72,14 +78,32 @@ func listenForMessages(conn *websocket.Conn) {
 
 	for {
 		err := conn.ReadJSON(&msg)
-		assert(err)
-		handleMessage(&msg)
+		if err != nil {
+			logger.LogError(errors.New("disconnected from monitor, retrying..."))
+			conn = openSocketConnection()
+			defer conn.Close()
+			continue
+		}
+
+		err = handleMessage(&msg)
+		if err == nil {
+			conn.WriteJSON(map[string]string{"response": "ok"})
+		} else {
+			logger.LogError(err)
+			conn.WriteJSON(map[string]string{"error": err.Error()})
+		}
 	}
 }
 
-func handleMessage(msg *models.HouseKeeperMessage) {
+func handleMessage(msg *models.HouseKeeperMessage) error {
+	// pemCert := pem.EncodeToMemory(&pem.Block{Type: "CERTIFICATE", Bytes: []byte(msg.Signature)})
+	// err := msg.Config.VerifySignature(string(pemCert), msg.Signature)
+	// if err != nil {
+	// 	return err
+	// }
 	pending[msg.Signature] = msg
 	logger.Log("new backup added to pending, TTL: %d", msg.Config.TTL)
+	return nil
 }
 
 // this function was hard-coded for duplicity-formatted backups
