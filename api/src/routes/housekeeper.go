@@ -3,11 +3,11 @@ package routes
 import (
 	"fmt"
 
-	"enix.io/banana/src/logger"
 	"enix.io/banana/src/models"
 	"enix.io/banana/src/services"
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
+	"k8s.io/klog"
 )
 
 var houseKeeperStreams = make(map[string]chan models.HouseKeeperMessage)
@@ -21,7 +21,7 @@ var wsUpgrader = websocket.Upgrader{
 func handleHouseKeeperConnection(context *gin.Context) {
 	conn, err := wsUpgrader.Upgrade(context.Writer, context.Request, nil)
 	if err != nil {
-		fmt.Printf("failed to set websocket upgrade: %+v\n", err)
+		klog.Infof("failed to set websocket upgrade: %+v\n", err)
 		return
 	}
 
@@ -64,6 +64,6 @@ func sendHouseKeeperEvent(msg *models.AgentMessage, issuer *RequestIssuer) {
 	select {
 	case houseKeeperStreams[issuer.Organization] <- event:
 	default:
-		logger.Log("warning: no housekeeper was listening for last backup")
+		klog.Warning("no housekeeper was listening for last backup")
 	}
 }

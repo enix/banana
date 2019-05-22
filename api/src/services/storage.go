@@ -4,11 +4,11 @@ import (
 	"errors"
 	"os"
 
-	"enix.io/banana/src/logger"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3"
+	"k8s.io/klog"
 )
 
 // Storage : Use this API to interact with object storage
@@ -92,6 +92,6 @@ func OpenStorageConnection() error {
 		return errors.New("fatal: failed to list buckets from remote. configuration error?")
 	}
 
-	logger.Log("etablished connection with object storage")
+	klog.Info("etablished connection with object storage")
 	return nil
 }

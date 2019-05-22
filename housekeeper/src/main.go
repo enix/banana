@@ -3,21 +3,16 @@ package main
 import (
 	"crypto/x509"
 	"encoding/pem"
-	"fmt"
 	"io/ioutil"
-	"os"
+
+	"k8s.io/klog"
 
 	"enix.io/banana/src/services"
 )
 
-func logFatal(err error) {
-	fmt.Fprintf(os.Stderr, "%s\n", fmt.Sprintf("error: %s", err.Error()))
-	os.Exit(1)
-}
-
 func assert(err error) {
 	if err != nil {
-		logFatal(err)
+		klog.Fatal(err)
 	}
 }
 

@@ -3,9 +3,9 @@ package main
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
 
 	"enix.io/banana/src/models"
+	"k8s.io/klog"
 )
 
 // BackupCmd : Command implementation for 'backup'
@@ -37,7 +37,7 @@ func (cmd *BackupCmd) Execute(config *models.Config) error {
 	}
 
 	SendMessageToMonitor("backup_start", config, cmd, "")
-	fmt.Printf("running %s, see you on the other side\n", config.Backend)
+	klog.Infof("running %s, see you on the other side\n", config.Backend)
 	logs, err := backend.Backup(config, cmd)
 	if logs == nil {
 		SendMessageToMonitor("agent_crashed", config, cmd, err.Error())
@@ -49,7 +49,7 @@ func (cmd *BackupCmd) Execute(config *models.Config) error {
 	}
 
 	SendMessageToMonitor("backup_done", config, cmd, string(logs))
-	fmt.Println("backup done, everything OK")
+	klog.Info("backup done, everything OK")
 	return nil
 }
 

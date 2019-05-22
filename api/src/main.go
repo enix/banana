@@ -1,9 +1,10 @@
 package main
 
 import (
-	"os"
+	"flag"
 
-	"enix.io/banana/src/logger"
+	"k8s.io/klog"
+
 	"enix.io/banana/src/routes"
 	"enix.io/banana/src/services"
 )
@@ -12,12 +13,15 @@ import (
 // 					otherwise print it and exit process with status code 1
 func Assert(err error) {
 	if err != nil {
-		logger.LogError(err)
-		os.Exit(1)
+		klog.Fatal(err)
 	}
 }
 
 func main() {
+	klog.InitFlags(nil)
+	flag.Set("v", "1")
+	flag.Parse()
+
 	err := services.OpenVaultConnection()
 	Assert(err)
 	err = services.OpenDatabaseConnection()

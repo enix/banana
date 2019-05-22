@@ -62,7 +62,6 @@ func ServeAgentBackups(context *gin.Context, issuer *RequestIssuer) (int, interf
 			return http.StatusInternalServerError, err
 		}
 
-		fmt.Println(messages)
 		for _, msg := range messages {
 			typedMsg := msg.(*models.AgentMessage)
 			if typedMsg.Info.Type == "backup_done" {

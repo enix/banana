@@ -3,15 +3,15 @@ package main
 import (
 	"crypto/tls"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"net/url"
 	"time"
 
-	"enix.io/banana/src/logger"
 	"enix.io/banana/src/models"
 	"enix.io/banana/src/services"
 	"github.com/gorilla/websocket"
+	"github.com/pkg/errors"
+	"k8s.io/klog"
 )
 
 var pending = make(map[string]*models.HouseKeeperMessage)
@@ -23,13 +23,13 @@ func watchPendingBackups() {
 			continue
 		}
 
-		logger.Log("checking for expired TTLs...")
+		klog.Info("checking for expired TTLs...")
 		now := time.Now().UTC().Unix()
 		for key, value := range pending {
 			if now-value.Info.Timestamp > value.Config.TTL {
 				removeFromStorage(value)
 				delete(pending, key)
-				logger.Log("%d remaining backup(s)", len(pending))
+				klog.Infof("%d remaining backup(s)", len(pending))
 			}
 		}
 	}
@@ -44,7 +44,7 @@ func openSocketConnection() *websocket.Conn {
 
 	socket, err := tls.Dial("tcp", url.Host, services.GetTLSConfig())
 	if err != nil {
-		logger.LogError(err)
+		klog.Error(err)
 		time.Sleep(3 * time.Second)
 		return openSocketConnection()
 	}
@@ -79,7 +79,7 @@ func listenForMessages(conn *websocket.Conn) {
 	for {
 		err := conn.ReadJSON(&msg)
 		if err != nil {
-			logger.LogError(errors.New("disconnected from monitor, retrying..."))
+			klog.Error(errors.New("disconnected from monitor, retrying"))
 			conn = openSocketConnection()
 			defer conn.Close()
 			continue
@@ -89,7 +89,7 @@ func listenForMessages(conn *websocket.Conn) {
 		if err == nil {
 			conn.WriteJSON(map[string]string{"response": "ok"})
 		} else {
-			logger.LogError(err)
+			klog.Error(err)
 			conn.WriteJSON(map[string]string{"error": err.Error()})
 		}
 	}
@@ -102,7 +102,7 @@ func handleMessage(msg *models.HouseKeeperMessage) error {
 	// 	return err
 	// }
 	pending[msg.Signature] = msg
-	logger.Log("new backup added to pending, TTL: %d", msg.Config.TTL)
+	klog.Infof("new backup added to pending, TTL: %d", msg.Config.TTL)
 	return nil
 }
 
@@ -113,19 +113,19 @@ func removeFromStorage(msg *models.HouseKeeperMessage) {
 	sigFilename := fmt.Sprintf("%s/duplicity-full-signatures.%s.sigtar.gpg", msg.Command["name"], msg.Config.OpaqueID)
 
 	fmt.Println()
-	logger.Log("deleting backup %s from %s in bucket %s", msg.Config.OpaqueID, msg.Command["name"], msg.Config.BucketName)
-	logger.Log("the following files will be deleted: \n\t* %s\n\t* %s\n\t* %s\n", manifestFilename, diffFilename, sigFilename)
+	klog.Infof("deleting backup %s from %s in bucket %s", msg.Config.OpaqueID, msg.Command["name"], msg.Config.BucketName)
+	klog.Infof("the following files will be deleted: \n\t* %s\n\t* %s\n\t* %s\n", manifestFilename, diffFilename, sigFilename)
 
 	_, err := services.Storage.DeleteObject(&msg.Config.BucketName, &manifestFilename)
 	if err != nil {
-		logger.Log("backup could not be deleted, this is not normal (error: %s)", err.Error())
+		klog.Error(errors.Wrap(err, "backup could not be deleted, this is not normal"))
 	}
 	_, err = services.Storage.DeleteObject(&msg.Config.BucketName, &diffFilename)
 	if err != nil {
-		logger.Log("backup could not be deleted, this is not normal (error: %s)", err.Error())
+		klog.Error(errors.Wrap(err, "backup could not be deleted, this is not normal"))
 	}
 	_, err = services.Storage.DeleteObject(&msg.Config.BucketName, &sigFilename)
 	if err != nil {
-		logger.Log("backup could not be deleted, this is not normal (error: %s)", err.Error())
+		klog.Error(errors.Wrap(err, "backup could not be deleted, this is not normal"))
 	}
 }

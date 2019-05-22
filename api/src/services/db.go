@@ -6,8 +6,8 @@ import (
 	"os"
 	"reflect"
 
-	"enix.io/banana/src/logger"
 	"github.com/go-redis/redis"
+	"k8s.io/klog"
 )
 
 // Db : Use this API to interact with redis
@@ -114,6 +114,6 @@ func OpenDatabaseConnection() error {
 		return errors.New("failed to connect to redis database")
 	}
 
-	logger.Log("etablished connection with redis database")
+	klog.Info("etablished connection with redis database")
 	return nil
 }

@@ -13,6 +13,7 @@ import (
 
 	"enix.io/banana/src/services"
 	"github.com/imdario/mergo"
+	"k8s.io/klog"
 )
 
 // Config : Contains full confugration will be used to execute commands
@@ -57,7 +58,7 @@ func (config *Config) LoadDefaults() {
 func (config *Config) LoadFromFile(path string) error {
 	bytes, err := ioutil.ReadFile(path)
 	if err != nil {
-		fmt.Println("warning: can't load config file " + path + ", using config from env and command-line only")
+		klog.Warning("warning: can't load config file " + path + ", using config from env and command-line only")
 		return err
 	}
 

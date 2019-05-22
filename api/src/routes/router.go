@@ -3,10 +3,10 @@ package routes
 import (
 	"net/http"
 
-	"enix.io/banana/src/logger"
 	"enix.io/banana/src/services"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
+	"k8s.io/klog"
 )
 
 // RequestIssuer : Used to authenticate requests
@@ -47,7 +47,7 @@ func handleClientRequest(handler RequestHandler) func(*gin.Context) {
 			context.JSON(401, map[string]string{"error": "invalid authentication data"})
 			return
 		}
-		logger.Log("Hello, %s from %s", client.CommonName, client.Organization)
+		klog.Infof("Hello, %s from %s", client.CommonName, client.Organization)
 
 		status, data := handler(context, client)
 		if dataAsError, ok := data.(error); ok {

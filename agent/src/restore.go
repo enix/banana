@@ -3,9 +3,9 @@ package main
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
 
 	"enix.io/banana/src/models"
+	"k8s.io/klog"
 )
 
 // RestoreCmd : Command implementation for 'backup'
@@ -42,7 +42,7 @@ func (cmd *RestoreCmd) Execute(config *models.Config) error {
 	}
 
 	SendMessageToMonitor("restore_start", config, cmd, "")
-	fmt.Printf("running %s, see you on the other side\n", config.Backend)
+	klog.Infof("running %s, see you on the other side\n", config.Backend)
 	logs, err := backend.Restore(config, cmd)
 	if logs == nil {
 		SendMessageToMonitor("agent_crashed", config, cmd, err.Error())
