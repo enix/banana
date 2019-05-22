@@ -28,7 +28,11 @@ func receiveAgentMesssage(context *gin.Context, issuer *requestIssuer) (int, int
 	msg.Info.SenderID = fmt.Sprintf("%s:%s", issuer.Organization, issuer.CommonName)
 	services.DbZAdd(msg.Info.GetFullKey(), msg.Info.GetSortedSetScore(), msg)
 
-	agent := models.NewAgent(issuer.Organization, issuer.CommonName, msg)
+	agent := &models.Agent{
+		Organization: issuer.Organization,
+		CommonName:   issuer.CommonName,
+		LastMessage:  msg,
+	}
 	services.DbSet(agent.GetFullKeyFor("info"), agent)
 
 	if msg.Info.Type == "backup_done" {
