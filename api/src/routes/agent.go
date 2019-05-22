@@ -9,8 +9,8 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// ServeAgent : Returns informations about a specific agent
-func ServeAgent(context *gin.Context, issuer *RequestIssuer) (int, interface{}) {
+// serveAgent : Returns informations about a specific agent
+func serveAgent(context *gin.Context, issuer *requestIssuer) (int, interface{}) {
 	var agent models.Agent
 	err := services.DbGet("agent:info:"+context.Param("id"), &agent)
 	if err != nil {
@@ -20,8 +20,8 @@ func ServeAgent(context *gin.Context, issuer *RequestIssuer) (int, interface{}) 
 	return http.StatusOK, agent
 }
 
-// ServeAgentList : Returns the agent list
-func ServeAgentList(context *gin.Context, issuer *RequestIssuer) (int, interface{}) {
+// serveAgentList : Returns the agent list
+func serveAgentList(context *gin.Context, issuer *requestIssuer) (int, interface{}) {
 	keys, err := services.Db.Keys("agent*").Result()
 	if err != nil {
 		return http.StatusInternalServerError, err

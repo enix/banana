@@ -10,8 +10,8 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// ReceiveAgentMesssage : Check and store an agent's message
-func ReceiveAgentMesssage(context *gin.Context, issuer *RequestIssuer) (int, interface{}) {
+// receiveAgentMesssage : Check and store an agent's message
+func receiveAgentMesssage(context *gin.Context, issuer *requestIssuer) (int, interface{}) {
 	msg := models.AgentMessage{}
 	body := services.ReadBytesFromStream(context.Request.Body)
 	json.Unmarshal(body, &msg)
@@ -38,8 +38,8 @@ func ReceiveAgentMesssage(context *gin.Context, issuer *RequestIssuer) (int, int
 	return http.StatusOK, "ok"
 }
 
-// ServeAgentMesssages : Returns the last messages from a given agent
-func ServeAgentMesssages(context *gin.Context, issuer *RequestIssuer) (int, interface{}) {
+// serveAgentMesssages : Returns the last messages from a given agent
+func serveAgentMesssages(context *gin.Context, issuer *requestIssuer) (int, interface{}) {
 	messages, err := getLastMessages(fmt.Sprintf("messages:%s", context.Param("id")))
 	if err != nil {
 		return http.StatusInternalServerError, err
@@ -48,8 +48,8 @@ func ServeAgentMesssages(context *gin.Context, issuer *RequestIssuer) (int, inte
 	return http.StatusOK, messages
 }
 
-// ServeAgentBackups : Returns the backup_done messages from a given agent
-func ServeAgentBackups(context *gin.Context, issuer *RequestIssuer) (int, interface{}) {
+// serveAgentBackups : Returns the backup_done messages from a given agent
+func serveAgentBackups(context *gin.Context, issuer *requestIssuer) (int, interface{}) {
 	keys, err := services.Db.Keys(fmt.Sprintf("messages:%s*", context.Param("id"))).Result()
 	if err != nil {
 		return http.StatusInternalServerError, err

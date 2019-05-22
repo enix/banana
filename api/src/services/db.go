@@ -10,7 +10,7 @@ import (
 	"k8s.io/klog"
 )
 
-// Db : Use this API to interact with redis
+// Db : Can be used to interact with redis
 var Db *redis.Client
 
 // DbGet : Convenience function to avoid JSON unmarshalling

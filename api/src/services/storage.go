@@ -20,20 +20,6 @@ type ObjectStorage struct {
 	Client  *s3.S3
 }
 
-// Connect : Open a connection using the specified configuration
-func (o *ObjectStorage) Connect(endpoint string, creds *credentials.Credentials) {
-	config := &aws.Config{
-		Credentials:      creds,
-		Endpoint:         aws.String(endpoint),
-		Region:           aws.String("us-east-1"),
-		DisableSSL:       aws.Bool(false),
-		S3ForcePathStyle: aws.Bool(true),
-	}
-
-	o.Session = session.New(config)
-	o.Client = s3.New(o.Session)
-}
-
 // ListBuckets : List buckets on remote
 func (o *ObjectStorage) ListBuckets() (*s3.ListBucketsOutput, error) {
 	return o.Client.ListBuckets(nil)
@@ -70,6 +56,19 @@ func (o *ObjectStorage) DeleteObject(bucket *string, object *string) (*s3.Delete
 	})
 }
 
+func (o *ObjectStorage) connect(endpoint string, creds *credentials.Credentials) {
+	config := &aws.Config{
+		Credentials:      creds,
+		Endpoint:         aws.String(endpoint),
+		Region:           aws.String("us-east-1"),
+		DisableSSL:       aws.Bool(false),
+		S3ForcePathStyle: aws.Bool(true),
+	}
+
+	o.Session = session.New(config)
+	o.Client = s3.New(o.Session)
+}
+
 // OpenStorageConnection : Initialize and test connection with object storage
 func OpenStorageConnection() error {
 	accessToken, err := Vault.GetStorageAccessToken()
@@ -82,7 +81,7 @@ func OpenStorageConnection() error {
 	}
 
 	Storage = &ObjectStorage{}
-	Storage.Connect(
+	Storage.connect(
 		os.Getenv("STORAGE_API_ENDPOINT"),
 		credentials.NewStaticCredentials(accessToken, secretToken, ""),
 	)

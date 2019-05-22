@@ -17,7 +17,7 @@ var wsUpgrader = websocket.Upgrader{
 	WriteBufferSize: 1024,
 }
 
-// HandleHouseKeeperConnection : Upgrade HTTP to WS and send events to the housekeeper
+// handleHouseKeeperConnection : Upgrade HTTP to WS and send events to the housekeeper
 func handleHouseKeeperConnection(context *gin.Context) {
 	conn, err := wsUpgrader.Upgrade(context.Writer, context.Request, nil)
 	if err != nil {
@@ -53,7 +53,7 @@ func handleHouseKeeperConnection(context *gin.Context) {
 	}
 }
 
-func sendHouseKeeperEvent(msg *models.AgentMessage, issuer *RequestIssuer) {
+func sendHouseKeeperEvent(msg *models.AgentMessage, issuer *requestIssuer) {
 	event := models.HouseKeeperMessage{
 		Info:      msg.Info,
 		Config:    msg.Config,

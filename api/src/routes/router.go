@@ -9,17 +9,17 @@ import (
 	"k8s.io/klog"
 )
 
-// RequestIssuer : Used to authenticate requests
-type RequestIssuer struct {
+// requestIssuer : Used to authenticate requests
+type requestIssuer struct {
 	CommonName   string
 	Organization string
 	Certificate  string
 }
 
 // RequestHandler : Shorthand for func type that handle client requests
-type RequestHandler = func(*gin.Context, *RequestIssuer) (int, interface{})
+type requestHandler = func(*gin.Context, *requestIssuer) (int, interface{})
 
-func authenticateClientRequest(context *gin.Context) (*RequestIssuer, error) {
+func authenticateClientRequest(context *gin.Context) (*requestIssuer, error) {
 	dn := context.GetHeader("X-Client-Subject-DN")
 	cname, err := services.GetDNFieldValue(dn, "CN")
 	if err != nil {
@@ -31,7 +31,7 @@ func authenticateClientRequest(context *gin.Context) (*RequestIssuer, error) {
 		return nil, err
 	}
 
-	client := &RequestIssuer{
+	client := &requestIssuer{
 		CommonName:   cname,
 		Organization: oname,
 		Certificate:  context.GetHeader("X-Client-Certificate"),
@@ -40,7 +40,7 @@ func authenticateClientRequest(context *gin.Context) (*RequestIssuer, error) {
 	return client, nil
 }
 
-func handleClientRequest(handler RequestHandler) func(*gin.Context) {
+func handleClientRequest(handler requestHandler) func(*gin.Context) {
 	return func(context *gin.Context) {
 		client, err := authenticateClientRequest(context)
 		if err != nil {
@@ -63,7 +63,7 @@ func handleClientRequest(handler RequestHandler) func(*gin.Context) {
 	}
 }
 
-func handlePingRequest(context *gin.Context, issuer *RequestIssuer) (int, interface{}) {
+func handlePingRequest(context *gin.Context, issuer *requestIssuer) (int, interface{}) {
 	return http.StatusOK, map[string]string{
 		"issuer":       issuer.CommonName,
 		"organization": issuer.Organization,

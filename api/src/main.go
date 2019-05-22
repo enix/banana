@@ -11,7 +11,7 @@ import (
 
 // Assert : Ensure that the given error is a nil pointer
 // 					otherwise print it and exit process with status code 1
-func Assert(err error) {
+func assert(err error) {
 	if err != nil {
 		klog.Fatal(err)
 	}
@@ -23,10 +23,10 @@ func main() {
 	flag.Parse()
 
 	err := services.OpenVaultConnection()
-	Assert(err)
+	assert(err)
 	err = services.OpenDatabaseConnection()
-	Assert(err)
+	assert(err)
 	router, err := routes.InitializeRouter()
-	Assert(err)
+	assert(err)
 	router.Run(":80")
 }
