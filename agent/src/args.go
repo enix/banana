@@ -7,17 +7,17 @@ import (
 	"github.com/pborman/getopt/v2"
 )
 
-// LaunchArgs : Filled on launch with parsed command line args
-type LaunchArgs struct {
+// launchArgs : Filled on launch with parsed command line args
+type launchArgs struct {
 	Flags       models.CliConfig
 	Values      []string
 	DisplayHelp bool
 	ConfigPath  string
 }
 
-// LoadArguments : Load args from os.Args to a LaunchArgs struct
-func LoadArguments() *LaunchArgs {
-	args := LaunchArgs{
+// loadArguments : Load args from os.Args to a LaunchArgs struct
+func loadArguments() *launchArgs {
+	args := launchArgs{
 		ConfigPath: "./banana.json",
 	}
 

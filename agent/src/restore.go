@@ -8,15 +8,15 @@ import (
 	"k8s.io/klog"
 )
 
-// RestoreCmd : Command implementation for 'backup'
-type RestoreCmd struct {
+// restoreCmd : Command implementation for 'backup'
+type restoreCmd struct {
 	Name            string `json:"name"`
 	TargetTime      string `json:"target_timestamp"`
 	TargetDirectory string `json:"target_directory"`
 }
 
-// NewRestoreCmd : Creates backup command from command line args
-func NewRestoreCmd(args *LaunchArgs) (*RestoreCmd, error) {
+// newRestoreCmd : Creates backup command from command line args
+func newRestoreCmd(args *launchArgs) (*restoreCmd, error) {
 	if len(args.Values) < 2 {
 		return nil, errors.New("no backup name specified")
 	}
@@ -27,38 +27,38 @@ func NewRestoreCmd(args *LaunchArgs) (*RestoreCmd, error) {
 		return nil, errors.New("no target folder specified")
 	}
 
-	return &RestoreCmd{
+	return &restoreCmd{
 		Name:            args.Values[1],
 		TargetTime:      args.Values[2],
 		TargetDirectory: args.Values[3],
 	}, nil
 }
 
-// Execute : Start the backup using specified backend
-func (cmd *RestoreCmd) Execute(config *models.Config) error {
-	backend, err := NewBackupBackend(config.Backend)
+// execute : Start the backup using specified backend
+func (cmd *restoreCmd) execute(config *models.Config) error {
+	backend, err := newBackupBackend(config.Backend)
 	if err != nil {
 		return err
 	}
 
-	SendMessageToMonitor("restore_start", config, cmd, "")
+	sendMessageToMonitor("restore_start", config, cmd, "")
 	klog.Infof("running %s, see you on the other side\n", config.Backend)
-	logs, err := backend.Restore(config, cmd)
+	logs, err := backend.restore(config, cmd)
 	if logs == nil {
-		SendMessageToMonitor("agent_crashed", config, cmd, err.Error())
+		sendMessageToMonitor("agent_crashed", config, cmd, err.Error())
 		return err
 	}
 	if err != nil {
-		SendMessageToMonitor("restore_failed", config, cmd, string(logs))
+		sendMessageToMonitor("restore_failed", config, cmd, string(logs))
 		return err
 	}
-	SendMessageToMonitor("restore_done", config, cmd, string(logs))
+	sendMessageToMonitor("restore_done", config, cmd, string(logs))
 
 	return err
 }
 
-// JSONMap : Convert struct to an anonymous map with given JSON keys
-func (cmd *RestoreCmd) JSONMap() (out map[string]interface{}) {
+// jsonMap : Convert struct to an anonymous map with given JSON keys
+func (cmd *restoreCmd) jsonMap() (out map[string]interface{}) {
 	raw, _ := json.Marshal(cmd)
 	json.Unmarshal(raw, &out)
 	return

@@ -71,7 +71,7 @@ func unloadCredentialsFromEnv() {
 }
 
 func main() {
-	args := LoadArguments()
+	args := loadArguments()
 	if args.DisplayHelp || len(args.Values) < 1 {
 		Usage()
 	}
@@ -83,12 +83,12 @@ func main() {
 	assert(err)
 	err = config.LoadFromArgs(&args.Flags)
 	assert(err)
-	cmd, err := NewCommand(args)
+	cmd, err := newCommand(args)
 	assert(err)
 
 	loadCredentialsToMem(config)
 	loadCredentialsToEnv(&config.Vault)
-	err = cmd.Execute(config)
+	err = cmd.execute(config)
 	assert(err)
 	unloadCredentialsFromEnv()
 }

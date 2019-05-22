@@ -12,8 +12,8 @@ import (
 	"enix.io/banana/src/services"
 )
 
-// SendToMonitor : Sign given message and POST it to the monitor API
-func SendToMonitor(config *models.Config, message *models.AgentMessage) error {
+// sendToMonitor : Sign given message and POST it to the monitor API
+func sendToMonitor(config *models.Config, message *models.AgentMessage) error {
 	fmt.Print("waiting for monitor... ")
 
 	httpClient := services.GetHTTPClient()
@@ -37,8 +37,8 @@ func SendToMonitor(config *models.Config, message *models.AgentMessage) error {
 	return nil
 }
 
-// SendMessageToMonitor : Convenience function to create and send a message
-func SendMessageToMonitor(typ string, config *models.Config, cmd Command, logs string) {
+// sendMessageToMonitor : Convenience function to create and send a message
+func sendMessageToMonitor(typ string, config *models.Config, cmd command, logs string) {
 	msg := &models.AgentMessage{
 		Info: models.Message{
 			Version:   1,
@@ -46,12 +46,12 @@ func SendMessageToMonitor(typ string, config *models.Config, cmd Command, logs s
 			Type:      typ,
 		},
 		Config:  *config,
-		Command: cmd.JSONMap(),
+		Command: cmd.jsonMap(),
 		Logs:    logs,
 	}
 
 	msg.Signature, _ = msg.Config.Sign(services.Credentials.PrivateKey)
-	err := SendToMonitor(config, msg)
+	err := sendToMonitor(config, msg)
 	if err != nil {
 		log.Fatal(err)
 	}

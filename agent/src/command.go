@@ -6,25 +6,25 @@ import (
 	"enix.io/banana/src/models"
 )
 
-// Command : Generic interface for all possible user commands
+// command : Generic interface for all possible user commands
 //					 Filled from command line arguments
-type Command interface {
-	Execute(*models.Config) error
-	JSONMap() map[string]interface{}
+type command interface {
+	execute(*models.Config) error
+	jsonMap() map[string]interface{}
 }
 
-// NewCommand : Instanciate the corresponding implementation of Command
+// newCommand : Instanciate the corresponding implementation of Command
 //							depending on loaded configuration
-func NewCommand(args *LaunchArgs) (Command, error) {
+func newCommand(args *launchArgs) (command, error) {
 	switch args.Values[0] {
 	case "b":
 		fallthrough
 	case "backup":
-		return NewBackupCmd(args)
+		return newBackupCmd(args)
 	case "r":
 		fallthrough
 	case "restore":
-		return NewRestoreCmd(args)
+		return newRestoreCmd(args)
 	default:
 		return nil, errors.New(args.Values[0] + ": no such command")
 	}

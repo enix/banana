@@ -6,22 +6,22 @@ import (
 	"enix.io/banana/src/models"
 )
 
-// BackupBackend : Interface for communicatin with backends
+// backupBackend : Interface for communicatin with backends
 //								 such as duplicity, rsync, tar...
-type BackupBackend interface {
-	Backup(*models.Config, *BackupCmd) ([]byte, error)
-	Restore(*models.Config, *RestoreCmd) ([]byte, error)
+type backupBackend interface {
+	backup(*models.Config, *backupCmd) ([]byte, error)
+	restore(*models.Config, *restoreCmd) ([]byte, error)
 }
 
-// NewBackupBackend : Instanciate the corresponding backend from its name
-func NewBackupBackend(name string) (BackupBackend, error) {
+// newBackupBackend : Instanciate the corresponding backend from its name
+func newBackupBackend(name string) (backupBackend, error) {
 	if len(name) == 0 {
 		return nil, errors.New(name + ": please specify backend using the --backend (-b) command line argument")
 	}
 
 	switch name {
 	case "duplicity":
-		return &DuplicityBackend{}, nil
+		return &duplicityBackend{}, nil
 	default:
 		return nil, errors.New(name + ": unknown or unsupported backend")
 	}
