@@ -17,12 +17,12 @@ export default {
   },
   pingApiSuccess: {
     reducer: (state, { data }) => update(state, {
-        user: {
-          $set: {
-            name: data.issuer,
-            organization: data.organization,
-          },
+      user: {
+        $set: {
+          name: data.issuer,
+          organization: data.organization,
         },
+      },
     }),
   },
 
@@ -45,17 +45,15 @@ export default {
     },
   },
   getAgentSuccess: {
-    reducer(state, { data }, { payload: [ org, cn ] }) {
-      return update(state, {
-        agents: {
-          $set: {
-            [org]: {
-              [cn]: data,
-            },
+    reducer: (state, { data }, { payload: [ org, cn ] }) => update(state, {
+      agents: {
+        $set: {
+          [org]: {
+            [cn]: data,
           },
         },
-      });
-    },
+      },
+    }),
   },
 
   getAgentMessages: {
@@ -64,17 +62,15 @@ export default {
     },
   },
   getAgentMessagesSuccess: {
-    reducer(state, { data }, { payload: [ org, cn ] }) {
-      return update(state, {
-        agentsMessages: {
-          $set: {
-            [org]: {
-              [cn]: data,
-            },
+    reducer: (state, { data }, { payload: [ org, cn ] }) => update(state, {
+      agentsMessages: {
+        $set: {
+          [org]: {
+            [cn]: data,
           },
         },
-      });
-    },
+      },
+    }),
   },
 
   actionFailed: {
