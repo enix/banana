@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 
 	"enix.io/banana/src/models"
 	"k8s.io/klog"
@@ -12,20 +13,28 @@ import (
 type backupCmd struct {
 	Name   string `json:"name"`
 	Target string `json:"target"`
+	Type   string `json:"type"`
 }
 
 // newBackupCmd : Creates backup command from command line args
 func newBackupCmd(args *launchArgs) (*backupCmd, error) {
 	if len(args.Values) < 2 {
-		return nil, errors.New("no backup name specified")
+		return nil, errors.New("no backup type")
+	}
+	if args.Values[1] != "full" && args.Values[1] != "incremental" {
+		return nil, fmt.Errorf("unknown backup type: %s", args.Values[1])
 	}
 	if len(args.Values) < 3 {
+		return nil, errors.New("no backup name specified")
+	}
+	if len(args.Values) < 4 {
 		return nil, errors.New("no target folder specified")
 	}
 
 	return &backupCmd{
-		Name:   args.Values[1],
-		Target: args.Values[2],
+		Type:   args.Values[1],
+		Name:   args.Values[2],
+		Target: args.Values[3],
 	}, nil
 }
 
