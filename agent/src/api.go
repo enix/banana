@@ -42,7 +42,7 @@ func sendMessageToMonitor(typ string, config *models.Config, cmd command, logs s
 	msg := &models.AgentMessage{
 		Info: models.Message{
 			Version:   1,
-			Timestamp: time.Now().Unix(),
+			Timestamp: time.Now().UnixNano() / int64(time.Millisecond),
 			Type:      typ,
 		},
 		Config:  *config,
