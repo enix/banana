@@ -44,14 +44,14 @@ class Agent extends Component {
       key: 'action',
       render: (_, item) => (
         <div>
-          <a onClick={() => this.showConfig(item.key)}>Show config</a>
+          <Button type='link' onClick={() => this.showConfig(item.key)}>Show config</Button>
           <Divider type='vertical' />
-          <a href={null} onClick={() => this.showCommand(item.key)}>Show command</a>
+          <Button type='link' onClick={() => this.showCommand(item.key)}>Show command</Button>
           
           {item.logs && (
             <span>
               <Divider type='vertical' />
-              <a onClick={() => this.showLogs(item.key)}>Show logs</a>
+              <Button type='link' onClick={() => this.showLogs(item.key)}>Show logs</Button>
             </span>
           )}
           
