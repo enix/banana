@@ -11,9 +11,10 @@ import (
 
 // backupCmd : Command implementation for 'backup'
 type backupCmd struct {
-	Name   string `json:"name"`
-	Target string `json:"target"`
-	Type   string `json:"type"`
+	Name     string `json:"name"`
+	Target   string `json:"target"`
+	Type     string `json:"type"`
+	OpaqueID string `json:"opaque_id"`
 }
 
 // newBackupCmd : Creates backup command from command line args

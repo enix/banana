@@ -108,12 +108,12 @@ func handleMessage(msg *models.HouseKeeperMessage) error {
 
 // this function was hard-coded for duplicity-formatted backups
 func removeFromStorage(msg *models.HouseKeeperMessage) {
-	manifestFilename := fmt.Sprintf("%s/duplicity-full.%s.manifest.gpg", msg.Command["name"], msg.Config.OpaqueID)
-	diffFilename := fmt.Sprintf("%s/duplicity-full.%s.vol1.difftar.gpg", msg.Command["name"], msg.Config.OpaqueID)
-	sigFilename := fmt.Sprintf("%s/duplicity-full-signatures.%s.sigtar.gpg", msg.Command["name"], msg.Config.OpaqueID)
+	manifestFilename := fmt.Sprintf("%s/duplicity-full.%s.manifest.gpg", msg.Command["name"], msg.Command["OpaqueID"])
+	diffFilename := fmt.Sprintf("%s/duplicity-full.%s.vol1.difftar.gpg", msg.Command["name"], msg.Command["OpaqueID"])
+	sigFilename := fmt.Sprintf("%s/duplicity-full-signatures.%s.sigtar.gpg", msg.Command["name"], msg.Command["OpaqueID"])
 
 	fmt.Println()
-	klog.Infof("deleting backup %s from %s in bucket %s", msg.Config.OpaqueID, msg.Command["name"], msg.Config.BucketName)
+	klog.Infof("deleting backup %s from %s in bucket %s", msg.Command["OpaqueID"], msg.Command["name"], msg.Config.BucketName)
 	klog.Infof("the following files will be deleted: \n\t* %s\n\t* %s\n\t* %s\n", manifestFilename, diffFilename, sigFilename)
 
 	_, err := services.Storage.DeleteObject(&msg.Config.BucketName, &manifestFilename)

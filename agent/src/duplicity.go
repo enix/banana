@@ -28,7 +28,7 @@ func getBackupID() string {
 // Backup : BackupBackend's Backup call implementation for duplicity
 func (d *duplicityBackend) backup(config *models.Config, cmd *backupCmd) ([]byte, error) {
 	output, err := execute("duplicity", cmd.Type, "-v8", "--log-file", "/tmp/backup.log", cmd.Target, config.GetEndpoint(cmd.Name))
-	config.OpaqueID = getBackupID()
+	cmd.OpaqueID = getBackupID()
 
 	if checkForWarnings() {
 		return output, errors.New("backup finished with warnings")

@@ -7,7 +7,7 @@ function trimSlash(str) {
   return str;
 }
 
-function generateRestoreCmd({ command: { name, target }, config: { opaque_id }}) {
+function generateRestoreCmd({ command: { name, target, opaque_id } }) {
   if (!target) {
     return;
   }

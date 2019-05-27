@@ -25,7 +25,6 @@ type Config struct {
 	CaCertPath  string               `json:"ca_cert_path"`
 	BucketName  string               `json:"bucket"`
 	StorageHost string               `json:"storage_host"`
-	OpaqueID    string               `json:"opaque_id"`
 	TTL         int64                `json:"ttl"`
 	Vault       services.VaultConfig `json:"vault"`
 }
