@@ -1,7 +1,17 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { mapDispatchToProps } from 'redux-saga-wrapper';
-import { Table, Tag, Modal, Divider, Icon, Button } from 'antd';
+import {
+  Table,
+  Tag,
+  Modal,
+  Divider,
+  Icon,
+  Button,
+  Switch,
+  Row,
+  Col,
+} from 'antd';
 
 import JsonTable from '../components/JsonTable';
 import Code from '../components/Code';
@@ -10,6 +20,7 @@ import {
   formatDate,
   formatSnakeCase,
   getTagColor,
+  getTypeTagColor,
   generateRestoreCmd,
 } from '../helpers';
 
@@ -20,6 +31,7 @@ class Agent extends Component {
     configVisible: false,
     logsVisible: false,
     restoreVisible: false,
+    actionsStartVisible: false,
   }
 
   columns = [
@@ -38,6 +50,21 @@ class Agent extends Component {
       dataIndex: 'info.timestamp',
       key: 'timestamp',
       render: formatDate,
+    },
+    {
+      title: `Backup name`,
+      dataIndex: 'command.name',
+      key: 'name',
+    },
+    {
+      title: `Backup type`,
+      dataIndex: 'command.type',
+      key: 'backup_type',
+      render: (type) => (
+        <Tag color={getTypeTagColor(type)} key={type}>
+          {formatSnakeCase(type)}
+        </Tag>
+      ),
     },
     {
       title: 'Actions',
@@ -83,6 +110,16 @@ class Agent extends Component {
 
   showRestore = detailsIndex => this.setState({ detailsIndex, restoreVisible: true })
 
+  toggleActionsStart = actionsStartVisible => this.setState({ actionsStartVisible });
+
+  getAgentMessages = () => {
+    if (this.state.actionsStartVisible) {
+      return this.props.agentMessages;
+    }
+
+    return this.props.agentMessages.filter(message => !/.*start.*/.test(message.info.type));
+  };
+
   componentDidMount() {
     const { org, cn } = this.props.match.params;
     this.props.actions.getAgent(org, cn);
@@ -96,12 +133,20 @@ class Agent extends Component {
 
     return (
       <div className='Agent'>
-        <h2>Actions history for {this.props.agent.cn} from {this.props.agent.organization}</h2>
+        <Row>
+          <Col span={18}>
+            <h2>Actions history for {this.props.agent.cn} from {this.props.agent.organization}</h2>
+          </Col>
+          <Col style={{ textAlign: 'right' }}>
+            Display actions start
+            <Switch onChange={this.toggleActionsStart} style={{ marginLeft: 10 }} />
+          </Col>
+        </Row>
         {!this.props.agentMessages ? <Loading /> : (
           <div>
             <Table
               columns={this.columns}
-              dataSource={this.props.agentMessages}
+              dataSource={this.getAgentMessages()}
             />
             {this.props.agentMessages.length > 1 && (
               <div>

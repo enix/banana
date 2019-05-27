@@ -15,4 +15,16 @@ function getTagColor(tag) {
   return 'grey';
 }
 
-export default getTagColor;
+function getTypeTagColor(type) {
+  if (/(I|i)nc.*/.test(type)) {
+    return 'blue';
+  }
+
+  if (/(F|f)ull/.test(type)) {
+    return 'green';
+  }
+
+  return 'grey';
+}
+
+export { getTagColor, getTypeTagColor };
