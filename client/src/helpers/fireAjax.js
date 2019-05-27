@@ -10,12 +10,24 @@ const defaultAjaxConfig = {
   },
 };
 
+class AjaxError extends Error {
+  constructor(ajax, ...args) {
+    super(...args);
+    this.ajax = ajax;
+  }
+}
+
 async function fireAjax(config) {
-  return await axios({
-    ...defaultAjaxConfig,
-    ...config,
-    url: `https://api.banana.enix.io${config.uri}`
-  });
+  try {
+    return await axios({
+      ...defaultAjaxConfig,
+      ...config,
+      url: `https://api.banana.enix.io${config.uri}`,
+    });
+  }
+  catch (error) {
+    throw new AjaxError(config, error.message);
+  }
 }
 
 export default fireAjax;

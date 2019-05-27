@@ -74,10 +74,10 @@ export default {
   },
 
   actionFailed: {
-    *saga(error, { payload: [ request ] }) {
+    *saga(error) {
       yield notification.error({
         message: error.message,
-        description: `${request.method || 'GET'} ${request.uri}`,
+        description: `${error.ajax.method || 'GET'} ${error.ajax.uri}`,
       });
     },
   },
