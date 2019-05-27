@@ -1,14 +1,14 @@
 
 function getTagColor(tag) {
-  if (/.*_start/.test(tag)) {
+  if (/start/gi.test(tag)) {
     return 'orange';
   }
 
-  if (/.*_done/.test(tag)) {
+  if (/done|running/gi.test(tag)) {
     return 'green';
   }
 
-  if (/(.*_failed)|(.*_crashed)/.test(tag)) {
+  if (/stopped|failed|crashed/gi.test(tag)) {
     return 'volcano';
   }
 
@@ -16,11 +16,11 @@ function getTagColor(tag) {
 }
 
 function getTypeTagColor(type) {
-  if (/(I|i)nc.*/.test(type)) {
+  if (/inc/gi.test(type)) {
     return 'blue';
   }
 
-  if (/(F|f)ull/.test(type)) {
+  if (/full/gi.test(type)) {
     return 'green';
   }
 

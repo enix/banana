@@ -55,12 +55,13 @@ class Agent extends Component {
       title: `Backup name`,
       dataIndex: 'command.name',
       key: 'name',
+      render: name => name ? name : '-',
     },
     {
       title: `Backup type`,
       dataIndex: 'command.type',
       key: 'backup_type',
-      render: (type) => (
+      render: (type) => !type ? '-' : (
         <Tag color={getTypeTagColor(type)} key={type}>
           {formatSnakeCase(type)}
         </Tag>
