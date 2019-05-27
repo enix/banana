@@ -1,20 +1,17 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
-import { createStore, applyMiddleware } from 'redux';
-import createSagaMiddleware from 'redux-saga';
+import { createStore } from 'redux-saga-wrapper';
 
+import initialState from './state/initialState';
+import actions from './state/actions';
 import App from './containers/App';
-import storeApp from './state/reducers';
-import sagas from './state/sagas';
-import registerServiceWorker from './registerServiceWorker';
 import { extendArray } from './helpers';
+import registerServiceWorker from './registerServiceWorker';
 
-const sagaMiddleware = createSagaMiddleware();
-const store = createStore(storeApp, applyMiddleware(sagaMiddleware));
+const store = createStore(initialState, actions);
 
 extendArray();
-sagaMiddleware.run(sagas);
 ReactDOM.render(
   <Provider store={store}>
     <App />

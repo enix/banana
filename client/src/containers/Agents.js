@@ -1,11 +1,10 @@
 import React, { Component } from 'react';
-import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
+import { mapDispatchToProps } from 'redux-saga-wrapper';
 import { Link } from 'react-router-dom';
 import { Table, Divider, Tag } from 'antd';
 
 import Loading from '../components/Loading';
-import ActionCreators from '../state/actions';
 import { formatSnakeCase, getTagColor } from '../helpers';
 
 class Agents extends Component {
@@ -53,10 +52,6 @@ class Agents extends Component {
 
 const mapStateToProps = state => ({
   agents: state.agentList && state.agentList.map((agent, key) => ({ ...agent, key })),
-});
-
-const mapDispatchToProps = dispatch => ({
-  actions: bindActionCreators(ActionCreators, dispatch),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(Agents);

@@ -1,12 +1,11 @@
 import React, { Component } from 'react';
-import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
+import { mapDispatchToProps } from 'redux-saga-wrapper';
 import { Table, Tag, Modal, Divider, Icon, Button } from 'antd';
 
 import JsonTable from '../components/JsonTable';
 import Code from '../components/Code';
 import Loading from '../components/Loading';
-import ActionCreators from '../state/actions';
 import {
   formatDate,
   formatSnakeCase,
@@ -168,9 +167,5 @@ const mapStateToProps = (state, props) => {
 
   return loaded;
 };
-
-const mapDispatchToProps = dispatch => ({
-  actions: bindActionCreators(ActionCreators, dispatch),
-});
 
 export default connect(mapStateToProps, mapDispatchToProps)(Agent);

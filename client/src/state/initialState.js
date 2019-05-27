@@ -1,11 +1,6 @@
 
-const initialState = {
-  app: {
-    title: 'Banana',
-    isSetup: false,
-  },
-  containers: [],
+export default {
   user: {},
-};
-
-export default initialState;
+  agents: {},
+  agentsMessages: {},
+};;

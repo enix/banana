@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
-import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux'
+import { mapDispatchToProps } from 'redux-saga-wrapper';
 import { BrowserRouter as Router, Route } from 'react-router-dom';
 import { Layout } from 'antd';
 
@@ -8,7 +8,6 @@ import Settings from '../containers/Settings';
 import Agents from '../containers/Agents';
 import Agent from '../containers/Agent';
 import Header from './Header';
-import ActionCreators from '../state/actions';
 
 const { Content } = Layout;
 
@@ -36,12 +35,6 @@ class App extends Component {
   }
 }
 
-const mapStateToProps = state => ({
-  isSetup: state.app.isSetup,
-});
-
-const mapDispatchToProps = dispatch => ({
-  actions: bindActionCreators(ActionCreators, dispatch),
-});
+const mapStateToProps = state => ({});
 
 export default connect(mapStateToProps, mapDispatchToProps)(App);

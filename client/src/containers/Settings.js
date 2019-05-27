@@ -1,9 +1,7 @@
 import React, { Component } from 'react';
-import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
+import { mapDispatchToProps } from 'redux-saga-wrapper';
 import { Form, Divider, Select } from 'antd';
-
-import ActionCreators from '../state/actions';
 
 class Settings extends Component {
 
@@ -39,9 +37,5 @@ class Settings extends Component {
 }
 
 const mapStateToProps = state => ({});
-
-const mapDispatchToProps = dispatch => ({
-  actions: bindActionCreators(ActionCreators, dispatch),
-});
 
 export default connect(mapStateToProps, mapDispatchToProps)(Form.create({ name: 'settings' })(Settings));

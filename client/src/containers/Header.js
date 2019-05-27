@@ -1,11 +1,10 @@
 import React, { Component } from 'react';
-import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
+import { mapDispatchToProps } from 'redux-saga-wrapper';
 import { Layout, Menu, Icon } from 'antd';
 import { Link } from 'react-router-dom';
 
 import Loading from '../components/Loading';
-import ActionCreators from '../state/actions';
 
 import './Header.less';
 
@@ -49,10 +48,6 @@ class Header extends Component {
 
 const mapStateToProps = state => ({
   user: state.user,
-});
-
-const mapDispatchToProps = dispatch => ({
-  actions: bindActionCreators(ActionCreators, dispatch),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(Header);
