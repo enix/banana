@@ -3,12 +3,14 @@ package main
 import (
 	"crypto/x509"
 	"encoding/pem"
+	"flag"
 	"fmt"
 	"io/ioutil"
 	"os"
 
 	"enix.io/banana/src/models"
 	"enix.io/banana/src/services"
+	"k8s.io/klog"
 )
 
 func logFatal(err error) {
@@ -71,6 +73,10 @@ func unloadCredentialsFromEnv() {
 }
 
 func main() {
+	klog.InitFlags(nil)
+	flag.Set("v", "1")
+	flag.Parse()
+
 	args := loadArguments()
 	if args.DisplayHelp || len(args.Values) < 1 {
 		Usage()
