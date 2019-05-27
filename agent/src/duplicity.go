@@ -18,6 +18,10 @@ func checkForWarnings() bool {
 func getBackupID() string {
 	idRegExp := "'s/\\.[^.]*\\.(?:[^.]*\\.)?(?:[^.]*\\.)?([^.a-z]*)\\.(?:vol1\\.)?[^.]*\\.gpg/\\1/g'"
 	id, _ := execute("sh", "-c", "grep Writing /tmp/backup.log | tail -n 1 | perl -pe "+idRegExp)
+
+	if len(id) < 1 {
+		return ""
+	}
 	return string(id)[:len(id)-1]
 }
 
