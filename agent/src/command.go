@@ -25,6 +25,8 @@ func newCommand(args *launchArgs) (command, error) {
 		fallthrough
 	case "restore":
 		return newRestoreCmd(args)
+	case "routine":
+		return newRoutineCmd(args)
 	default:
 		return nil, errors.New(args.Values[0] + ": no such command")
 	}

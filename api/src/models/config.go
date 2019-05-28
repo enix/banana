@@ -16,17 +16,25 @@ import (
 	"k8s.io/klog"
 )
 
+// BackupSchedule : Contains informations of when to run inc/full backups
+type BackupSchedule struct {
+	Interval  int `json:"interval"`
+	FullEvery int `json:"full_every"`
+}
+
 // Config : Contains full confugration will be used to execute commands
 type Config struct {
-	MonitorURL  string               `json:"monitor_url"`
-	Backend     string               `json:"backend"`
-	PrivKeyPath string               `json:"private_key_path"`
-	CertPath    string               `json:"client_cert_path"`
-	CaCertPath  string               `json:"ca_cert_path"`
-	BucketName  string               `json:"bucket"`
-	StorageHost string               `json:"storage_host"`
-	TTL         int64                `json:"ttl"`
-	Vault       services.VaultConfig `json:"vault"`
+	MonitorURL  string                    `json:"monitor_url"`
+	Backend     string                    `json:"backend"`
+	StatePath   string                    `json:"state_path"`
+	PrivKeyPath string                    `json:"private_key_path"`
+	CertPath    string                    `json:"client_cert_path"`
+	CaCertPath  string                    `json:"ca_cert_path"`
+	BucketName  string                    `json:"bucket"`
+	StorageHost string                    `json:"storage_host"`
+	TTL         int64                     `json:"ttl"`
+	Vault       services.VaultConfig      `json:"vault"`
+	Schedule    map[string]BackupSchedule `json:"schedule"`
 }
 
 // CliConfig : Extended config struct for stuff that can be passed from cli only

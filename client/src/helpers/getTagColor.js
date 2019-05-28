@@ -4,7 +4,7 @@ function getTagColor(tag) {
     return 'orange';
   }
 
-  if (/done|running/gi.test(tag)) {
+  if (/done/gi.test(tag)) {
     return 'green';
   }
 
