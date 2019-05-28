@@ -28,6 +28,7 @@ func loadArguments() *launchArgs {
 	getopt.FlagLong(&args.Flags.BucketName, "bucket", 'k', "target bucket name", "my-bucket-name")
 	getopt.FlagLong(&args.Flags.TTL, "ttl", 't', "time to live", "3600")
 	getopt.FlagLong(&args.Flags.StorageHost, "storage-host", 's', "storage API host", "object-storage.r1.nxs.enix.io")
+	getopt.FlagLong(&args.Flags.StatePath, "state", 0, "state location", "/etc/banana/state.json")
 	getopt.FlagLong(&args.Flags.PrivKeyPath, "privkey", 0, "private key location", "/etc/banana/privkey.pem")
 	getopt.FlagLong(&args.Flags.CertPath, "cert", 0, "client certificate location", "/etc/banana/cert.pem")
 	getopt.FlagLong(&args.Flags.CaCertPath, "cacert", 0, "CA certificate location", "/etc/banana/cacert.pem")

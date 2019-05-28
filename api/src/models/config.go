@@ -39,6 +39,7 @@ func (config *Config) LoadDefaults() {
 	*config = Config{
 		MonitorURL:  "https://api.banana.enix.io",
 		Backend:     "duplicity",
+		StatePath:   "/etc/banana/state.json",
 		PrivKeyPath: "/etc/banana/privkey.pem",
 		CertPath:    "/etc/banana/cert.pem",
 		CaCertPath:  "/etc/banana/cacert.pem",
@@ -75,6 +76,7 @@ func (config *Config) LoadFromEnv() error {
 	env := Config{
 		MonitorURL:  os.Getenv("BANANA_MONITOR_URL"),
 		Backend:     os.Getenv("BANANA_BACKEND"),
+		StatePath:   os.Getenv("BANANA_STATE_PATH"),
 		PrivKeyPath: os.Getenv("BANANA_PRIVATE_KEY_PATH"),
 		CertPath:    os.Getenv("BANANA_CLIENT_CERT_PATH"),
 		CaCertPath:  os.Getenv("BANANA_CA_CERT_PATH"),
