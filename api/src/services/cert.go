@@ -86,7 +86,8 @@ func GetTLSConfig() *tls.Config {
 				PrivateKey:  Credentials.PrivateKey,
 			},
 		},
-		RootCAs: caCertPool,
+		RootCAs:            caCertPool,
+		InsecureSkipVerify: true, // TODO: find a way to get CA and remove this
 	}
 	tlsConfig.BuildNameToCertificate()
 	return tlsConfig
