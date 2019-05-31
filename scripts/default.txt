@@ -1,7 +1,7 @@
 FR
 Ile-de-France
 Paris
-Bananagency
+Enix
 Root
-bananagency.com
-yellow-cow@bananagency.com
+enix.io
+yellow-cow@enix.io

@@ -6,8 +6,6 @@ services:
     build:
       context: ./client
       target: bundler
-    ports:
-      - 3000:80
     expose:
       - 80
     volumes:
@@ -27,8 +25,9 @@ services:
     volumes:
       - ./api/src:/go/src/enix.io/banana/src
     restart: unless-stopped
-    env_file:
-      - .env
+    environment:
+      - REDIS_ADDR=redis:6379
+      - REDIS_PASSWD=
 
   vault:
     image: vault:latest
@@ -44,7 +43,6 @@ services:
   proxy:
     image: nginx:latest
     ports:
-      - 7080:80
       - 443:443
     restart: unless-stopped
     volumes:
@@ -53,8 +51,6 @@ services:
 
   redis:
     image: redis:5.0
-    ports:
-      - 7017:6379
     restart: unless-stopped
     # volumes:
     #   - ./db:/db

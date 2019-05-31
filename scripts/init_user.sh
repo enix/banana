@@ -18,13 +18,6 @@ setIfEmpty VAULT_TOKEN "myroot" "${VAULT_TOKEN}"
 
 mkdir -p ../security/out
 
-# Create role
-curl -sSL \
-  -H "X-Vault-Token: $VAULT_TOKEN" \
-  -X POST \
-  -d "{\"allow_any_name\": true, \"max_ttl\": \"52560h\", \"organization\": \"$1\"}" \
-  "$VAULT_ADDR/v1/users-pki/roles/$1"
-
 # Issue cert
 cert=$(curl -sSL \
   -H "X-Vault-Token: $VAULT_TOKEN" \
