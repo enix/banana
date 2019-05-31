@@ -1,0 +1,11 @@
+[Unit]
+Description=Banana backup daemon
+After=network.target
+
+[Service]
+Type=simple
+User=root
+ExecStart=/usr/bin/bananactl routine
+
+[Install]
+WantedBy=multi-user.target
