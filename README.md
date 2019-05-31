@@ -15,7 +15,7 @@ Thoose steps should be executed while ssh'd into the monitor node.
 ```bash
 git clone -b develop https://gitlab.enix.io/products/banana.git
 cd banana
-docker-compose up -d
+docker-compose up -d --build
 ```
 
 #### Generate the certs and setup Vault
@@ -55,7 +55,7 @@ vault write users-pki/issue/enix common_name=<your username>
 
 This certificate will grant you access to the banana UI.
 
-#### Add hosts to /etc/hosts
+#### Add host to /etc/hosts
 
 Add `banana.enix.io` pointing to the monitor IP to your `/etc/hosts` to be able to reach the UI.
 
@@ -76,6 +76,10 @@ Thoose steps should be executed while ssh'd into the nodes that should be backed
 curl -s achaloin.com/bananactl > /usr/bin/bananactl
 chmod +x /usr/bin/bananactl
 ```
+
+#### Add host to /etc/hosts
+
+Add `api.banana.enix.io` pointing to the monitor IP to your `/etc/hosts` to be able to reach the API.
 
 #### Register your node
 
