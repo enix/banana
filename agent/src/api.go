@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"log"
 	"os"
 	"strings"
@@ -10,6 +11,7 @@ import (
 
 	"enix.io/banana/src/models"
 	"enix.io/banana/src/services"
+	"k8s.io/klog"
 )
 
 // sendToMonitor : Sign given message and POST it to the monitor API
@@ -32,6 +34,7 @@ func sendToMonitor(config *models.Config, message *models.AgentMessage) error {
 
 	fmt.Println(res.Status)
 	if res.StatusCode != 200 {
+		klog.Error(ioutil.ReadAll(res.Body))
 		os.Exit(1)
 	}
 	return nil

@@ -7,8 +7,10 @@
 
   "schedule": {
     "foo": {
-      "interval": 1,
-      "full_every": 7
+      "bucket": "banana-test7",
+      "target": "/etc",
+      "interval": 0,
+      "full_every": 2
     }
   }
 }

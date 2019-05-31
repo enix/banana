@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"enix.io/banana/src/models"
+	"github.com/imdario/mergo"
 	"k8s.io/klog"
 )
 
@@ -53,15 +54,23 @@ func (cmd *routineCmd) jsonMap() (out map[string]interface{}) {
 }
 
 func (cmd *routineCmd) runTasks(state *State, config *models.Config) error {
-	for name, schedule := range config.Schedule {
+	for name, schedule := range config.ScheduledBackups {
 		backupState, exists := state.LastBackups[name]
-		if !exists {
-			cmd.doBackup(name, state, config)
+		fullConfig := schedule
+		mergo.Merge(&fullConfig.Config, config)
+		if !exists || backupState.Status == "Failed" {
+			err := cmd.doBackup(name, state, &fullConfig)
+			if err != nil {
+				return err
+			}
 		} else {
 			timeSinceLastBackup := time.Since(backupState.Time)
-			interval := time.Duration(schedule.Interval * int(time.Hour) * 24)
+			interval := time.Duration(schedule.Interval * float32(time.Hour) * 24)
 			if timeSinceLastBackup > interval {
-				cmd.doBackup(name, state, config)
+				err := cmd.doBackup(name, state, &fullConfig)
+				if err != nil {
+					return err
+				}
 			}
 		}
 	}
@@ -69,7 +78,38 @@ func (cmd *routineCmd) runTasks(state *State, config *models.Config) error {
 	return nil
 }
 
-func (cmd *routineCmd) doBackup(name string, state *State, config *models.Config) {
-	state.LastBackups[name] = BackupState{Time: time.Now()}
-	fmt.Printf("backup %s now\n", name)
+func (cmd *routineCmd) doBackup(name string, state *State, config *models.ScheduledBackupConfig) error {
+	if state.LastBackups[name] == nil {
+		state.LastBackups[name] = &BackupState{}
+	}
+
+	state.LastBackups[name].Time = time.Now()
+	state.LastBackups[name].Status = "Failed"
+	klog.Infof("backing up %s", name)
+
+	if config.Target == "" {
+		return fmt.Errorf("missing target directory in schedule for backup %s", name)
+	}
+
+	typ := "incremental"
+	if state.LastBackups[name].Type == "" || state.LastBackups[name].IncrCountSinceLastFull >= config.FullEvery-1 {
+		typ = "full"
+	}
+
+	backupCmd := &backupCmd{
+		Type:   typ,
+		Name:   name,
+		Target: config.Target,
+	}
+	backupCmd.execute(&config.Config)
+
+	state.LastBackups[name].Status = "Success"
+	state.LastBackups[name].Type = typ
+	if typ == "full" {
+		state.LastBackups[name].IncrCountSinceLastFull = 0
+	} else {
+		state.LastBackups[name].IncrCountSinceLastFull++
+	}
+
+	return nil
 }

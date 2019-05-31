@@ -18,7 +18,7 @@ func receiveAgentMesssage(context *gin.Context, issuer *requestIssuer) (int, int
 
 	err := msg.Config.VerifySignature(issuer.Certificate, msg.Signature)
 	if err != nil {
-		return http.StatusForbidden, err
+		return http.StatusBadRequest, err
 	}
 	issuerID := fmt.Sprintf("%s:%s", issuer.Organization, issuer.CommonName)
 	if msg.Info.SenderID != issuerID {

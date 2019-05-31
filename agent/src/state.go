@@ -13,13 +13,16 @@ import (
 
 // BackupState : Represents the state of a backup, including the last time it ran
 type BackupState struct {
-	Time time.Time `json:"time"`
+	Time                   time.Time `json:"time"`
+	Status                 string    `json:"status"`
+	Type                   string    `json:"type"`
+	IncrCountSinceLastFull int       `json:"incr_count_since_last_full"`
 }
 
 // State : Represents the state of an agent, aka. its last backups
 type State struct {
-	Version     int8                   `json:"version"`
-	LastBackups map[string]BackupState `json:"last_backups"`
+	Version     int8                    `json:"version"`
+	LastBackups map[string]*BackupState `json:"last_backups"`
 }
 
 func (s *State) loadFromDisk(config *models.Config) error {
@@ -34,7 +37,7 @@ func (s *State) loadFromDisk(config *models.Config) error {
 			}
 
 			s.Version = 1
-			s.LastBackups = make(map[string]BackupState)
+			s.LastBackups = make(map[string]*BackupState)
 			return nil
 		}
 

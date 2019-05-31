@@ -66,3 +66,4 @@ bananactl
 
 # certs & keys
 /security
+agent/state.json

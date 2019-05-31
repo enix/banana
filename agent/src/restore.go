@@ -52,8 +52,8 @@ func (cmd *restoreCmd) execute(config *models.Config) error {
 		sendMessageToMonitor("restore_failed", config, cmd, string(logs))
 		return err
 	}
-	sendMessageToMonitor("restore_done", config, cmd, string(logs))
 
+	sendMessageToMonitor("restore_done", config, cmd, string(logs))
 	return err
 }
 
