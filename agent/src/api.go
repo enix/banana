@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
-	"log"
 	"os"
 	"strings"
 	"time"
@@ -42,6 +41,15 @@ func sendToMonitor(config *models.Config, message *models.AgentMessage) error {
 
 // sendMessageToMonitor : Convenience function to create and send a message
 func sendMessageToMonitor(typ string, config *models.Config, cmd command, logs string) {
+	if config.MonitorURL == "" {
+		klog.Fatal("monitor URL not set, set using -m")
+	}
+
+	rawCommand := map[string]interface{}{}
+	if cmd != nil {
+		rawCommand = cmd.jsonMap()
+	}
+
 	msg := &models.AgentMessage{
 		Message: models.Message{
 			Version:   1,
@@ -49,13 +57,13 @@ func sendMessageToMonitor(typ string, config *models.Config, cmd command, logs s
 			Type:      typ,
 		},
 		Config:  *config,
-		Command: cmd.jsonMap(),
+		Command: rawCommand,
 		Logs:    logs,
 	}
 
 	msg.Signature, _ = msg.Config.Sign(services.Credentials.PrivateKey)
 	err := sendToMonitor(config, msg)
 	if err != nil {
-		log.Fatal(err)
+		klog.Fatal(err)
 	}
 }

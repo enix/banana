@@ -27,6 +27,10 @@ func newCommand(args *launchArgs) (command, error) {
 		return newRestoreCmd(args)
 	case "routine":
 		return newRoutineCmd(args)
+	case "init":
+		return newInitCmd(args)
+	case "ping":
+		return newPingCmd(args)
 	default:
 		return nil, errors.New(args.Values[0] + ": no such command")
 	}

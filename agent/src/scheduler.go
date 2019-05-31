@@ -13,12 +13,12 @@ import (
 // routineCmd : Command implementation for 'daemon'
 type routineCmd struct{}
 
-// newRoutineCmd : Creates backup command from command line args
+// newRoutineCmd : Creates routine command from command line args
 func newRoutineCmd(*launchArgs) (*routineCmd, error) {
 	return &routineCmd{}, nil
 }
 
-// execute : Start the backup using specified backend
+// execute : Start the routine using specified backend
 func (cmd *routineCmd) execute(config *models.Config) error {
 	sendMessageToMonitor("routine_start", config, cmd, "")
 	klog.Info("starting banana routine")

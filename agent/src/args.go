@@ -18,7 +18,7 @@ type launchArgs struct {
 // loadArguments : Load args from os.Args to a LaunchArgs struct
 func loadArguments() *launchArgs {
 	args := launchArgs{
-		ConfigPath: "./banana.json",
+		ConfigPath: "/etc/banana/banana.json",
 	}
 
 	getopt.FlagLong(&args.DisplayHelp, "help", 'h', "display this message")

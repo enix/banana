@@ -15,7 +15,7 @@ type restoreCmd struct {
 	TargetDirectory string `json:"target_directory"`
 }
 
-// newRestoreCmd : Creates backup command from command line args
+// newRestoreCmd : Creates restore command from command line args
 func newRestoreCmd(args *launchArgs) (*restoreCmd, error) {
 	if len(args.Values) < 2 {
 		return nil, errors.New("no backup name specified")
@@ -34,7 +34,7 @@ func newRestoreCmd(args *launchArgs) (*restoreCmd, error) {
 	}, nil
 }
 
-// execute : Start the backup using specified backend
+// execute : Start the restore using specified backend
 func (cmd *restoreCmd) execute(config *models.Config) error {
 	backend, err := newBackupBackend(config.Backend)
 	if err != nil {

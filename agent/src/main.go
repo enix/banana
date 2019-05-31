@@ -4,7 +4,6 @@ import (
 	"crypto/x509"
 	"encoding/pem"
 	"flag"
-	"fmt"
 	"io/ioutil"
 	"os"
 
@@ -13,25 +12,18 @@ import (
 	"k8s.io/klog"
 )
 
-func logFatal(err error) {
-	fmt.Fprintf(os.Stderr, "%s\n", fmt.Sprintf("error: %s", err.Error()))
-	os.Exit(1)
-}
-
 func assert(err error) {
 	if err != nil {
-		logFatal(err)
+		klog.Fatal(err)
 	}
 }
 
-func loadCredentialsToEnv(config *services.VaultConfig) {
-	vault, err := services.NewVaultClient(config)
+func loadCredentialsToEnv() {
+	accessToken, err := services.Vault.GetStorageAccessToken()
 	assert(err)
-	accessToken, err := vault.GetStorageAccessToken()
+	secretToken, err := services.Vault.GetStorageSecretToken()
 	assert(err)
-	secretToken, err := vault.GetStorageSecretToken()
-	assert(err)
-	passphrase, err := vault.GetStoragePassphrase()
+	passphrase, err := services.Vault.GetStoragePassphrase()
 	assert(err)
 
 	os.Setenv("AWS_ACCESS_KEY_ID", accessToken)
@@ -84,16 +76,27 @@ func main() {
 
 	config := &models.Config{}
 	config.LoadDefaults()
+	if args.Values[0] == "init" {
+		config.Backend = ""
+		config.BucketName = ""
+		config.TTL = 0
+	}
 	config.LoadFromFile(args.ConfigPath)
 	err := config.LoadFromEnv()
 	assert(err)
 	err = config.LoadFromArgs(&args.Flags)
 	assert(err)
+
 	cmd, err := newCommand(args)
 	assert(err)
 
-	loadCredentialsToMem(config)
-	loadCredentialsToEnv(&config.Vault)
+	err = services.OpenVaultConnection(&config.Vault)
+	assert(err)
+	if args.Values[0] != "init" {
+		loadCredentialsToMem(config)
+		loadCredentialsToEnv()
+	}
+
 	err = cmd.execute(config)
 	assert(err)
 	unloadCredentialsFromEnv()
