@@ -6,68 +6,79 @@ https://confluence.enix.org/pages/viewpage.action?pageId=31621154
 
 ## Setting up a working dev workspace
 
-#### Create your .env file
+### 1. Setting up the monitor
 
-Example `.env`:
-
-```ini
-API_ENDPOINT=https://object-storage.r1.nxs.enix.io
-REDIS_ADDR=redis:6379
-REDIS_PASSWD=
-VAULT_ADDR=http://vault:7777
-VAULT_TOKEN=myroot
-```
+Thoose steps should be executed while ssh'd into the monitor node.
 
 #### Start the stack
 
 ```bash
+git clone -b develop https://gitlab.enix.io/products/banana.git
+cd banana
 docker-compose up -d
 ```
 
-#### Generate the certs
+#### Generate the certs and setup Vault
 
-There's a script that can do that for you. If you're lazy you can one-shot the config by adding the `--auto` switch.
-
-```bash
-export BANANA_COMPANY_NAME="bananagency"
-./scripts/init_dev.sh $BANANA_COMPANY_NAME --auto
-```
-
-#### Trust the root CA
+There's a script that can do most of the work for you. It should not be used in production.
+This script will setup the local Vault, which is listening on port 7777.
 
 ```bash
-open security/ca/ca.pem
+./scripts/init.sh
 ```
 
-Select 'Always trust' in keychain or the page won't load!
+Put the storage credentials and backup encryption passphrase into Vault:
+
+```bash
+export VAULT_ADDR="http://localhost:7777"
+export VAULT_TOKEN="myroot"
+
+vault kv put secret/banana \
+  AWS_ACCESS_KEY_ID=<id> \
+  AWS_SECRET_ACCESS_KEY=<token> \
+  PASSPHRASE=mySuperPassphrase
+```
+
+ID and token can be found using (on your local machine) :
+
+```bash
+openstack ec2 credentials list
+```
+
+### 2. Setting up your local machine
+
+#### Get your client certificate from Vault
+
+```bash
+vault write users-pki/issue/enix common_name=<your username>
+```
+
+This certificate will grant you access to the banana UI.
 
 #### Add hosts to /etc/hosts
 
-Add the following line to `/etc/hosts`
+Add `banana.enix.io` pointing to the monitor IP to your `/etc/hosts` to be able to reach the UI.
 
-```
-127.0.0.1	banana.enix.io api.banana.enix.io
-```
+#### Trust the root CA (optional)
 
-#### Issue and trust a client cert for your user
+You may need to trust the TLS root CA (at least it's required on macOS). The PEM file to trust is on the monitor node : `security/ca/ca.pem`.
 
-```bash
-./scripts/init_user.sh $BANANA_COMPANY_NAME "king.kong"
-open security/out/king.kong.p12
-```
+For macOS : Select 'Always trust' in keychain or the page won't load.
 
-#### Issue a client cert for your agent
+### 3. Setup the agent on your nodes
 
-```bash
-./scripts/init_agent.sh $BANANA_COMPANY_NAME "the.agent"
-```
+Thoose steps should be executed while ssh'd into the nodes that should be backed up.
 
-#### Test your setup
-
-- For user access, open your browser on [https://banana.enix.io](https://banana.enix.io)
-- For agent access:
+#### Install bananactl
 
 ```bash
-cd agent
-go run ./src backup test42 /etc
+# this is ofc temporary as we don't have setup CD yet
+curl -s achaloin.com/bananactl > /usr/bin/bananactl
+chmod +x /usr/bin/bananactl
+```
+
+#### Register your node
+
+```bash
+bananactl init <company name> <agent name>
 ```
