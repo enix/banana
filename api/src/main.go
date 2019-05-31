@@ -22,9 +22,7 @@ func main() {
 	flag.Set("v", "1")
 	flag.Parse()
 
-	err := services.OpenVaultConnection()
-	assert(err)
-	err = services.OpenDatabaseConnection()
+	err := services.OpenDatabaseConnection()
 	assert(err)
 	router, err := routes.InitializeRouter()
 	assert(err)

@@ -26,17 +26,17 @@ type ScheduledBackupConfig struct {
 
 // Config : Contains full confugration will be used to execute commands
 type Config struct {
-	MonitorURL       string                           `json:"monitor_url"`
-	Backend          string                           `json:"backend"`
-	StatePath        string                           `json:"state_path"`
-	PrivKeyPath      string                           `json:"private_key_path"`
-	CertPath         string                           `json:"client_cert_path"`
-	CaCertPath       string                           `json:"ca_cert_path"`
-	BucketName       string                           `json:"bucket"`
-	StorageHost      string                           `json:"storage_host"`
-	TTL              int64                            `json:"ttl"`
-	Vault            services.VaultConfig             `json:"vault"`
-	ScheduledBackups map[string]ScheduledBackupConfig `json:"schedule"`
+	MonitorURL       string                           `json:"monitor_url,omitempty"`
+	Backend          string                           `json:"backend,omitempty"`
+	StatePath        string                           `json:"state_path,omitempty"`
+	PrivKeyPath      string                           `json:"private_key_path,omitempty"`
+	CertPath         string                           `json:"client_cert_path,omitempty"`
+	CaCertPath       string                           `json:"ca_cert_path,omitempty"`
+	BucketName       string                           `json:"bucket,omitempty"`
+	StorageHost      string                           `json:"storage_host,omitempty"`
+	TTL              int64                            `json:"ttl,omitempty"`
+	Vault            services.VaultConfig             `json:"vault,omitempty"`
+	ScheduledBackups map[string]ScheduledBackupConfig `json:"schedule,omitempty"`
 }
 
 // CliConfig : Extended config struct for stuff that can be passed from cli only

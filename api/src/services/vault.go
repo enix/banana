@@ -3,7 +3,6 @@ package services
 import (
 	"errors"
 	"fmt"
-	"os"
 
 	vault "github.com/hashicorp/vault/api"
 )
@@ -23,20 +22,6 @@ type VaultConfig struct {
 	Addr       string `json:"address"`
 	Token      string `json:"token"`
 	SecretPath string `json:"secret_path"`
-}
-
-// NewVaultClient : Create and authenticate a vault client
-func NewVaultClient(config *VaultConfig) (*VaultClient, error) {
-	client, err := vault.NewClient(&vault.Config{Address: config.Addr})
-	if err != nil {
-		return nil, err
-	}
-
-	client.SetToken(config.Token)
-	return &VaultClient{
-		Client: client,
-		Path:   config.SecretPath,
-	}, nil
 }
 
 // FetchSecret : Retreive a secret map from the current set path
@@ -97,16 +82,28 @@ func (vault *VaultClient) GetStoragePassphrase() (string, error) {
 	return vault.GetStorageAccess("PASSPHRASE")
 }
 
+// newVaultClient : Create and authenticate a vault client
+func newVaultClient(config *VaultConfig) (*VaultClient, error) {
+	if config.Addr == "" || config.Token == "" {
+		return nil, errors.New("missing vault address or token")
+	}
+
+	client, err := vault.NewClient(&vault.Config{Address: config.Addr})
+	if err != nil {
+		return nil, err
+	}
+
+	client.SetToken(config.Token)
+	return &VaultClient{
+		Client: client,
+		Path:   config.SecretPath,
+	}, nil
+}
+
 // OpenVaultConnection : Etablish connection with vault
-//											 Other calls will crash if used before this
-func OpenVaultConnection() error {
+// Other calls will crash if used before this
+func OpenVaultConnection(config *VaultConfig) error {
 	var err error
-
-	Vault, err = NewVaultClient(&VaultConfig{
-		Addr:       os.Getenv("VAULT_ADDR"),
-		Token:      os.Getenv("VAULT_TOKEN"),
-		SecretPath: "banana",
-	})
-
+	Vault, err = newVaultClient(config)
 	return err
 }
