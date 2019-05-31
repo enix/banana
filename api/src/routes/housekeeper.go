@@ -55,7 +55,7 @@ func handleHouseKeeperConnection(context *gin.Context) {
 
 func sendHouseKeeperEvent(msg *models.AgentMessage, issuer *requestIssuer) {
 	event := models.HouseKeeperMessage{
-		Info:      msg.Info,
+		Message:   msg.Message,
 		Config:    msg.Config,
 		Command:   msg.Command,
 		Signature: msg.Signature,

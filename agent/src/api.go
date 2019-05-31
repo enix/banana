@@ -19,9 +19,8 @@ func sendToMonitor(config *models.Config, message *models.AgentMessage) error {
 	fmt.Print("waiting for monitor... ")
 
 	httpClient := services.GetHTTPClient()
-	dn := services.Credentials.Cert.Subject.ToRDNSequence().String()
-	oname, _ := services.GetDNFieldValue(dn, "O")
-	cname, _ := services.GetDNFieldValue(dn, "CN")
+	oname := services.Credentials.Cert.Subject.Organization[0]
+	cname := services.Credentials.Cert.Subject.CommonName
 	message.SenderID = fmt.Sprintf("%s:%s", oname, cname)
 
 	url := fmt.Sprintf("%s/agents/notify", config.MonitorURL)
@@ -34,7 +33,8 @@ func sendToMonitor(config *models.Config, message *models.AgentMessage) error {
 
 	fmt.Println(res.Status)
 	if res.StatusCode != 200 {
-		klog.Error(ioutil.ReadAll(res.Body))
+		err, _ := ioutil.ReadAll(res.Body)
+		klog.Error(string(err))
 		os.Exit(1)
 	}
 	return nil
