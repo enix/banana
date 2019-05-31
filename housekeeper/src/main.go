@@ -17,19 +17,19 @@ func assert(err error) {
 }
 
 func loadCredentialsToMem() {
-	privkeyBytes, err := ioutil.ReadFile("../../security/out/the.agent.key")
+	privkeyBytes, err := ioutil.ReadFile("../security/out/the.agent.key")
 	assert(err)
 	privkeyBlock, _ := pem.Decode([]byte(privkeyBytes))
 	privkey, err := x509.ParsePKCS1PrivateKey(privkeyBlock.Bytes)
 	assert(err)
 
-	certBytes, err := ioutil.ReadFile("../../security/out/the.agent.pem")
+	certBytes, err := ioutil.ReadFile("../security/out/the.agent.pem")
 	assert(err)
 	certBlock, _ := pem.Decode([]byte(certBytes))
 	cert, err := x509.ParseCertificate(certBlock.Bytes)
 	assert(err)
 
-	cacertBytes, err := ioutil.ReadFile("../../security/ca/ca.pem")
+	cacertBytes, err := ioutil.ReadFile("../security/ca/ca.pem")
 	assert(err)
 	cacertBlock, _ := pem.Decode([]byte(cacertBytes))
 	cacert, err := x509.ParseCertificate(cacertBlock.Bytes)
