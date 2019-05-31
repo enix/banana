@@ -2,7 +2,7 @@ package main
 
 import (
 	"crypto/tls"
-	"encoding/json"
+	"encoding/pem"
 	"fmt"
 	"net/url"
 	"time"
@@ -14,7 +14,7 @@ import (
 	"k8s.io/klog"
 )
 
-var pending = make(map[string]*models.HouseKeeperMessage)
+var pending = make(map[int64]*models.HouseKeeperMessage)
 
 func watchPendingBackups() {
 	for {
@@ -26,7 +26,7 @@ func watchPendingBackups() {
 		klog.Info("checking for expired TTLs...")
 		now := time.Now().UTC().Unix()
 		for key, value := range pending {
-			if now-value.Info.Timestamp > value.Config.TTL {
+			if now-value.Timestamp > value.Config.TTL {
 				removeFromStorage(value)
 				delete(pending, key)
 				klog.Infof("%d remaining backup(s)", len(pending))
@@ -54,25 +54,6 @@ func openSocketConnection() *websocket.Conn {
 	return conn
 }
 
-func synchroniseBackups() {
-	dn := services.Credentials.Cert.Subject.ToRDNSequence().String()
-	org, err := services.GetDNFieldValue(dn, "O")
-	assert(err)
-	url := fmt.Sprintf("%s/agents/%s/backups", "https://api.banana.enix.io", org)
-	httpClient := services.GetHTTPClient()
-	res, err := httpClient.Get(url)
-	assert(err)
-	defer res.Body.Close()
-
-	messages := make([]models.HouseKeeperMessage, 0)
-	err = json.Unmarshal(services.ReadBytesFromStream(res.Body), &messages)
-	assert(err)
-
-	for index := range messages {
-		handleMessage(&messages[index])
-	}
-}
-
 func listenForMessages(conn *websocket.Conn) {
 	msg := models.HouseKeeperMessage{}
 
@@ -96,13 +77,19 @@ func listenForMessages(conn *websocket.Conn) {
 }
 
 func handleMessage(msg *models.HouseKeeperMessage) error {
-	// pemCert := pem.EncodeToMemory(&pem.Block{Type: "CERTIFICATE", Bytes: []byte(msg.Signature)})
-	// err := msg.Config.VerifySignature(string(pemCert), msg.Signature)
-	// if err != nil {
-	// 	return err
-	// }
-	pending[msg.Signature] = msg
-	klog.Infof("new backup added to pending, TTL: %d", msg.Config.TTL)
+	pemCert := pem.EncodeToMemory(&pem.Block{Type: "CERTIFICATE", Bytes: []byte(services.Credentials.Cert.Raw)})
+	err := msg.Config.VerifySignature(string(pemCert), msg.Signature)
+	if err != nil {
+		klog.Error(err)
+	}
+
+	if msg.Type == "backup_done" {
+		pending[msg.Timestamp] = msg
+		klog.Infof("new backup added to pending, TTL: %d", msg.Config.TTL)
+	} else if msg.Type == "routine_start" {
+		fmt.Println(msg.Config)
+	}
+
 	return nil
 }
 

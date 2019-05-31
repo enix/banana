@@ -3,6 +3,7 @@ package main
 import (
 	"crypto/x509"
 	"encoding/pem"
+	"flag"
 	"io/ioutil"
 
 	"k8s.io/klog"
@@ -43,6 +44,10 @@ func loadCredentialsToMem() {
 }
 
 func main() {
+	klog.InitFlags(nil)
+	flag.Set("v", "1")
+	flag.Parse()
+
 	err := services.OpenVaultConnection()
 	assert(err)
 	err = services.OpenStorageConnection()
