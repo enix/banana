@@ -32,6 +32,7 @@ class Agent extends Component {
     logsVisible: false,
     restoreVisible: false,
     actionsStartVisible: false,
+    routinesVisible: false,
   }
 
   columns = [
@@ -113,12 +114,20 @@ class Agent extends Component {
 
   toggleActionsStart = actionsStartVisible => this.setState({ actionsStartVisible });
 
+  toggleRoutines = routinesVisible => this.setState({ routinesVisible });
+
   getAgentMessages = () => {
-    if (this.state.actionsStartVisible) {
-      return this.props.agentMessages;
+    let actions = this.props.agentMessages;
+
+    if (!this.state.actionsStartVisible) {
+      actions = actions.filter(message => !/.*start.*/gi.test(message.info.type));
     }
 
-    return this.props.agentMessages.filter(message => !/.*start.*/.test(message.info.type));
+    if (!this.state.routinesVisible) {
+      actions = actions.filter(message => !/.*routine.*/gi.test(message.info.type));
+    }
+
+    return actions;
   };
 
   componentDidMount() {
@@ -141,6 +150,9 @@ class Agent extends Component {
           <Col style={{ textAlign: 'right' }}>
             Display actions start
             <Switch onChange={this.toggleActionsStart} style={{ marginLeft: 10 }} />
+            <Divider type='vertical' />
+            Display routines
+            <Switch onChange={this.toggleRoutines} style={{ marginLeft: 10 }} />
           </Col>
         </Row>
         {!this.props.agentMessages ? <Loading /> : (
