@@ -26,7 +26,7 @@ class Agents extends Component {
       dataIndex: 'last_message',
       key: 'last_message',
       render: msg => (
-        <Tag color={getTagColor(msg.info.type)} key={msg.key}>{formatSnakeCase(msg.info.type)}</Tag>
+        <Tag color={getTagColor(msg.type)} key={msg.key}>{formatSnakeCase(msg.type)}</Tag>
       ),
     },
   ]

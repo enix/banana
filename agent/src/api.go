@@ -22,7 +22,7 @@ func sendToMonitor(config *models.Config, message *models.AgentMessage) error {
 	dn := services.Credentials.Cert.Subject.ToRDNSequence().String()
 	oname, _ := services.GetDNFieldValue(dn, "O")
 	cname, _ := services.GetDNFieldValue(dn, "CN")
-	message.Info.SenderID = fmt.Sprintf("%s:%s", oname, cname)
+	message.SenderID = fmt.Sprintf("%s:%s", oname, cname)
 
 	url := fmt.Sprintf("%s/agents/notify", config.MonitorURL)
 	rawMessage, _ := json.Marshal(message)
@@ -43,7 +43,7 @@ func sendToMonitor(config *models.Config, message *models.AgentMessage) error {
 // sendMessageToMonitor : Convenience function to create and send a message
 func sendMessageToMonitor(typ string, config *models.Config, cmd command, logs string) {
 	msg := &models.AgentMessage{
-		Info: models.Message{
+		Message: models.Message{
 			Version:   1,
 			Timestamp: time.Now().UnixNano() / int64(time.Millisecond),
 			Type:      typ,

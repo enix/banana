@@ -38,7 +38,7 @@ class Agent extends Component {
   columns = [
     {
       title: 'Type',
-      dataIndex: 'info.type',
+      dataIndex: 'type',
       key: 'type',
       render: (type) => (
         <Tag color={getTagColor(type)} key={type}>
@@ -48,7 +48,7 @@ class Agent extends Component {
     },
     {
       title: `Time (${localStorage.getItem('dateFormat') || 'UTC'})`,
-      dataIndex: 'info.timestamp',
+      dataIndex: 'timestamp',
       key: 'timestamp',
       render: formatDate,
     },
@@ -84,7 +84,7 @@ class Agent extends Component {
             </span>
           )}
           
-          {item.info.type === 'backup_done' && (
+          {item.type === 'backup_done' && (
             <span>
               <Divider type='vertical' />
               <a
@@ -120,11 +120,11 @@ class Agent extends Component {
     let actions = this.props.agentMessages;
 
     if (!this.state.actionsStartVisible) {
-      actions = actions.filter(message => !/.*start.*/gi.test(message.info.type));
+      actions = actions.filter(message => !/.*start.*/gi.test(message.type));
     }
 
     if (!this.state.routinesVisible) {
-      actions = actions.filter(message => !/.*routine.*/gi.test(message.info.type));
+      actions = actions.filter(message => !/.*routine.*/gi.test(message.type));
     }
 
     return actions;

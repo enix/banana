@@ -35,7 +35,7 @@ func handleHouseKeeperConnection(context *gin.Context) {
 			messages, _ := getLastMessages(key)
 			for _, msg := range messages {
 				typedMsg := msg.(*models.AgentMessage)
-				if typedMsg.Info.Type == "backup_done" {
+				if typedMsg.Type == "backup_done" {
 					sendHouseKeeperEvent(typedMsg, issuer)
 				}
 			}

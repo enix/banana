@@ -21,12 +21,12 @@ func receiveAgentMesssage(context *gin.Context, issuer *requestIssuer) (int, int
 		return http.StatusBadRequest, err
 	}
 	issuerID := fmt.Sprintf("%s:%s", issuer.Organization, issuer.CommonName)
-	if msg.Info.SenderID != issuerID {
-		return http.StatusForbidden, fmt.Errorf("sender_id / certificate DN mismatch : [%s] vs [%s]", msg.Info.SenderID, issuerID)
+	if msg.SenderID != issuerID {
+		return http.StatusForbidden, fmt.Errorf("sender_id / certificate DN mismatch : [%s] vs [%s]", msg.SenderID, issuerID)
 	}
 
-	msg.Info.SenderID = fmt.Sprintf("%s:%s", issuer.Organization, issuer.CommonName)
-	services.DbZAdd(msg.Info.GetFullKey(), msg.Info.GetSortedSetScore(), msg)
+	msg.SenderID = fmt.Sprintf("%s:%s", issuer.Organization, issuer.CommonName)
+	services.DbZAdd(msg.GetFullKey(), msg.GetSortedSetScore(), msg)
 
 	agent := &models.Agent{
 		Organization: issuer.Organization,
@@ -35,7 +35,7 @@ func receiveAgentMesssage(context *gin.Context, issuer *requestIssuer) (int, int
 	}
 	services.DbSet(agent.GetFullKeyFor("info"), agent)
 
-	if msg.Info.Type == "backup_done" {
+	if msg.Type == "backup_done" || msg.Type == "routine_start" {
 		sendHouseKeeperEvent(&msg, issuer)
 	}
 
@@ -68,7 +68,7 @@ func serveAgentBackups(context *gin.Context, issuer *requestIssuer) (int, interf
 
 		for _, msg := range messages {
 			typedMsg := msg.(*models.AgentMessage)
-			if typedMsg.Info.Type == "backup_done" {
+			if typedMsg.Type == "backup_done" {
 				backupMsg = append(backupMsg, typedMsg)
 			}
 		}

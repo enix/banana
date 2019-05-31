@@ -14,7 +14,7 @@ type Message struct {
 
 // AgentMessage : Representation of an agent's notification
 type AgentMessage struct {
-	Info      Message                `json:"info"`
+	Message
 	Config    Config                 `json:"config"`
 	Command   map[string]interface{} `json:"command"`
 	Logs      string                 `json:"logs"`
@@ -23,7 +23,7 @@ type AgentMessage struct {
 
 // HouseKeeperMessage : Representation of a housekeeper event
 type HouseKeeperMessage struct {
-	Info      Message                `json:"info"`
+	Message
 	Config    Config                 `json:"config"`
 	Command   map[string]interface{} `json:"command"`
 	Signature string                 `json:"signature,omitempty"`
