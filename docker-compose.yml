@@ -31,14 +31,18 @@ services:
 
   vault:
     image: vault:latest
-    ports:
-      - 7777:7777
+    command:
+      - sh
+      - -c
+      - mkdir -p /data && chown vault:vault /data && vault server -config /config/vault.hcl
     restart: unless-stopped
+    ports:
+      - 7777:8200
     cap_add:
       - IPC_LOCK
-    environment:
-      - VAULT_DEV_LISTEN_ADDRESS=0.0.0.0:7777
-      - VAULT_DEV_ROOT_TOKEN_ID=myroot
+    volumes:
+      - ./config/vault:/config
+      - ./config/tls:/tls
 
   proxy:
     image: nginx:latest
@@ -46,8 +50,9 @@ services:
       - 443:443
     restart: unless-stopped
     volumes:
-      - ./proxy:/etc/nginx/conf.d
-      - ./security:/security
+      - ./config/nginx:/etc/nginx/conf.d
+      - ./config/tls:/tls
+      - ./security/ca/trusted-ca.pem:/trusted-ca.pem
 
   redis:
     image: redis:5.0
