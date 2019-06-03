@@ -1,0 +1,62 @@
+#! /usr/bin/env python3
+
+import argparse
+import hvac
+import os
+
+
+def init_arguments():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('command', help='init | create')
+    parser.add_argument(
+        '--cacert',
+        help='path to CA certificate for init',
+        default='./ca.pem',
+    )
+    parser.add_argument(
+        '--privkey',
+        help='path to CA certificate for init',
+        default='./ca.key',
+    )
+    parser.add_argument(
+        '--skip-tls-verify',
+        help='ignore TLS errors',
+        action='store_true'
+    )
+    parser.add_argument(
+        '--pki',
+        help='root banana pki name',
+        default='banana-pki',
+    )
+    return parser.parse_args()
+
+
+def init(args, vault):
+    vault.sys.enable_secrets_engine('pki', path=args.pki)
+    cacert = open(args.cacert, 'r').read()
+    privkey = open(args.privkey, 'r').read()
+    vault.secrets.pki.submit_ca_information(
+        cacert + privkey,
+        mount_point=args.pki
+    )
+    vault.secrets.pki.create_or_update_role('client', {
+        'allow_any_name': 'true',
+    }, mount_point=args.pki)
+
+
+args = init_arguments()
+if args.command not in ['init', 'create']:
+    print('invalid command', args.command)
+    exit(1)
+
+verify = False if args.skip_tls_verify else True
+vault = hvac.Client(
+    url=os.getenv('VAULT_ADDR'),
+    token=os.getenv('VAULT_TOKEN'),
+    verify=verify,
+)
+if not vault.is_authenticated():
+    print('invalid authentication data')
+    exit(1)
+
+globals()[args.command](args, vault)
