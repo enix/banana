@@ -7,17 +7,27 @@ import os
 
 def init_arguments():
     parser = argparse.ArgumentParser()
-    parser.add_argument('command', help='init | create')
-    parser.add_argument(
-        '--cacert',
-        help='path to CA certificate for init',
-        default='./ca.pem',
+    subparsers = parser.add_subparsers(title='subcommands')
+
+    parser_create = subparsers.add_parser(
+        'create',
+        help='create a client|user|agent'
     )
-    parser.add_argument(
-        '--privkey',
-        help='path to CA certificate for init',
-        default='./ca.key',
+    parser_create.add_argument(
+        'type',
+        help='client|agent|user',
     )
+    parser_create.add_argument(
+        'name',
+        nargs='?',
+        help='name of the client|user to create',
+    )
+    parser_create.add_argument(
+        '--client',
+        help='client in which create the user|agent',
+    )
+    parser_create.set_defaults(func=create)
+
     parser.add_argument(
         '--skip-tls-verify',
         help='ignore TLS errors',
@@ -25,38 +35,115 @@ def init_arguments():
     )
     parser.add_argument(
         '--pki',
-        help='root banana pki name',
+        help='root banana pki mount point',
         default='banana-pki',
     )
+
     return parser.parse_args()
 
 
-def init(args, vault):
-    vault.sys.enable_secrets_engine('pki', path=args.pki)
-    cacert = open(args.cacert, 'r').read()
-    privkey = open(args.privkey, 'r').read()
-    vault.secrets.pki.submit_ca_information(
-        cacert + privkey,
-        mount_point=args.pki
+def get_vault_client(args):
+    verify = False if args.skip_tls_verify else True
+    vault = hvac.Client(
+        url=os.getenv('VAULT_ADDR'),
+        token=os.getenv('VAULT_TOKEN'),
+        verify=verify,
     )
-    vault.secrets.pki.create_or_update_role('client', {
+    return vault
+
+
+def create_cert(cn, pki, role):
+    vault = get_vault_client(args)
+    res = vault.secrets.pki.generate_certificate(
+        name=role,
+        common_name=cn,
+        mount_point=pki,
+        extra_params={
+            'ttl': 30 * 24 * 60 * 60,
+        },
+    )
+    cert = res.json()['data']['certificate']
+    key = res.json()['data']['private_key']
+    return cert, key
+
+
+def generate_agent_install_policy(args):
+    return '''
+        path "{}-{}/issue/agent" {{
+            capabilities = ["create"]
+        }}
+    '''.format(args.name, args.pki)
+
+
+def create_client(args):
+    vault = get_vault_client(args)
+    client_pki = '{}-{}'.format(args.name, args.pki)
+    vault.sys.enable_secrets_engine('pki', path=client_pki)
+    vault.secrets.pki.generate_root(
+        type='internal',
+        common_name=args.name,
+        mount_point=client_pki,
+        extra_params={
+            'ttl': 365 * 24 * 60 * 60,
+        },
+    )
+    vault.secrets.pki.create_or_update_role('user', {
         'allow_any_name': 'true',
-    }, mount_point=args.pki)
+        'organization': args.name,
+        'ou': 'user',
+    }, mount_point=client_pki)
+    vault.secrets.pki.create_or_update_role('agent', {
+        'allow_any_name': 'true',
+        'organization': args.name,
+        'ou': 'agent',
+    }, mount_point=client_pki)
+    policy = generate_agent_install_policy(args)
+    vault.sys.create_or_update_policy(
+        name='{}-agent-creation'.format(args.name),
+        policy=policy,
+    )
+
+
+def create_user(args):
+    client_pki = '{}-{}'.format(args.client, args.pki)
+    cert, key = create_cert(args.name, client_pki, args.type)
+    open(args.name + '.pem', 'w').write(cert)
+    open(args.name + '.key', 'w').write(key)
+
+
+def create_agent(args):
+    vault = get_vault_client(args)
+    token = vault.create_token(
+        policies=['{}-agent-creation'.format(args.client)],
+        lease='1h',
+    )
+
+    print('Join your new agent using:\n')
+    print('bananactl --vault-addr={} --vault-token={} init {} <agent name>'.format(
+        os.getenv('VAULT_ADDR'),
+        token['auth']['client_token'],
+        args.client,
+    ))
+
+
+def create(args):
+    if args.type == 'client':
+        create_client(args)
+    elif args.type in ['user', 'agent']:
+        if not args.client:
+            print('please specify a client using --client')
+            exit(1)
+        if args.type == 'user':
+            create_user(args)
+        else:
+            create_agent(args)
+    else:
+        print('type must be one of agent|user|client')
+        exit(1)
 
 
 args = init_arguments()
-if args.command not in ['init', 'create']:
-    print('invalid command', args.command)
-    exit(1)
-
-verify = False if args.skip_tls_verify else True
-vault = hvac.Client(
-    url=os.getenv('VAULT_ADDR'),
-    token=os.getenv('VAULT_TOKEN'),
-    verify=verify,
-)
-if not vault.is_authenticated():
+if not get_vault_client(args).is_authenticated():
     print('invalid authentication data')
     exit(1)
-
-globals()[args.command](args, vault)
+args.func(args)
