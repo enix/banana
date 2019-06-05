@@ -58,9 +58,6 @@ def create_cert(cn, pki, role):
         name=role,
         common_name=cn,
         mount_point=pki,
-        extra_params={
-            'ttl': 30 * 24 * 60 * 60,
-        },
     )
     cert = res.json()['data']['certificate']
     key = res.json()['data']['private_key']
@@ -78,24 +75,28 @@ def generate_agent_install_policy(args):
 def create_client(args):
     vault = get_vault_client(args)
     client_pki = '{}-{}'.format(args.name, args.pki)
-    vault.sys.enable_secrets_engine('pki', path=client_pki)
+    vault.sys.enable_secrets_engine('pki', path=client_pki, config={
+        'max_lease_ttl': '43800h',
+    })
     vault.secrets.pki.generate_root(
         type='internal',
         common_name=args.name,
         mount_point=client_pki,
         extra_params={
-            'ttl': 5 * 365 * 24 * 60 * 60,
+            'ttl': '43800h',
         },
     )
     vault.secrets.pki.create_or_update_role('user', {
         'allow_any_name': 'true',
         'organization': args.name,
         'ou': 'user',
+        'default_lease_ttl': '17520h',
     }, mount_point=client_pki)
     vault.secrets.pki.create_or_update_role('agent', {
         'allow_any_name': 'true',
         'organization': args.name,
         'ou': 'agent',
+        'default_lease_ttl': '17520h',
     }, mount_point=client_pki)
     policy = generate_agent_install_policy(args)
     vault.sys.create_or_update_policy(
