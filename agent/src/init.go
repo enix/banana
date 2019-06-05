@@ -33,6 +33,11 @@ func newInitCmd(args *launchArgs) (*initCmd, error) {
 
 // execute : Start the init using specified backend
 func (cmd *initCmd) execute(config *models.Config) error {
+	err := os.Mkdir("/etc/banana", 00755)
+	if err != nil && os.IsPermission(err) {
+		return err
+	}
+
 	services.Vault.Client.SetToken(cmd.Token)
 	out, err := services.Vault.Client.Logical().Write(
 		fmt.Sprintf("%s/%s-agents/issue/default", config.Vault.RootPath, cmd.Organization),
@@ -48,7 +53,6 @@ func (cmd *initCmd) execute(config *models.Config) error {
 	privkey, _ := out.Data["private_key"].(string)
 	configRaw, _ := json.MarshalIndent(config, "", "  ")
 
-	os.Mkdir("/etc/banana", 00755)
 	err = ioutil.WriteFile(config.CertPath, []byte(cert), 00644)
 	assert(err)
 	err = ioutil.WriteFile(config.PrivKeyPath, []byte(privkey), 00644)
