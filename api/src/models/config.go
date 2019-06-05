@@ -26,7 +26,6 @@ type ScheduledBackupConfig struct {
 
 // Config : Contains full confugration will be used to execute commands
 type Config struct {
-	// CaCertPath       string                           `json:"ca_cert_path,omitempty"`
 	MonitorURL       string                           `json:"monitor_url,omitempty"`
 	Backend          string                           `json:"backend,omitempty"`
 	StatePath        string                           `json:"state_path,omitempty"`
@@ -53,7 +52,6 @@ func (config *Config) LoadDefaults() {
 		StatePath:   "/etc/banana/state.json",
 		PrivKeyPath: "/etc/banana/privkey.pem",
 		CertPath:    "/etc/banana/cert.pem",
-		// CaCertPath:  "",
 		BucketName:  "backup-bucket",
 		StorageHost: "object-storage.r1.nxs.enix.io",
 		TTL:         3600,
@@ -91,7 +89,6 @@ func (config *Config) LoadFromEnv() error {
 		StatePath:   os.Getenv("BANANA_STATE_PATH"),
 		PrivKeyPath: os.Getenv("BANANA_PRIVATE_KEY_PATH"),
 		CertPath:    os.Getenv("BANANA_CLIENT_CERT_PATH"),
-		// CaCertPath:  os.Getenv("BANANA_CA_CERT_PATH"),
 		BucketName:  os.Getenv("BANANA_BUCKET_NAME"),
 		StorageHost: os.Getenv("BANANA_STORAGE_HOST"),
 		Vault: services.VaultConfig{

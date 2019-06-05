@@ -46,7 +46,6 @@ func (cmd *initCmd) execute(config *models.Config) error {
 
 	cert, _ := out.Data["certificate"].(string)
 	privkey, _ := out.Data["private_key"].(string)
-	// cacert, _ := out.Data["issuing_ca"].(string)
 	configRaw, _ := json.MarshalIndent(config, "", "  ")
 
 	os.Mkdir("/etc/banana", 00755)
@@ -54,8 +53,6 @@ func (cmd *initCmd) execute(config *models.Config) error {
 	assert(err)
 	err = ioutil.WriteFile(config.PrivKeyPath, []byte(privkey), 00644)
 	assert(err)
-	// err = ioutil.WriteFile(config.CaCertPath, []byte(cacert), 00644)
-	// assert(err)
 	err = ioutil.WriteFile("/etc/banana/banana.json", configRaw, 00644)
 	assert(err)
 

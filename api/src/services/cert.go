@@ -22,7 +22,6 @@ var Credentials *APICredentials
 type APICredentials struct {
 	PrivateKey *rsa.PrivateKey
 	Cert       *x509.Certificate
-	// CaCert     *x509.Certificate
 }
 
 // GetCertificatePublicKey : Extracts the pubkey from a given url-escaped PEM cert
@@ -82,21 +81,15 @@ func GetTLSConfig(skipTLSVerify bool) *tls.Config {
 		}
 	}
 
-	// caCertPool := x509.NewCertPool()
-	// caCertPool.AddCert(Credentials.CaCert)
-
-	tlsConfig := &tls.Config{
+	return &tls.Config{
 		Certificates: []tls.Certificate{
 			tls.Certificate{
 				Certificate: [][]byte{Credentials.Cert.Raw},
 				PrivateKey:  Credentials.PrivateKey,
 			},
 		},
-		// RootCAs:            caCertPool,
 		InsecureSkipVerify: skipTLSVerify,
 	}
-	// tlsConfig.BuildNameToCertificate()
-	return tlsConfig
 }
 
 // GetHTTPClient : Returns the TLS-configured http client for sending requests to the Monitor

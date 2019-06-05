@@ -44,16 +44,9 @@ func loadCredentialsToMem(config *models.Config) error {
 	cert, err := x509.ParseCertificate(certBlock.Bytes)
 	assert(err)
 
-	// cacertBytes, err := ioutil.ReadFile(config.CaCertPath)
-	// assert(err)
-	// cacertBlock, _ := pem.Decode([]byte(cacertBytes))
-	// cacert, err := x509.ParseCertificate(cacertBlock.Bytes)
-	// assert(err)
-
 	services.Credentials = &services.APICredentials{
 		PrivateKey: privkey,
 		Cert:       cert,
-		// CaCert:     cacert,
 	}
 
 	return nil
