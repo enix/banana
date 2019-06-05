@@ -76,14 +76,14 @@ class Agent extends Component {
           <Button type='link' onClick={() => this.showConfig(item.key)}>Show config</Button>
           <Divider type='vertical' />
           <Button type='link' onClick={() => this.showCommand(item.key)}>Show command</Button>
-          
+
           {item.logs && (
             <span>
               <Divider type='vertical' />
               <Button type='link' onClick={() => this.showLogs(item.key)}>Show logs</Button>
             </span>
           )}
-          
+
           {item.type === 'backup_done' && (
             <span>
               <Divider type='vertical' />
@@ -161,7 +161,7 @@ class Agent extends Component {
               columns={this.columns}
               dataSource={this.getAgentMessages()}
             />
-            {this.props.agentMessages.length > 1 && (
+            {this.props.agentMessages.length > 0 && (
               <div>
                 <Modal
                   title='Action config'
@@ -199,7 +199,7 @@ class Agent extends Component {
                   onCancel={() => this.setState({ restoreVisible: false })}
                 >
                   <Code dark>
-                    {generateRestoreCmd(this.props.agentMessages[this.state.detailsIndex])}                    
+                    {generateRestoreCmd(this.props.agentMessages[this.state.detailsIndex])}
                   </Code>
                 </Modal>
               </div>
