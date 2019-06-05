@@ -10,7 +10,7 @@ def init_arguments():
     subparsers = parser.add_subparsers(title='subcommands')
 
     parser_create = subparsers.add_parser(
-        'create',
+        'new',
         help='create a client|user|agent'
     )
     parser_create.add_argument(
@@ -70,7 +70,7 @@ def create_cert(cn, pki, role):
 def generate_agent_install_policy(args):
     return '''
         path "{}-{}/issue/agent" {{
-            capabilities = ["create"]
+            capabilities = ["create", "update"]
         }}
     '''.format(args.name, args.pki)
 
@@ -84,7 +84,7 @@ def create_client(args):
         common_name=args.name,
         mount_point=client_pki,
         extra_params={
-            'ttl': 365 * 24 * 60 * 60,
+            'ttl': 5 * 365 * 24 * 60 * 60,
         },
     )
     vault.secrets.pki.create_or_update_role('user', {
@@ -118,12 +118,16 @@ def create_agent(args):
         lease='1h',
     )
 
-    print('Join your new agent using:\n')
-    print('bananactl --vault-addr={} --vault-token={} init {} <agent name>'.format(
-        os.getenv('VAULT_ADDR'),
-        token['auth']['client_token'],
-        args.client,
-    ))
+    print('Join your new agent(s) using:\n')
+    print(
+        'bananactl {} --vault-addr={} --vault-token={} init {} <agent name>'
+        .format(
+            '--skip-tls-verify' if args.skip_tls_verify else '',
+            os.getenv('VAULT_ADDR'),
+            token['auth']['client_token'],
+            args.client,
+        )
+    )
 
 
 def create(args):
