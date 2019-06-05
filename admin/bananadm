@@ -4,6 +4,7 @@ import argparse
 import requests
 import hvac
 import os
+import urllib3
 
 
 def init_arguments():
@@ -35,9 +36,9 @@ def init_arguments():
         action='store_true'
     )
     parser.add_argument(
-        '--pki',
-        help='root banana pki mount point',
-        default='banana-pki',
+        '--root-path',
+        help='root vault mount point',
+        default='banana',
     )
 
     return parser.parse_args()
@@ -67,29 +68,67 @@ def create_cert(cn, pki, role):
 
 def generate_agent_install_policy(args):
     return '''
-        path "{}-{}/issue/agent" {{
+        path "{}/{}-agents/issue/default" {{
             capabilities = ["create", "update"]
         }}
-    '''.format(args.name, args.pki)
+    '''.format(args.root_path, args.name)
 
 
 def generate_agent_access_policy(args):
     return '''
-        path "{}-banana-secrets/data/*" {{
+        path "{}/{}-secrets/*" {{
             capabilities = ["read"]
         }}
-    '''.format(args.name)
+    '''.format(args.root_path, args.name)
+
+
+def create_intermediate_ca(args, root_path, int_path, type):
+    vault = get_vault_client(args)
+    vault.sys.enable_secrets_engine('pki', path=int_path, config={
+        'max_lease_ttl': '43800h',
+    })
+    users_int = vault.secrets.pki.generate_intermediate(
+        type='internal',
+        common_name='{} {} Intermediate CA'.format(args.name, type),
+        mount_point=int_path,
+        extra_params={
+            'ttl': '43800h',
+        },
+    )
+    signed_users_int = vault.secrets.pki.sign_intermediate(
+        csr=users_int.json()['data']['csr'],
+        common_name='{} {} Intermediate CA'.format(args.name, type),
+        mount_point=root_path,
+        extra_params={
+            'ttl': '43800h',
+        },
+    )
+    int_cert = signed_users_int.json()['data']['certificate']
+    vault.secrets.pki.set_signed_intermediate(
+        int_cert,
+        mount_point=int_path,
+    )
+    vault.secrets.pki.create_or_update_role('default', {
+        'allow_any_name': 'true',
+        'organization': args.name,
+        'ou': type,
+        'default_lease_ttl': '17520h',
+    }, mount_point=int_path)
+    return int_cert
 
 
 def create_client(args):
     vault = get_vault_client(args)
-    client_pki = '{}-{}'.format(args.name, args.pki)
-    client_kv = '{}-banana-secrets'.format(args.name, args.pki)
+    client_pki = '{}/{}'.format(args.root_path, args.name)
+    client_kv = '{}/{}-secrets'.format(args.root_path, args.name)
+    client_users_pki = '{}/{}-users'.format(args.root_path, args.name)
+    client_agents_pki = '{}/{}-agents'.format(args.root_path, args.name)
+    vault.sys.enable_secrets_engine('kv', path=client_kv)
+
     vault.sys.enable_secrets_engine('pki', path=client_pki, config={
         'max_lease_ttl': '43800h',
     })
-    vault.sys.enable_secrets_engine('kv', path=client_kv)
-    root = vault.secrets.pki.generate_root(
+    vault.secrets.pki.generate_root(
         type='internal',
         common_name=args.name,
         mount_point=client_pki,
@@ -97,18 +136,12 @@ def create_client(args):
             'ttl': '43800h',
         },
     )
-    vault.secrets.pki.create_or_update_role('user', {
-        'allow_any_name': 'true',
-        'organization': args.name,
-        'ou': 'user',
-        'default_lease_ttl': '17520h',
-    }, mount_point=client_pki)
-    vault.secrets.pki.create_or_update_role('agent', {
-        'allow_any_name': 'true',
-        'organization': args.name,
-        'ou': 'agent',
-        'default_lease_ttl': '17520h',
-    }, mount_point=client_pki)
+
+    create_intermediate_ca(args, client_pki, client_users_pki, 'User')
+    agents_cert = create_intermediate_ca(
+        args, client_pki, client_agents_pki, 'Agent'
+    )
+
     vault.sys.create_or_update_policy(
         name='{}-agent-creation'.format(args.name),
         policy=generate_agent_install_policy(args),
@@ -117,7 +150,7 @@ def create_client(args):
         name='{}-agent-access'.format(args.name),
         policy=generate_agent_access_policy(args),
     )
-    requests.post(
+    res = requests.post(
         '{}/v1/auth/cert/certs/{}'.format(
             os.getenv('VAULT_ADDR'),
             args.name,
@@ -125,18 +158,23 @@ def create_client(args):
         json={
             'display_name': args.name,
             'policies': '{}-agent-access'.format(args.name),
-            'certificate': root.json()['data']['certificate'],
+            'certificate': agents_cert,
         },
         headers={
             'X-Vault-Token': os.getenv('VAULT_TOKEN'),
         },
         verify=not args.skip_tls_verify,
     )
+    if res.status_code >= 400:
+        print(res.json())
+        print('did you enable cert auth method in vault?')
+        print('\n$ vault auth enable cert')
+        exit(1)
 
 
 def create_user(args):
-    client_pki = '{}-{}'.format(args.client, args.pki)
-    cert, key = create_cert(args.name, client_pki, args.type)
+    client_pki = '{}/{}-users'.format(args.root_path, args.client)
+    cert, key = create_cert(args.name, client_pki, 'default')
     open(args.name + '.pem', 'w').write(cert)
     open(args.name + '.key', 'w').write(key)
 
@@ -177,6 +215,8 @@ def create(args):
 
 
 args = init_arguments()
+if args.skip_tls_verify:
+    urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 if not get_vault_client(args).is_authenticated():
     print('invalid authentication data')
     exit(1)
