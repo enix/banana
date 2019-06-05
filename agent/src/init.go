@@ -14,22 +14,25 @@ import (
 type initCmd struct {
 	Organization string
 	Name         string
+	Token        string
 }
 
 // newInitCmd : Creates init command from command line args
 func newInitCmd(args *launchArgs) (*initCmd, error) {
-	if len(args.Values) < 3 {
-		return nil, errors.New("usage: bananactl init <company name> <agent name>")
+	if len(args.Values) < 4 {
+		return nil, errors.New("usage: bananactl init <company name> <agent name> <token>")
 	}
 
 	return &initCmd{
-		Organization: args.Values[1],
-		Name:         args.Values[2],
+		Token:        args.Values[1],
+		Organization: args.Values[2],
+		Name:         args.Values[3],
 	}, nil
 }
 
 // execute : Start the init using specified backend
 func (cmd *initCmd) execute(config *models.Config) error {
+	services.Vault.Client.SetToken(cmd.Token)
 	out, err := services.Vault.Client.Logical().Write(
 		cmd.Organization+"-banana-pki/issue/agent",
 		map[string]interface{}{
@@ -43,7 +46,7 @@ func (cmd *initCmd) execute(config *models.Config) error {
 	cert, _ := out.Data["certificate"].(string)
 	privkey, _ := out.Data["private_key"].(string)
 	// cacert, _ := out.Data["issuing_ca"].(string)
-	configRaw, _ := json.Marshal(config)
+	configRaw, _ := json.MarshalIndent(config, "", "  ")
 
 	os.Mkdir("/etc/banana", 00755)
 	err = ioutil.WriteFile(config.CertPath, []byte(cert), 00644)

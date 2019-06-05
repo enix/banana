@@ -90,10 +90,12 @@ func main() {
 	cmd, err := newCommand(args)
 	assert(err)
 
+	if args.Values[0] != "init" {
+		loadCredentialsToMem(config)
+	}
 	err = services.OpenVaultConnection(&config.Vault, config.SkipTLSVerify)
 	assert(err)
 	if args.Values[0] != "init" {
-		loadCredentialsToMem(config)
 		loadCredentialsToEnv()
 	}
 

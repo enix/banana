@@ -26,7 +26,8 @@ type VaultConfig struct {
 
 // FetchSecret : Retreive a secret map from the current set path
 func (vault *VaultClient) FetchSecret(key string) (map[string]string, error) {
-	secret, err := vault.Client.Logical().Read("secret/data/" + key)
+	company := Credentials.Cert.Subject.Organization[0]
+	secret, err := vault.Client.Logical().Read(company + "-banana-secrets/data/" + key)
 	if err != nil {
 		return nil, err
 	}
@@ -84,7 +85,7 @@ func (vault *VaultClient) GetStoragePassphrase() (string, error) {
 
 // newVaultClient : Create and authenticate a vault client
 func newVaultClient(config *VaultConfig, skipTLSVerify bool) (*VaultClient, error) {
-	if config.Addr == "" || config.Token == "" {
+	if config.Addr == "" {
 		return nil, errors.New("missing vault address or token")
 	}
 
@@ -96,7 +97,6 @@ func newVaultClient(config *VaultConfig, skipTLSVerify bool) (*VaultClient, erro
 		return nil, err
 	}
 
-	client.SetToken(config.Token)
 	return &VaultClient{
 		Client: client,
 		Path:   config.SecretPath,
@@ -108,5 +108,15 @@ func newVaultClient(config *VaultConfig, skipTLSVerify bool) (*VaultClient, erro
 func OpenVaultConnection(config *VaultConfig, skipTLSVerify bool) error {
 	var err error
 	Vault, err = newVaultClient(config, skipTLSVerify)
-	return err
+	if err != nil {
+		return err
+	}
+	if Credentials != nil {
+		secret, err := Vault.Client.Logical().Write("auth/cert/login", map[string]interface{}{})
+		if err != nil {
+			return err
+		}
+		Vault.Client.SetToken(secret.Auth.ClientToken)
+	}
+	return nil
 }
