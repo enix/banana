@@ -13,21 +13,22 @@ var Vault *VaultClient
 // VaultClient : Convenience wrapper of vault client
 type VaultClient struct {
 	Client        *vault.Client
-	Path          string
+	Config        *VaultConfig
 	StorageAccess *map[string]string
 }
 
 // VaultConfig : Configuration for vault API access
 type VaultConfig struct {
-	Addr       string `json:"address"`
-	Token      string `json:"token"`
-	SecretPath string `json:"secret_path"`
+	Addr              string `json:"address"`
+	Token             string `json:"token"`
+	StorageSecretPath string `json:"storage_secret_path"`
+	RootPath          string `json:"root_path"`
 }
 
 // FetchSecret : Retreive a secret map from the current set path
 func (vault *VaultClient) FetchSecret(key string) (map[string]string, error) {
 	company := Credentials.Cert.Subject.Organization[0]
-	secret, err := vault.Client.Logical().Read(company + "-banana-secrets/data/" + key)
+	secret, err := vault.Client.Logical().Read(fmt.Sprintf("%s/%s-secrets/%s", vault.Config.RootPath, company, key))
 	if err != nil {
 		return nil, err
 	}
@@ -35,13 +36,14 @@ func (vault *VaultClient) FetchSecret(key string) (map[string]string, error) {
 		return nil, fmt.Errorf("secret %s not found in vault", key)
 	}
 
-	kvInterface, ok := secret.Data["data"].(map[string]interface{})
-	if !ok {
-		return nil, errors.New("vault API returned an unexpected data type")
-	}
+	// fmt.Println(secret.Data)
+	// kvInterface, ok := secret.Data)
+	// if !ok {
+	// 	return nil, errors.New("vault API returned an unexpected data type")
+	// }
 
 	kv := make(map[string]string)
-	for key, value := range kvInterface {
+	for key, value := range secret.Data {
 		kv[key] = fmt.Sprintf("%v", value)
 	}
 
@@ -52,7 +54,7 @@ func (vault *VaultClient) FetchSecret(key string) (map[string]string, error) {
 //										and returns the given key from the secret map
 func (vault *VaultClient) GetStorageAccess(key string) (string, error) {
 	if vault.StorageAccess == nil {
-		kv, err := vault.FetchSecret(vault.Path)
+		kv, err := vault.FetchSecret(vault.Config.StorageSecretPath)
 		if err != nil {
 			return "", err
 		}
@@ -99,7 +101,7 @@ func newVaultClient(config *VaultConfig, skipTLSVerify bool) (*VaultClient, erro
 
 	return &VaultClient{
 		Client: client,
-		Path:   config.SecretPath,
+		Config: config,
 	}, nil
 }
 

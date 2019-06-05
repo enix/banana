@@ -58,9 +58,10 @@ func (config *Config) LoadDefaults() {
 		StorageHost: "object-storage.r1.nxs.enix.io",
 		TTL:         3600,
 		Vault: services.VaultConfig{
-			Addr:       "http://localhost:7777",
-			Token:      "myroot",
-			SecretPath: "storage",
+			Addr:              "http://localhost:7777",
+			Token:             "myroot",
+			StorageSecretPath: "storage",
+			RootPath:          "banana",
 		},
 	}
 }
@@ -95,9 +96,10 @@ func (config *Config) LoadFromEnv() error {
 		BucketName:  os.Getenv("BANANA_BUCKET_NAME"),
 		StorageHost: os.Getenv("BANANA_STORAGE_HOST"),
 		Vault: services.VaultConfig{
-			Addr:       os.Getenv("VAULT_ADDR"),
-			Token:      os.Getenv("VAULT_TOKEN"),
-			SecretPath: os.Getenv("BANANA_VAULT_SECRET_PATH"),
+			Addr:              os.Getenv("VAULT_ADDR"),
+			Token:             os.Getenv("VAULT_TOKEN"),
+			RootPath:          os.Getenv("BANANA_VAULT_ROOT_PATH"),
+			StorageSecretPath: os.Getenv("BANANA_VAULT_STORAGE_SECRET_PATH"),
 		},
 	}
 

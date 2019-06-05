@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io/ioutil"
 	"os"
 
@@ -34,7 +35,7 @@ func newInitCmd(args *launchArgs) (*initCmd, error) {
 func (cmd *initCmd) execute(config *models.Config) error {
 	services.Vault.Client.SetToken(cmd.Token)
 	out, err := services.Vault.Client.Logical().Write(
-		cmd.Organization+"-banana-pki/issue/agent",
+		fmt.Sprintf("%s/%s-agents/issue/default", config.Vault.RootPath, cmd.Organization),
 		map[string]interface{}{
 			"common_name": cmd.Name,
 		},
