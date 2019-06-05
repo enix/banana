@@ -14,7 +14,7 @@ import (
 
 func assert(err error) {
 	if err != nil {
-		klog.Fatal(err)
+		panic(err)
 	}
 }
 
@@ -44,16 +44,16 @@ func loadCredentialsToMem(config *models.Config) error {
 	cert, err := x509.ParseCertificate(certBlock.Bytes)
 	assert(err)
 
-	cacertBytes, err := ioutil.ReadFile(config.CaCertPath)
-	assert(err)
-	cacertBlock, _ := pem.Decode([]byte(cacertBytes))
-	cacert, err := x509.ParseCertificate(cacertBlock.Bytes)
-	assert(err)
+	// cacertBytes, err := ioutil.ReadFile(config.CaCertPath)
+	// assert(err)
+	// cacertBlock, _ := pem.Decode([]byte(cacertBytes))
+	// cacert, err := x509.ParseCertificate(cacertBlock.Bytes)
+	// assert(err)
 
 	services.Credentials = &services.APICredentials{
 		PrivateKey: privkey,
 		Cert:       cert,
-		CaCert:     cacert,
+		// CaCert:     cacert,
 	}
 
 	return nil
@@ -67,7 +67,7 @@ func unloadCredentialsFromEnv() {
 func main() {
 	klog.InitFlags(nil)
 	flag.Set("v", "1")
-	flag.Parse()
+	// flag.Parse()
 
 	args := loadArguments()
 	if args.DisplayHelp || len(args.Values) < 1 {
@@ -90,7 +90,7 @@ func main() {
 	cmd, err := newCommand(args)
 	assert(err)
 
-	err = services.OpenVaultConnection(&config.Vault)
+	err = services.OpenVaultConnection(&config.Vault, config.SkipTLSVerify)
 	assert(err)
 	if args.Values[0] != "init" {
 		loadCredentialsToMem(config)

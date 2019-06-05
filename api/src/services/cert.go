@@ -22,7 +22,7 @@ var Credentials *APICredentials
 type APICredentials struct {
 	PrivateKey *rsa.PrivateKey
 	Cert       *x509.Certificate
-	CaCert     *x509.Certificate
+	// CaCert     *x509.Certificate
 }
 
 // GetCertificatePublicKey : Extracts the pubkey from a given url-escaped PEM cert
@@ -75,9 +75,15 @@ func VerifySha256Signature(data []byte, base64sig, base64cert string) error {
 }
 
 // GetTLSConfig : Returns the TLS config for sending requests to the Monitor
-func GetTLSConfig() *tls.Config {
-	caCertPool := x509.NewCertPool()
-	caCertPool.AddCert(Credentials.CaCert)
+func GetTLSConfig(skipTLSVerify bool) *tls.Config {
+	if Credentials == nil {
+		return &tls.Config{
+			InsecureSkipVerify: skipTLSVerify,
+		}
+	}
+
+	// caCertPool := x509.NewCertPool()
+	// caCertPool.AddCert(Credentials.CaCert)
 
 	tlsConfig := &tls.Config{
 		Certificates: []tls.Certificate{
@@ -86,15 +92,15 @@ func GetTLSConfig() *tls.Config {
 				PrivateKey:  Credentials.PrivateKey,
 			},
 		},
-		RootCAs:            caCertPool,
-		InsecureSkipVerify: true, // TODO: find a way to get CA and remove this
+		// RootCAs:            caCertPool,
+		InsecureSkipVerify: skipTLSVerify,
 	}
-	tlsConfig.BuildNameToCertificate()
+	// tlsConfig.BuildNameToCertificate()
 	return tlsConfig
 }
 
 // GetHTTPClient : Returns the TLS-configured http client for sending requests to the Monitor
-func GetHTTPClient() *http.Client {
-	transport := &http.Transport{TLSClientConfig: GetTLSConfig()}
+func GetHTTPClient(skipTLSVerify bool) *http.Client {
+	transport := &http.Transport{TLSClientConfig: GetTLSConfig(skipTLSVerify)}
 	return &http.Client{Transport: transport}
 }

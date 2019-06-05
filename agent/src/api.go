@@ -17,7 +17,7 @@ import (
 func sendToMonitor(config *models.Config, message *models.AgentMessage) error {
 	fmt.Print("waiting for monitor... ")
 
-	httpClient := services.GetHTTPClient()
+	httpClient := services.GetHTTPClient(config.SkipTLSVerify)
 	oname := services.Credentials.Cert.Subject.Organization[0]
 	cname := services.Credentials.Cert.Subject.CommonName
 	message.SenderID = fmt.Sprintf("%s:%s", oname, cname)

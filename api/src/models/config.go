@@ -26,14 +26,15 @@ type ScheduledBackupConfig struct {
 
 // Config : Contains full confugration will be used to execute commands
 type Config struct {
+	// CaCertPath       string                           `json:"ca_cert_path,omitempty"`
 	MonitorURL       string                           `json:"monitor_url,omitempty"`
 	Backend          string                           `json:"backend,omitempty"`
 	StatePath        string                           `json:"state_path,omitempty"`
 	PrivKeyPath      string                           `json:"private_key_path,omitempty"`
 	CertPath         string                           `json:"client_cert_path,omitempty"`
-	CaCertPath       string                           `json:"ca_cert_path,omitempty"`
 	BucketName       string                           `json:"bucket,omitempty"`
 	StorageHost      string                           `json:"storage_host,omitempty"`
+	SkipTLSVerify    bool                             `json:"skip_tls_verify"`
 	TTL              int64                            `json:"ttl,omitempty"`
 	Vault            services.VaultConfig             `json:"vault,omitempty"`
 	ScheduledBackups map[string]ScheduledBackupConfig `json:"schedule,omitempty"`
@@ -52,7 +53,7 @@ func (config *Config) LoadDefaults() {
 		StatePath:   "/etc/banana/state.json",
 		PrivKeyPath: "/etc/banana/privkey.pem",
 		CertPath:    "/etc/banana/cert.pem",
-		CaCertPath:  "/etc/banana/cacert.pem",
+		// CaCertPath:  "",
 		BucketName:  "backup-bucket",
 		StorageHost: "object-storage.r1.nxs.enix.io",
 		TTL:         3600,
@@ -68,7 +69,8 @@ func (config *Config) LoadDefaults() {
 func (config *Config) LoadFromFile(path string) error {
 	bytes, err := ioutil.ReadFile(path)
 	if err != nil {
-		klog.Warning("warning: can't load config file " + path + ", using config from env and command-line only")
+		klog.V(2).Info("warning: can't load config file " + path + ", using config from env and command-line only")
+		klog.V(2).Info(err)
 		return err
 	}
 
@@ -89,7 +91,7 @@ func (config *Config) LoadFromEnv() error {
 		StatePath:   os.Getenv("BANANA_STATE_PATH"),
 		PrivKeyPath: os.Getenv("BANANA_PRIVATE_KEY_PATH"),
 		CertPath:    os.Getenv("BANANA_CLIENT_CERT_PATH"),
-		CaCertPath:  os.Getenv("BANANA_CA_CERT_PATH"),
+		// CaCertPath:  os.Getenv("BANANA_CA_CERT_PATH"),
 		BucketName:  os.Getenv("BANANA_BUCKET_NAME"),
 		StorageHost: os.Getenv("BANANA_STORAGE_HOST"),
 		Vault: services.VaultConfig{

@@ -31,10 +31,11 @@ func loadArguments() *launchArgs {
 	getopt.FlagLong(&args.Flags.StatePath, "state", 0, "state location", "/etc/banana/state.json")
 	getopt.FlagLong(&args.Flags.PrivKeyPath, "privkey", 0, "private key location", "/etc/banana/privkey.pem")
 	getopt.FlagLong(&args.Flags.CertPath, "cert", 0, "client certificate location", "/etc/banana/cert.pem")
-	getopt.FlagLong(&args.Flags.CaCertPath, "cacert", 0, "CA certificate location", "/etc/banana/cacert.pem")
+	// getopt.FlagLong(&args.Flags.CaCertPath, "cacert", 0, "CA certificate location", "/etc/banana/cacert.pem")
 	getopt.FlagLong(&args.Flags.Vault.Addr, "vault-addr", 0, "vault API URL", "http://localhost:7777")
 	getopt.FlagLong(&args.Flags.Vault.Token, "vault-token", 0, "vault auth token", "myroot")
 	getopt.FlagLong(&args.Flags.Vault.SecretPath, "vault-secret", 0, "vault secret path where credentials are stored", "banana")
+	getopt.FlagLong(&args.Flags.SkipTLSVerify, "skip-tls-verify", 0, "ignore tls errors")
 
 	opts := getopt.CommandLine
 	opts.Parse(os.Args)

@@ -83,12 +83,15 @@ func (vault *VaultClient) GetStoragePassphrase() (string, error) {
 }
 
 // newVaultClient : Create and authenticate a vault client
-func newVaultClient(config *VaultConfig) (*VaultClient, error) {
+func newVaultClient(config *VaultConfig, skipTLSVerify bool) (*VaultClient, error) {
 	if config.Addr == "" || config.Token == "" {
 		return nil, errors.New("missing vault address or token")
 	}
 
-	client, err := vault.NewClient(&vault.Config{Address: config.Addr})
+	client, err := vault.NewClient(&vault.Config{
+		Address:    config.Addr,
+		HttpClient: GetHTTPClient(skipTLSVerify),
+	})
 	if err != nil {
 		return nil, err
 	}
@@ -102,8 +105,8 @@ func newVaultClient(config *VaultConfig) (*VaultClient, error) {
 
 // OpenVaultConnection : Etablish connection with vault
 // Other calls will crash if used before this
-func OpenVaultConnection(config *VaultConfig) error {
+func OpenVaultConnection(config *VaultConfig, skipTLSVerify bool) error {
 	var err error
-	Vault, err = newVaultClient(config)
+	Vault, err = newVaultClient(config, skipTLSVerify)
 	return err
 }
