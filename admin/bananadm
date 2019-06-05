@@ -68,7 +68,7 @@ def create_cert(cn, pki, role):
 
 def generate_agent_install_policy(args):
     return '''
-        path "{}/{}-agents/issue/default" {{
+        path "{}/{}/agents-pki/issue/default" {{
             capabilities = ["create", "update"]
         }}
     '''.format(args.root_path, args.name)
@@ -76,7 +76,7 @@ def generate_agent_install_policy(args):
 
 def generate_agent_access_policy(args):
     return '''
-        path "{}/{}-secrets/*" {{
+        path "{}/{}/secrets/*" {{
             capabilities = ["read"]
         }}
     '''.format(args.root_path, args.name)
@@ -119,10 +119,10 @@ def create_intermediate_ca(args, root_path, int_path, type):
 
 def create_client(args):
     vault = get_vault_client(args)
-    client_pki = '{}/{}'.format(args.root_path, args.name)
-    client_kv = '{}/{}-secrets'.format(args.root_path, args.name)
-    client_users_pki = '{}/{}-users'.format(args.root_path, args.name)
-    client_agents_pki = '{}/{}-agents'.format(args.root_path, args.name)
+    client_pki = '{}/{}/root-pki'.format(args.root_path, args.name)
+    client_kv = '{}/{}/secrets'.format(args.root_path, args.name)
+    client_users_pki = '{}/{}/users-pki'.format(args.root_path, args.name)
+    client_agents_pki = '{}/{}/agents-pki'.format(args.root_path, args.name)
     vault.sys.enable_secrets_engine('kv', path=client_kv)
 
     vault.sys.enable_secrets_engine('pki', path=client_pki, config={
@@ -173,7 +173,7 @@ def create_client(args):
 
 
 def create_user(args):
-    client_pki = '{}/{}-users'.format(args.root_path, args.client)
+    client_pki = '{}/{}/users-pki'.format(args.root_path, args.client)
     cert, key = create_cert(args.name, client_pki, 'default')
     open(args.name + '.pem', 'w').write(cert)
     open(args.name + '.key', 'w').write(key)
