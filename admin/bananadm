@@ -1,6 +1,7 @@
 #! /usr/bin/env python3
 
 import argparse
+import requests
 import hvac
 import os
 
@@ -72,13 +73,23 @@ def generate_agent_install_policy(args):
     '''.format(args.name, args.pki)
 
 
+def generate_agent_access_policy(args):
+    return '''
+        path "{}-banana-secrets/data/*" {{
+            capabilities = ["read"]
+        }}
+    '''.format(args.name)
+
+
 def create_client(args):
     vault = get_vault_client(args)
     client_pki = '{}-{}'.format(args.name, args.pki)
+    client_kv = '{}-banana-secrets'.format(args.name, args.pki)
     vault.sys.enable_secrets_engine('pki', path=client_pki, config={
         'max_lease_ttl': '43800h',
     })
-    vault.secrets.pki.generate_root(
+    vault.sys.enable_secrets_engine('kv', path=client_kv)
+    root = vault.secrets.pki.generate_root(
         type='internal',
         common_name=args.name,
         mount_point=client_pki,
@@ -98,10 +109,28 @@ def create_client(args):
         'ou': 'agent',
         'default_lease_ttl': '17520h',
     }, mount_point=client_pki)
-    policy = generate_agent_install_policy(args)
     vault.sys.create_or_update_policy(
         name='{}-agent-creation'.format(args.name),
-        policy=policy,
+        policy=generate_agent_install_policy(args),
+    )
+    vault.sys.create_or_update_policy(
+        name='{}-agent-access'.format(args.name),
+        policy=generate_agent_access_policy(args),
+    )
+    requests.post(
+        '{}/v1/auth/cert/certs/{}'.format(
+            os.getenv('VAULT_ADDR'),
+            args.name,
+        ),
+        json={
+            'display_name': args.name,
+            'policies': '{}-agent-access'.format(args.name),
+            'certificate': root.json()['data']['certificate'],
+        },
+        headers={
+            'X-Vault-Token': os.getenv('VAULT_TOKEN'),
+        },
+        verify=not args.skip_tls_verify,
     )
 
 
@@ -121,7 +150,7 @@ def create_agent(args):
 
     print('Join your new agent(s) using:\n')
     print(
-        'bananactl {} --vault-addr={} --vault-token={} init {} <agent name>'
+        'bananactl {} --vault-addr={} init {} {} <agent name>'
         .format(
             '--skip-tls-verify' if args.skip_tls_verify else '',
             os.getenv('VAULT_ADDR'),
