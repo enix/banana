@@ -18,7 +18,7 @@ type initCmd struct {
 
 // newInitCmd : Creates init command from command line args
 func newInitCmd(args *launchArgs) (*initCmd, error) {
-	if len(args.Values) < 2 {
+	if len(args.Values) < 3 {
 		return nil, errors.New("usage: bananactl init <company name> <agent name>")
 	}
 
@@ -30,16 +30,19 @@ func newInitCmd(args *launchArgs) (*initCmd, error) {
 
 // execute : Start the init using specified backend
 func (cmd *initCmd) execute(config *models.Config) error {
-	out, err := services.Vault.Client.Logical().Write("agents-pki/issue/"+cmd.Organization, map[string]interface{}{
-		"common_name": cmd.Name,
-	})
+	out, err := services.Vault.Client.Logical().Write(
+		cmd.Organization+"-banana-pki/issue/agent",
+		map[string]interface{}{
+			"common_name": cmd.Name,
+		},
+	)
 	if err != nil {
 		return err
 	}
 
 	cert, _ := out.Data["certificate"].(string)
 	privkey, _ := out.Data["private_key"].(string)
-	cacert, _ := out.Data["issuing_ca"].(string)
+	// cacert, _ := out.Data["issuing_ca"].(string)
 	configRaw, _ := json.Marshal(config)
 
 	os.Mkdir("/etc/banana", 00755)
@@ -47,8 +50,8 @@ func (cmd *initCmd) execute(config *models.Config) error {
 	assert(err)
 	err = ioutil.WriteFile(config.PrivKeyPath, []byte(privkey), 00644)
 	assert(err)
-	err = ioutil.WriteFile(config.CaCertPath, []byte(cacert), 00644)
-	assert(err)
+	// err = ioutil.WriteFile(config.CaCertPath, []byte(cacert), 00644)
+	// assert(err)
 	err = ioutil.WriteFile("/etc/banana/banana.json", configRaw, 00644)
 	assert(err)
 
