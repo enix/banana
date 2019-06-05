@@ -40,7 +40,7 @@ func (cmd *initCmd) execute(config *models.Config) error {
 
 	services.Vault.Client.SetToken(cmd.Token)
 	out, err := services.Vault.Client.Logical().Write(
-		fmt.Sprintf("%s/%s-agents/issue/default", config.Vault.RootPath, cmd.Organization),
+		fmt.Sprintf("%s/%s/agents-pki/issue/default", config.Vault.RootPath, cmd.Organization),
 		map[string]interface{}{
 			"common_name": cmd.Name,
 		},

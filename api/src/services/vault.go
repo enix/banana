@@ -27,7 +27,7 @@ type VaultConfig struct {
 // FetchSecret : Retreive a secret map from the current set path
 func (vault *VaultClient) FetchSecret(key string) (map[string]string, error) {
 	company := Credentials.Cert.Subject.Organization[0]
-	secret, err := vault.Client.Logical().Read(fmt.Sprintf("%s/%s-secrets/%s", vault.Config.RootPath, company, key))
+	secret, err := vault.Client.Logical().Read(fmt.Sprintf("%s/%s/secrets/%s", vault.Config.RootPath, company, key))
 	if err != nil {
 		return nil, err
 	}
