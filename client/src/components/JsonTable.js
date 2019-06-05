@@ -17,7 +17,7 @@ class JsonTable extends Component {
       title: 'Value',
       dataIndex: 'value',
       key: 'value',
-      render: value => typeof value !== 'object' ? <Code>{value}</Code> : (
+      render: value => typeof value !== 'object' ? <Code>{value && value.toString()}</Code> : (
         <Code dark>{JSON.stringify(value, null, 2)}</Code>
       ),
     },
