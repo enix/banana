@@ -20,7 +20,6 @@ type VaultClient struct {
 // VaultConfig : Configuration for vault API access
 type VaultConfig struct {
 	Addr              string `json:"address"`
-	Token             string `json:"token"`
 	StorageSecretPath string `json:"storage_secret_path"`
 	RootPath          string `json:"root_path"`
 }
