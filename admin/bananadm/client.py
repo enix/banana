@@ -10,7 +10,7 @@ def create_client(args):
     client_kv = '{}/{}/secrets'.format(args.root_path, args.name)
     client_users_pki = '{}/{}/users-pki'.format(args.root_path, args.name)
     client_agents_pki = '{}/{}/agents-pki'.format(args.root_path, args.name)
-    client.sys.enable_secrets_engine('kv', path=client_kv)
+    client.sys.enable_secrets_engine('kv-v2', path=client_kv)
     print('mounted KV at path \'{}\''.format(client_kv))
 
     client.sys.enable_secrets_engine('pki', path=client_pki, config={

@@ -2,6 +2,7 @@ import argparse
 from bananadm import client
 from bananadm import user
 from bananadm import agent
+from bananadm import backend
 from bananadm import input
 
 
@@ -21,6 +22,13 @@ def create_client(args):
     client.create_client(args)
 
 
+def create_backend_secret(args, type):
+    args.client = input.prompt('client in which create the secret')
+    args.name = input.prompt('backend name')
+    values = backend.prompt_secret_values(type)
+    backend.create_backend_secret(args, values)
+
+
 def init_arguments():
     parser = argparse.ArgumentParser()
     subparsers = parser.add_subparsers(title='subcommands')
@@ -32,21 +40,32 @@ def init_arguments():
     subparsers_create = parser_create.add_subparsers(
         title='types that can be created',
     )
-    parser_client = subparsers_create.add_parser(
+
+    subparsers_create.add_parser(
         'client',
         help='create a client',
-    )
-    parser_client.set_defaults(func=create_client)
-    parser_user = subparsers_create.add_parser(
+    ).set_defaults(func=create_client)
+    subparsers_create.add_parser(
         'user',
         help='create a user',
-    )
-    parser_user.set_defaults(func=create_user)
-    parser_agent = subparsers_create.add_parser(
+    ).set_defaults(func=create_user)
+    subparsers_create.add_parser(
         'agent',
         help='create a agent',
+    ).set_defaults(func=create_agent)
+
+    parser_backend_secret = subparsers_create.add_parser(
+        'backend',
+        help='add a backend secret',
     )
-    parser_agent.set_defaults(func=create_agent)
+    subparsers_backend_secret = parser_backend_secret.add_subparsers(
+        title='supported backend types',
+    )
+    subparsers_backend_secret.add_parser(
+        's3',
+        help='s3 protocol credentials, also works \
+            with openstack block storage',
+    ).set_defaults(func=lambda args: create_backend_secret(args, 's3'))
 
     parser.add_argument(
         '--skip-tls-verify',

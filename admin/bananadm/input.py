@@ -8,10 +8,3 @@ def prompt(question, default=None):
     if not answer:
         answer = default
     return answer
-
-
-def prompt_many(questions):
-    answers = []
-    for question in questions:
-        answers.append(prompt(question))
-    return answers
