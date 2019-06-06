@@ -47,6 +47,7 @@ func (cmd *backupCmd) execute(config *models.Config) error {
 	}
 
 	sendMessageToMonitor("backup_start", config, cmd, "")
+	loadCredentialsToEnv()
 	klog.Infof("running %s, see you on the other side\n", config.Backend)
 	logs, err := backend.backup(config, cmd)
 	if logs == nil {

@@ -15,6 +15,7 @@ type VaultClient struct {
 	Client        *vault.Client
 	Config        *VaultConfig
 	StorageAccess *map[string]string
+	EntityID      string
 }
 
 // VaultConfig : Configuration for vault API access
@@ -48,6 +49,19 @@ func (vault *VaultClient) FetchSecret(key string) (map[string]string, error) {
 	return kv, nil
 }
 
+// WriteSecret : Write secret map to the current set path
+func (vault *VaultClient) WriteSecret(key string, data map[string]interface{}) error {
+	company := Credentials.Cert.Subject.Organization[0]
+	_, err := vault.Client.Logical().Write(
+		fmt.Sprintf("%s/%s/secrets/data/%s", vault.Config.RootPath, company, key),
+		map[string]interface{}{
+			"data": data,
+		},
+	)
+
+	return err
+}
+
 // GetStorageAccess : Put storage credentials in memory cache
 //										and returns the given key from the secret map
 func (vault *VaultClient) GetStorageAccess(key string) (string, error) {
@@ -57,7 +71,6 @@ func (vault *VaultClient) GetStorageAccess(key string) (string, error) {
 			return "", err
 		}
 
-		fmt.Println(kv)
 		vault.StorageAccess = &kv
 	}
 
@@ -77,11 +90,6 @@ func (vault *VaultClient) GetStorageAccessToken() (string, error) {
 // GetStorageSecretToken : Get storage secret token, from memory cache if possible
 func (vault *VaultClient) GetStorageSecretToken() (string, error) {
 	return vault.GetStorageAccess("AWS_SECRET_ACCESS_KEY")
-}
-
-// GetStoragePassphrase : Get storage secret token, from memory cache if possible
-func (vault *VaultClient) GetStoragePassphrase() (string, error) {
-	return vault.GetStorageAccess("PASSPHRASE")
 }
 
 // newVaultClient : Create and authenticate a vault client
@@ -118,6 +126,12 @@ func OpenVaultConnection(config *VaultConfig, skipTLSVerify bool) error {
 			return err
 		}
 		Vault.Client.SetToken(secret.Auth.ClientToken)
+		self, err := Vault.Client.Logical().Read("auth/token/lookup-self")
+		if err != nil {
+			return err
+		}
+		entityID := self.Data["entity_id"]
+		Vault.EntityID, _ = entityID.(string)
 	}
 	return nil
 }

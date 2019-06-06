@@ -2,10 +2,6 @@ agent_install_policy_template = '''
 path "{root_path}/{company}/agents-pki/issue/default" {{
     capabilities = ["create", "update"]
 }}
-
-path "{root_path}/{company}/secrets/agents/{{{{identity.entity.name}}}}" {{
-    capabilities = ["create", "update"]
-}}
 '''
 
 agent_access_policy_template = '''
@@ -13,8 +9,8 @@ path "{root_path}/{company}/secrets/data/backends/*" {{
     capabilities = ["read"]
 }}
 
-path "{root_path}/{company}/secrets/data/agents/\
-{{{{identity.entity.name}}}}/*" {{
+path "{root_path}/{company}/secrets/data/agents/{{{{identity.entity.id}}}}"\
+{{
     capabilities = ["read", "list", "create", "update"]
 }}
 '''

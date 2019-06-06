@@ -5,7 +5,6 @@ import (
 	"encoding/pem"
 	"flag"
 	"io/ioutil"
-	"os"
 
 	"enix.io/banana/src/models"
 	"enix.io/banana/src/services"
@@ -16,19 +15,6 @@ func assert(err error) {
 	if err != nil {
 		panic(err)
 	}
-}
-
-func loadCredentialsToEnv() {
-	accessToken, err := services.Vault.GetStorageAccessToken()
-	assert(err)
-	secretToken, err := services.Vault.GetStorageSecretToken()
-	assert(err)
-	passphrase, err := services.Vault.GetStoragePassphrase()
-	assert(err)
-
-	os.Setenv("AWS_ACCESS_KEY_ID", accessToken)
-	os.Setenv("AWS_SECRET_ACCESS_KEY", secretToken)
-	os.Setenv("PASSPHRASE", passphrase)
 }
 
 func loadCredentialsToMem(config *models.Config) error {
@@ -50,11 +36,6 @@ func loadCredentialsToMem(config *models.Config) error {
 	}
 
 	return nil
-}
-
-func unloadCredentialsFromEnv() {
-	os.Setenv("AWS_ACCESS_KEY_ID", "")
-	os.Setenv("AWS_SECRET_ACCESS_KEY", "")
 }
 
 func main() {
@@ -88,11 +69,7 @@ func main() {
 	}
 	err = services.OpenVaultConnection(&config.Vault, config.SkipTLSVerify)
 	assert(err)
-	if args.Values[0] != "init" {
-		loadCredentialsToEnv()
-	}
 
 	err = cmd.execute(config)
 	assert(err)
-	unloadCredentialsFromEnv()
 }

@@ -2,8 +2,13 @@ package main
 
 import (
 	"errors"
+	"fmt"
+	"math/rand"
+	"os"
+	"time"
 
 	"enix.io/banana/src/models"
+	"enix.io/banana/src/services"
 )
 
 // duplicityBackend : BackupBackend implementation for duplicity
@@ -23,6 +28,33 @@ func getBackupID() string {
 		return ""
 	}
 	return string(id)[:len(id)-1]
+}
+
+func generateAndUploadPassphrase() (string, error) {
+	rand.Seed(int64(time.Now().Unix()))
+	passphrase := fmt.Sprintf("%d", rand.Int())
+	return passphrase, services.Vault.WriteSecret("agents/"+services.Vault.EntityID, map[string]interface{}{
+		"passphrase": passphrase,
+	})
+}
+
+func loadCredentialsToEnv() {
+	accessToken, err := services.Vault.GetStorageAccessToken()
+	assert(err)
+	secretToken, err := services.Vault.GetStorageSecretToken()
+	assert(err)
+	agentSecret, err := services.Vault.FetchSecret("agents/" + services.Vault.EntityID)
+	passphrase := ""
+	if err != nil {
+		passphrase, err = generateAndUploadPassphrase()
+		assert(err)
+	} else {
+		passphrase = agentSecret["passphrase"]
+	}
+
+	os.Setenv("AWS_ACCESS_KEY_ID", accessToken)
+	os.Setenv("AWS_SECRET_ACCESS_KEY", secretToken)
+	os.Setenv("PASSPHRASE", passphrase)
 }
 
 // Backup : BackupBackend's Backup call implementation for duplicity
