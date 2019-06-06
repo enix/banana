@@ -11,6 +11,7 @@ def create_client(args):
     client_users_pki = '{}/{}/users-pki'.format(args.root_path, args.name)
     client_agents_pki = '{}/{}/agents-pki'.format(args.root_path, args.name)
     client.sys.enable_secrets_engine('kv', path=client_kv)
+    print('mounted KV at path \'{}\''.format(client_kv))
 
     client.sys.enable_secrets_engine('pki', path=client_pki, config={
         'max_lease_ttl': '43800h',
@@ -23,22 +24,37 @@ def create_client(args):
             'ttl': '43800h',
         },
     )
+    print('mounted root PKI at path \'{}\''.format(client_pki))
 
-    client.create_intermediate_ca(
+    vault.create_intermediate_ca(
         args, client_pki, client_users_pki, 'User',
     )
-    agents_cert = client.create_intermediate_ca(
-        args, client_pki, client_agents_pki, 'Agent',
+    print(
+        'mounted users intermediate PKI at path \'{}\''
+        .format(client_users_pki)
     )
 
+    agents_cert = vault.create_intermediate_ca(
+        args, client_pki, client_agents_pki, 'Agent',
+    )
+    print(
+        'mounted agents intermediate PKI at path \'{}\''
+        .format(client_agents_pki)
+    )
+
+    create_policy_name = '{}-agent-creation'.format(args.name)
     client.sys.create_or_update_policy(
-        name='{}-agent-creation'.format(args.name),
+        name=create_policy_name,
         policy=policies.generate_agent_install_policy(args),
     )
+    print('created policy {}'.format(create_policy_name))
+
+    access_policy_name = '{}-agent-access'.format(args.name)
     client.sys.create_or_update_policy(
-        name='{}-agent-access'.format(args.name),
+        name=access_policy_name,
         policy=policies.generate_agent_access_policy(args),
     )
+    print('created policy {}'.format(access_policy_name))
 
     res = requests.post(
         '{}/v1/auth/cert/certs/{}'.format(
@@ -60,3 +76,6 @@ def create_client(args):
         print('did you enable cert auth method in vault?')
         print('\n$ vault auth enable cert')
         exit(1)
+    print('allowed agent certs to login into vault')
+
+    print('successfully created client \'{}\''.format(args.name))
