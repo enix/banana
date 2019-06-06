@@ -7,6 +7,27 @@ import os
 import urllib3
 
 
+agent_install_policy_template = '''
+path "{root_path}/{company}/agents-pki/issue/default" {{
+    capabilities = ["create", "update"]
+}}
+
+path "{root_path}/{company}/secrets/agents/{{{{identity.entity.name}}}}" {{
+    capabilities = ["create", "update"]
+}}
+'''
+
+agent_access_policy_template = '''
+path "{root_path}/{company}/secrets/backends/*" {{
+    capabilities = ["read"]
+}}
+
+path "{root_path}/{company}/secrets/agents/{{{{identity.entity.name}}}}/*" {{
+    capabilities = ["read", "list", "create", "update"]
+}}
+'''
+
+
 def init_arguments():
     parser = argparse.ArgumentParser()
     subparsers = parser.add_subparsers(title='subcommands')
@@ -54,6 +75,20 @@ def get_vault_client(args):
     return vault
 
 
+def generate_agent_install_policy(args):
+    return agent_install_policy_template.format(
+        root_path=args.root_path,
+        company=args.name,
+    )
+
+
+def generate_agent_access_policy(args):
+    return agent_access_policy_template.format(
+        root_path=args.root_path,
+        company=args.name,
+    )
+
+
 def create_cert(cn, pki, role):
     vault = get_vault_client(args)
     res = vault.secrets.pki.generate_certificate(
@@ -64,22 +99,6 @@ def create_cert(cn, pki, role):
     cert = res.json()['data']['certificate']
     key = res.json()['data']['private_key']
     return cert, key
-
-
-def generate_agent_install_policy(args):
-    return '''
-        path "{}/{}/agents-pki/issue/default" {{
-            capabilities = ["create", "update"]
-        }}
-    '''.format(args.root_path, args.name)
-
-
-def generate_agent_access_policy(args):
-    return '''
-        path "{}/{}/secrets/*" {{
-            capabilities = ["read"]
-        }}
-    '''.format(args.root_path, args.name)
 
 
 def create_intermediate_ca(args, root_path, int_path, type):
@@ -150,6 +169,7 @@ def create_client(args):
         name='{}-agent-access'.format(args.name),
         policy=generate_agent_access_policy(args),
     )
+
     res = requests.post(
         '{}/v1/auth/cert/certs/{}'.format(
             os.getenv('VAULT_ADDR'),
