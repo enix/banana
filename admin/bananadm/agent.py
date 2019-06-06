@@ -3,13 +3,14 @@ from bananadm import vault
 
 
 def create_agent(args):
+    print('generating temporary token to allow new agent(s) to register')
     client = vault.get_vault_client(args)
     token = client.create_token(
         policies=['{}-agent-creation'.format(args.client)],
         lease='1h',
     )
 
-    print('Join your new agent(s) using:\n')
+    print('success! join your new agent(s) using:\n')
     print(
         'bananactl {} --vault-addr={} init {} {} <agent name>'
         .format(
