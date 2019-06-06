@@ -5,20 +5,20 @@ from bananadm import agent
 from bananadm import input
 
 
-def create(args):
-    if args.type == 'client':
-        args.name = input.prompt('client name')
-        client.create_client(args)
-    elif args.type == 'user':
-        args.client = input.prompt('client in which create the user')
-        args.name = input.prompt('username')
-        user.create_user(args)
-    elif args.type == 'agent':
-        args.client = input.prompt('client in which create the agent(s)')
-        agent.create_agent(args)
-    else:
-        print('type must be one of agent|user|client')
-        exit(1)
+def create_user(args):
+    args.client = input.prompt('client in which create the user')
+    args.name = input.prompt('username')
+    user.create_user(args)
+
+
+def create_agent(args):
+    args.client = input.prompt('client in which create the agent(s)')
+    agent.create_agent(args)
+
+
+def create_client(args):
+    args.name = input.prompt('client name')
+    client.create_client(args)
 
 
 def init_arguments():
@@ -29,11 +29,24 @@ def init_arguments():
         'new',
         help='create a client|user|agent'
     )
-    parser_create.add_argument(
-        'type',
-        help='client|agent|user',
+    subparsers_create = parser_create.add_subparsers(
+        title='types that can be created',
     )
-    parser_create.set_defaults(func=create)
+    parser_client = subparsers_create.add_parser(
+        'client',
+        help='create a client',
+    )
+    parser_client.set_defaults(func=create_client)
+    parser_user = subparsers_create.add_parser(
+        'user',
+        help='create a user',
+    )
+    parser_user.set_defaults(func=create_user)
+    parser_agent = subparsers_create.add_parser(
+        'agent',
+        help='create a agent',
+    )
+    parser_agent.set_defaults(func=create_agent)
 
     parser.add_argument(
         '--skip-tls-verify',
