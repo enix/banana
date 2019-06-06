@@ -67,3 +67,6 @@ bananactl
 # certs & keys
 /security
 agent/state.json
+
+# python stuff
+__pycache__
