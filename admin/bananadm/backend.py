@@ -22,7 +22,7 @@ def prompt_secret_values(type):
 
 def create_backend_secret(args, values):
     client = vault.get_vault_client(args)
-    secret_path = 'backend/{}'.format(args.name)
+    secret_path = 'backends/{}'.format(args.name)
     mount_point = '{}/{}/secrets'.format(args.root_path, args.client)
     client.secrets.kv.v2.create_or_update_secret(
         path=secret_path,

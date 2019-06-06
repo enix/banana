@@ -27,7 +27,7 @@ type VaultConfig struct {
 // FetchSecret : Retreive a secret map from the current set path
 func (vault *VaultClient) FetchSecret(key string) (map[string]string, error) {
 	company := Credentials.Cert.Subject.Organization[0]
-	secret, err := vault.Client.Logical().Read(fmt.Sprintf("%s/%s/secrets/%s", vault.Config.RootPath, company, key))
+	secret, err := vault.Client.Logical().Read(fmt.Sprintf("%s/%s/secrets/data/%s", vault.Config.RootPath, company, key))
 	if err != nil {
 		return nil, err
 	}
@@ -35,14 +35,13 @@ func (vault *VaultClient) FetchSecret(key string) (map[string]string, error) {
 		return nil, fmt.Errorf("secret %s not found in vault", key)
 	}
 
-	// fmt.Println(secret.Data)
-	// kvInterface, ok := secret.Data)
-	// if !ok {
-	// 	return nil, errors.New("vault API returned an unexpected data type")
-	// }
+	kvInterface, ok := secret.Data["data"].(map[string]interface{})
+	if !ok {
+		return nil, errors.New("vault API returned an unexpected data type")
+	}
 
 	kv := make(map[string]string)
-	for key, value := range secret.Data {
+	for key, value := range kvInterface {
 		kv[key] = fmt.Sprintf("%v", value)
 	}
 
@@ -53,11 +52,12 @@ func (vault *VaultClient) FetchSecret(key string) (map[string]string, error) {
 //										and returns the given key from the secret map
 func (vault *VaultClient) GetStorageAccess(key string) (string, error) {
 	if vault.StorageAccess == nil {
-		kv, err := vault.FetchSecret(vault.Config.StorageSecretPath)
+		kv, err := vault.FetchSecret("backends/" + vault.Config.StorageSecretPath)
 		if err != nil {
 			return "", err
 		}
 
+		fmt.Println(kv)
 		vault.StorageAccess = &kv
 	}
 

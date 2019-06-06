@@ -57,7 +57,7 @@ func (config *Config) LoadDefaults() {
 		TTL:         3600,
 		Vault: services.VaultConfig{
 			Addr:              "http://localhost:7777",
-			StorageSecretPath: "storage",
+			StorageSecretPath: "openstack",
 			RootPath:          "banana",
 		},
 	}

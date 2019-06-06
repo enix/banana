@@ -9,11 +9,12 @@ path "{root_path}/{company}/secrets/agents/{{{{identity.entity.name}}}}" {{
 '''
 
 agent_access_policy_template = '''
-path "{root_path}/{company}/secrets/backends/*" {{
+path "{root_path}/{company}/secrets/data/backends/*" {{
     capabilities = ["read"]
 }}
 
-path "{root_path}/{company}/secrets/agents/{{{{identity.entity.name}}}}/*" {{
+path "{root_path}/{company}/secrets/data/agents/\
+{{{{identity.entity.name}}}}/*" {{
     capabilities = ["read", "list", "create", "update"]
 }}
 '''
