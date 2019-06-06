@@ -3,7 +3,12 @@ from bananadm import client
 from bananadm import user
 from bananadm import agent
 from bananadm import backend
+from bananadm import monitor
 from bananadm import input
+
+
+def reconfigure(args):
+    monitor.reconfigure(args)
 
 
 def create_user(args):
@@ -32,6 +37,16 @@ def create_backend_secret(args, type):
 def init_arguments():
     parser = argparse.ArgumentParser()
     subparsers = parser.add_subparsers(title='subcommands')
+
+    subparsers.add_parser(
+        'init',
+        help='setup monitor policies and get its certificate'
+    ).set_defaults(func=monitor.init)
+
+    subparsers.add_parser(
+        'reconfigure',
+        help='ask monitor\'s nginx to re-fetch all CA certs'
+    ).set_defaults(func=reconfigure)
 
     parser_create = subparsers.add_parser(
         'new',
