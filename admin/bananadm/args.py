@@ -40,7 +40,7 @@ def init_arguments():
 
     subparsers.add_parser(
         'init',
-        help='setup monitor policies and get its certificate'
+        help='setup monitor policies'
     ).set_defaults(func=monitor.init)
 
     subparsers.add_parser(
@@ -50,7 +50,7 @@ def init_arguments():
 
     parser_create = subparsers.add_parser(
         'new',
-        help='create a client|user|agent'
+        help='create a client|user|agent|backend'
     )
     subparsers_create = parser_create.add_subparsers(
         title='types that can be created',
