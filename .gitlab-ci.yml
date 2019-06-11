@@ -22,12 +22,20 @@ build-stack:
     entrypoint:
       - sh
       - -c
+  # before_script:
+    # - mkdir -p /go/src/enix.io
+    # - ln -s /builds/products/banana/agent/src /go/src/enix.io/banana
+    # - cd /go/src/enix.io/banana
+    # - unlink services
+    # - unlink models
+    # - cp -r /builds/products/banana/api/src/services .
+    # - cp -r /builds/products/banana/api/src/models .
+
   before_script:
     - mkdir -p /go/src/enix.io
-    - ln -s /builds/products/banana /go/src/enix.io/banana
-    - ln -s /builds/products/banana/api/src /go/src/enix.io/banana/src
+    - ln -s /builds/products/banana/agent/src /go/src/enix.io/src
   script:
-    - cd /go/src/enix.io/banana/agent/src
+    - cd /go/src/enix.io/src
     - dep init
     - go build -o ${BANANACTL}
   artifacts:
