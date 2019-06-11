@@ -44,15 +44,15 @@ services:
       - ./config/vault:/config
       - ./config/tls:/tls
 
-  proxy:
-    image: nginx:latest
+  nginx:
+    build: ./config/nginx
     ports:
       - 443:443
     restart: unless-stopped
     volumes:
-      - ./config/nginx/conf.d:/etc/nginx/conf.d
-      - ./security/ca/trusted-ca.pem:/trusted-ca.pem
       - ./config/tls:/tls
+      - ./config/nginx/conf.d:/etc/nginx/conf.d
+      - ./config/nginx/fetch_ca_certs.sh:/fetch_ca_certs.sh
 
   redis:
     image: redis:5.0
