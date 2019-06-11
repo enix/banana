@@ -30,13 +30,14 @@ build-stack:
     - unlink models
     - cp -r /builds/products/banana/api/src/services .
     - cp -r /builds/products/banana/api/src/models .
+    - mkdir dist
   script:
     - cd /go/src/enix.io/banana/src
     - dep init
-    - go build -o /${BANANACTL}
+    - go build -o ./dist/${BANANACTL}
   artifacts:
     paths:
-      - /${BANANACTL}
+      - ./dist/*
 
 build-agent-linux:
   <<: *build-agent
