@@ -33,10 +33,10 @@ build-stack:
   script:
     - cd /go/src/enix.io/banana/src
     - dep init
-    - go build -o ${BANANACTL}
+    - go build -o /${BANANACTL}
   artifacts:
     paths:
-      - ${BANANACTL}
+      - /${BANANACTL}
 
 build-agent-linux:
   <<: *build-agent
