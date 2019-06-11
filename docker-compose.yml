@@ -45,6 +45,7 @@ services:
       - ./config/tls:/tls
 
   nginx:
+    image: docker-registry.enix.io/products/banana/nginx:dev
     build: ./config/nginx
     ports:
       - 443:443

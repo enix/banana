@@ -1,0 +1,37 @@
+stages:
+  - build
+  - release
+
+variables:
+  BANANACTL: bananactl
+  BANANADM: bananadm
+
+build-stack:
+  stage: build
+  script: docker-compose build && docker-compose push
+
+.build-agent: &build-agent
+  stage: build
+  before_script:
+    - mkdir dist
+  script:
+    - cd agent
+    - go build -o ${BANANACTL}
+  artifacts:
+    paths:
+      - ${BANANACTL}
+
+build-agent-linux:
+  <<: *build-agent
+  variables:
+    GOOS: linux
+
+build-agent-darwin:
+  <<: *build-agent
+  variables:
+    GOOS: darwin
+
+build-agent-windows:
+  <<: *build-agent
+  variables:
+    GOOS: windows
