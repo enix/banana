@@ -15,7 +15,11 @@ build-stack:
 
 .build-agent: &build-agent
   stage: build
-  image: enix/go-dep:0.5
+  image:
+    name: enix/go-dep:0.5
+    entrypoint:
+      - sh
+      - -c
   before_script:
     - mkdir dist
   script:
