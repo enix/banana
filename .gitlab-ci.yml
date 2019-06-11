@@ -8,10 +8,14 @@ variables:
 
 build-stack:
   stage: build
+  image: docker/compose
+  services:
+    - dind
   script: docker-compose build && docker-compose push
 
 .build-agent: &build-agent
   stage: build
+  image: enix/go-dep:0.5
   before_script:
     - mkdir dist
   script:
