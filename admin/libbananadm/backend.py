@@ -1,6 +1,6 @@
 import os
-from bananadm import input
-from bananadm import vault
+from libbananadm import input
+from libbananadm import vault
 
 
 def promt_s3_secret_values():

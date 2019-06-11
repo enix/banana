@@ -1,8 +1,8 @@
 import os
 import requests
-from bananadm import vault
-from bananadm import policies
-from bananadm import monitor
+from libbananadm import vault
+from libbananadm import policies
+from libbananadm import monitor
 
 
 def create_client(args):

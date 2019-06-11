@@ -1,10 +1,10 @@
 import argparse
-from bananadm import client
-from bananadm import user
-from bananadm import agent
-from bananadm import backend
-from bananadm import monitor
-from bananadm import input
+from libbananadm import client
+from libbananadm import user
+from libbananadm import agent
+from libbananadm import backend
+from libbananadm import monitor
+from libbananadm import input
 
 
 def reconfigure(args):

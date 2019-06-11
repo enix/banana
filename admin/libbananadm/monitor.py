@@ -1,7 +1,7 @@
 import os
 import requests
-from bananadm import vault
-from bananadm import policies
+from libbananadm import vault
+from libbananadm import policies
 
 
 def init(args):

@@ -1,5 +1,5 @@
 import os
-from bananadm import vault
+from libbananadm import vault
 
 
 def create_user(args):
