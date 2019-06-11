@@ -7,10 +7,7 @@ import (
 )
 
 // pingCmd : Command implementation for 'ping'
-type pingCmd struct {
-	Organization string
-	Name         string
-}
+type pingCmd struct{}
 
 // newPingCmd : Creates ping command from command line args
 func newPingCmd(args *launchArgs) (*pingCmd, error) {
