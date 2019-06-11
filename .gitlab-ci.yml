@@ -22,9 +22,11 @@ build-stack:
     entrypoint:
       - sh
       - -c
+  before_script:
+    - mkdir -p /go/src/enix.io
+    - ln -s /builds/products/banana/agent/src /go/src/enix.io/banana
   script:
-    - export GOPATH=/builds/products/banana/agent
-    - cd agent/src
+    - cd /go/src/enix.io/banana
     - dep init
     - go build -o ${BANANACTL}
   artifacts:
