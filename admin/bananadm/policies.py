@@ -16,21 +16,21 @@ path "{root_path}/{company}/secrets/data/agents/{{{{identity.entity.id}}}}"\
 '''
 
 monitor_policy_template = '''
-path "sys/mounts" {
+path "sys/mounts" {{
   capabilities = ["read"]
-}
+}}
 
-path "{root_path}/+/root-pki/ca/pem" {
+path "{root_path}/+/root-pki/ca/pem" {{
   capabilities = ["read"]
-}
+}}
 
-path "{root_path}/+/agents-pki/ca/pem" {
+path "{root_path}/+/agents-pki/ca/pem" {{
   capabilities = ["read"]
-}
+}}
 
-path "{root_path}/+/users-pki/ca/pem" {
+path "{root_path}/+/users-pki/ca/pem" {{
   capabilities = ["read"]
-}
+}}
 '''
 
 
