@@ -92,5 +92,10 @@ def init_arguments():
         help='root vault mount point',
         default='banana',
     )
+    parser.add_argument(
+        '--monitor-addr',
+        help='monitor API address',
+        default='https://api.banana.enix.io',
+    )
 
     return parser.parse_args()

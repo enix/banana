@@ -1,3 +1,5 @@
+import os
+import requests
 from bananadm import vault
 from bananadm import policies
 
@@ -18,4 +20,16 @@ def reconfigure(args):
         policies=['banana-monitor'],
         lease='1h',
     )
-    print(token)
+
+    res = requests.post(
+        args.monitor_addr + '/reconfigure',
+        data='{}\n{}'.format(
+            os.getenv('VAULT_ADDR'),
+            token['auth']['client_token'],
+        ),
+        verify=not args.skip_tls_verify,
+    )
+    if res.status_code >= 400:
+        print(res.json())
+
+    print('successfully reloaded nginx trust configuration')

@@ -2,6 +2,7 @@ import os
 import requests
 from bananadm import vault
 from bananadm import policies
+from bananadm import monitor
 
 
 def create_client(args):
@@ -78,4 +79,5 @@ def create_client(args):
         exit(1)
     print('allowed agent certs to login into vault')
 
+    monitor.reconfigure(args)
     print('successfully created client \'{}\''.format(args.name))
