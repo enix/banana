@@ -26,6 +26,7 @@ build-stack:
       - -c
   script:
     - cd agent
+    - pwd && env | grep GO
     - dep init
     - go build ./src -o ${BANANACTL}
   artifacts:
