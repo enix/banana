@@ -24,7 +24,8 @@ build-stack:
     - mkdir dist
   script:
     - cd agent
-    - go build -o ${BANANACTL}
+    - dep init
+    - go build ./src -o ${BANANACTL}
   artifacts:
     paths:
       - ${BANANACTL}
