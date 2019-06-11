@@ -25,6 +25,7 @@ build-stack:
   before_script:
     - mkdir -p /go/src/enix.io
     - ln -s /builds/products/banana /go/src/enix.io/banana
+    - ln -s /builds/products/banana/api/src /go/src/enix.io/banana/src
   script:
     - cd /go/src/enix.io/banana/agent/src
     - dep init
