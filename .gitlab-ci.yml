@@ -17,16 +17,14 @@ build-stack:
 
 .build-agent: &build-agent
   stage: build
-  variables:
-    GOPATH: /builds/products/banana/agent
   image:
     name: enix/go-dep:0.5
     entrypoint:
       - sh
       - -c
   script:
+    - export GOPATH=/builds/products/banana/agent
     - cd agent
-    - pwd && env | grep GO
     - dep init
     - go build ./src -o ${BANANACTL}
   artifacts:
