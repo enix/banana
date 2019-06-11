@@ -15,13 +15,13 @@ build-stack:
 
 .build-agent: &build-agent
   stage: build
+  variables:
+    GOPATH: /builds/products/banana/agent
   image:
     name: enix/go-dep:0.5
     entrypoint:
       - sh
       - -c
-  before_script:
-    - mkdir dist
   script:
     - cd agent
     - dep init
