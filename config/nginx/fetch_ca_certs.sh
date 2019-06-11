@@ -1,10 +1,18 @@
 #! /usr/bin/env bash
 
-set -e
-
 out="$1"
-export VAULT_ADDR="$2"
-export VAULT_TOKEN="$3"
+
+read vault_addr
+read vault_token
+export VAULT_ADDR="${vault_addr}"
+export VAULT_TOKEN="${vault_token}"
+
+vault token lookup -tls-skip-verify > /dev/null 2>&1
+if [ $? -ne 0 ]; then
+	export VAULT_ADDR="https://vault:8200"
+fi
+
+set -e
 
 vault token lookup -tls-skip-verify > /dev/null
 
