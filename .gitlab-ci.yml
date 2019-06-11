@@ -8,7 +8,7 @@ variables:
 
 build-stack:
   stage: build
-  image: docker/compose
+  image: docker/compose:1.25.0-rc1
   services:
     - docker:dind
   script: docker-compose build && docker-compose push
