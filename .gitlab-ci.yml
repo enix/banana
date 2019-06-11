@@ -24,9 +24,9 @@ build-stack:
       - -c
   script:
     - export GOPATH=/builds/products/banana/agent
-    - cd agent
+    - cd agent/src
     - dep init
-    - go build ./src -o ${BANANACTL}
+    - go build -o ${BANANACTL}
   artifacts:
     paths:
       - ${BANANACTL}
