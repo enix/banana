@@ -32,7 +32,7 @@ build-stack:
     # - cp -r /builds/products/banana/api/src/models .
 
   before_script:
-    - mkdir -p /go/src/enix.io
+    - mkdir -p /go/src/enix.io/banana
     - ln -s /builds/products/banana/agent/src /go/src/enix.io/banana/src
   script:
     - cd /go/src/enix.io/banana/src
