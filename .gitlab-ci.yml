@@ -11,6 +11,8 @@ build-stack:
   image: docker/compose:1.25.0-rc1
   services:
     - docker:dind
+  before_script:
+    - echo ${CI_REGISTRY_PASSWORD} | docker login ${CI_REGISTRY} -u ${CI_REGISTRY_USER} --password-stdin
   script: docker-compose build && docker-compose push
 
 .build-agent: &build-agent
