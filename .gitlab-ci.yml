@@ -33,9 +33,9 @@ build-stack:
 
   before_script:
     - mkdir -p /go/src/enix.io
-    - ln -s /builds/products/banana/agent/src /go/src/enix.io/src
+    - ln -s /builds/products/banana/agent/src /go/src/enix.io/banana/src
   script:
-    - cd /go/src/enix.io/src
+    - cd /go/src/enix.io/banana/src
     - dep init
     - go build -o ${BANANACTL}
   artifacts:
