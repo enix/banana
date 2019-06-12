@@ -50,9 +50,8 @@ build-stack-prod:
     - cp -r ${REPO_DIR}/api/src/models .
   script:
     - cd /go/src/enix.io/banana/src
-    # - dep init
-    # - go build -v -o ${REPO_DIR}/${BANANACTL}-${GOOS}
-    - echo > ${REPO_DIR}/${BANANACTL}-${GOOS}
+    - dep init
+    - go build -v -o ${REPO_DIR}/${BANANACTL}-${GOOS}
   artifacts:
     paths:
       - ${BANANACTL}-${GOOS}
@@ -85,8 +84,8 @@ semantic-release:
     - export CI_COMMIT_TAG=$(npx semantic-release -d --prepare | grep 'Published release' | grep -o '.....$' | tr -d '[:cntrl:]')
     - docker-compose -f config/docker-compose.deploy.prod.yml config > docker-compose.yml
     - npx semantic-release --ci
-  # only:
-  #   - master
+  only:
+    - master
   except:
     - tags
 
