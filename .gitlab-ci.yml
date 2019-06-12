@@ -27,7 +27,7 @@ build-stack-prod:
   <<: *build-stack
   script:
     - export CI_COMMIT_TAG=${CI_COMMIT_TAG:1}
-    - export COMPOSE_FLAGS='-f docker-compose.yml -f config/docker-compose.prod.yml'
+    - export COMPOSE_FLAGS='-f docker-compose.yml -f config/docker-compose.build.prod.yml'
     - docker-compose ${COMPOSE_FLAGS} build --parallel
     - docker-compose ${COMPOSE_FLAGS} push
   only:
@@ -76,8 +76,12 @@ build-agent-windows:
 semantic-release:
   stage: release
   image: enix/semantic-release:gitlab
+  before_script:
+    - apk add --update py-pip python-dev libffi-dev openssl-dev gcc libc-dev make
+    - pip install --upgrade pip
+    - pip install docker-compose
   script:
-    - mv config/docker-compose.deploy.prod.yml docker-compose.yml
+    - docker-compose -f config/docker-compose.deploy.prod.yml config > docker-compose.yml
     - npx semantic-release --ci
   # only:
   #   - master
