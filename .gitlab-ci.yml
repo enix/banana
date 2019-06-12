@@ -50,8 +50,9 @@ build-stack-prod:
     - cp -r ${REPO_DIR}/api/src/models .
   script:
     - cd /go/src/enix.io/banana/src
-    - dep init
-    - go build -v -o ${REPO_DIR}/${BANANACTL}-${GOOS}
+    # - dep init
+    # - go build -v -o ${REPO_DIR}/${BANANACTL}-${GOOS}
+    - echo > ${REPO_DIR}/${BANANACTL}-${GOOS}
   artifacts:
     paths:
       - ${BANANACTL}-${GOOS}
