@@ -4,8 +4,6 @@ stages:
 
 variables:
   REPO_DIR: /builds/products/banana
-  BANANACTL: bananactl
-  BANANADM: bananadm
 
 build-stack:
   stage: build
@@ -38,6 +36,16 @@ build-stack:
   artifacts:
     paths:
       - ${BANANACTL}
+
+build-admin:
+  stage: build
+  image: python:3.7
+  before_script:
+    - pip3 install twine
+  script:
+    - cd admin
+    - ./setup.py sdist bdist_wheel
+    - twine upload dist/* --repository-url ${PYPI_REPOSITORY}
 
 build-agent-linux:
   <<: *build-agent
