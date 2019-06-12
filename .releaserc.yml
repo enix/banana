@@ -5,5 +5,4 @@ plugins:
     - gitlabUrl: https://gitlab.enix.io
       assets:
         - ./bananactl-*
-        - ./docker-compose.yml
 branch: develop

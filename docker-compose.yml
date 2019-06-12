@@ -16,10 +16,7 @@ services:
 
   api:
     image: docker-registry.enix.io/products/banana/api:${CI_COMMIT_TAG:-dev}
-    build:
-      context: ./api
-    ports:
-      - 8080:80
+    build: ./api
     expose:
       - 80
     volumes:

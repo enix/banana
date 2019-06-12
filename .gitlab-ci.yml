@@ -24,7 +24,9 @@ build-stack-dev:
 
 build-stack-prod:
   <<: *build-stack
-  script: docker-compose build --parallel && docker-compose push
+  script:
+    - export COMPOSE_FLAGS='-f docker-compose.yml -f config/docker-compose.prod.yml'
+    - docker-compose ${COMPOSE_FLAGS} build --parallel && docker-compose ${COMPOSE_FLAGS} push
   only:
     - tags
 
