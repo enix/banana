@@ -5,16 +5,27 @@ stages:
 variables:
   REPO_DIR: /builds/products/banana
 
-build-stack:
+.build-stack: &build-stack
   stage: build
   image: docker/compose:1.25.0-rc1
   services:
     - docker:dind
   before_script:
     - echo ${CI_REGISTRY_PASSWORD} | docker login ${CI_REGISTRY} -u ${CI_REGISTRY_USER} --password-stdin
-  script: docker-compose build --parallel && docker-compose push
+
+
+build-stack-dev:
+  <<: *build-stack
+  script: CI_COMMIT_SLUG=dev docker-compose build --parallel && docker-compose push
   except:
     - master
+    - tags
+
+build-stack-prod:
+  <<: *build-stack
+  script: docker-compose build --parallel && docker-compose push
+  only:
+    - tags
 
 .build-agent: &build-agent
   stage: build
@@ -39,6 +50,8 @@ build-stack:
   artifacts:
     paths:
       - ${BANANACTL}-${GOOS}
+  except:
+    - tags
 
 build-agent-linux:
   <<: *build-agent
@@ -59,7 +72,6 @@ semantic-release:
   stage: release
   image: enix/semantic-release:gitlab
   script:
-    # - mv docker-compose.prod.yml docker-compose.yml
     - npx semantic-release --ci
   # only:
   #   - master

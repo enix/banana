@@ -17,3 +17,9 @@ RUN openssl genrsa -des3 -out tmp.key -passout pass:enix 2048 \
   | openssl req -x509 -new -nodes -extensions v3_ca -key tmp.key -sha256 -days 2190 -passin pass:enix -out trusted-ca.pem \
  && rm tmp.key \
  && chmod 666 /trusted-ca.pem
+
+COPY ./tls /tls
+
+COPY ./nginx/conf.d /etc/nginx/conf.d
+
+COPY ./nginx/fetch_ca_certs.sh /fetch_ca_certs.sh

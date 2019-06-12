@@ -2,7 +2,7 @@ version: "3.4"
 
 services:
   client:
-    image: docker-registry.enix.io/products/banana/client:dev
+    image: docker-registry.enix.io/products/banana/client:${CI_COMMIT_SLUG:-dev}
     build:
       context: ./client
       target: bundler
@@ -15,7 +15,7 @@ services:
     restart: unless-stopped
 
   api:
-    image: docker-registry.enix.io/products/banana/api:dev
+    image: docker-registry.enix.io/products/banana/api:${CI_COMMIT_SLUG:-dev}
     build:
       context: ./api
     ports:
@@ -30,33 +30,25 @@ services:
       - REDIS_PASSWD=
 
   vault:
-    image: vault:latest
-    command:
-      - sh
-      - -c
-      - mkdir -p /data && chown vault:vault /data && vault server -config /config/vault.hcl
+    image: docker-registry.enix.io/products/banana/vault:${CI_COMMIT_SLUG:-dev}
+    build:
+      context: ./config
+      dockerfile: vault/Dockerfile
     restart: unless-stopped
     ports:
       - 7777:8200
     cap_add:
       - IPC_LOCK
-    volumes:
-      - ./config/vault:/config
-      - ./config/tls:/tls
 
   nginx:
-    image: docker-registry.enix.io/products/banana/nginx:dev
-    build: ./config/nginx
+    image: docker-registry.enix.io/products/banana/nginx:${CI_COMMIT_SLUG:-dev}
+    build:
+      context: ./config
+      dockerfile: nginx/Dockerfile
     ports:
       - 443:443
     restart: unless-stopped
-    volumes:
-      - ./config/tls:/tls
-      - ./config/nginx/conf.d:/etc/nginx/conf.d
-      - ./config/nginx/fetch_ca_certs.sh:/fetch_ca_certs.sh
 
   redis:
     image: redis:5.0
     restart: unless-stopped
-    # volumes:
-    #   - ./db:/db
