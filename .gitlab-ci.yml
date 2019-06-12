@@ -79,8 +79,8 @@ semantic-release:
   script:
     - mv config/docker-compose.deploy.prod.yml docker-compose.yml
     - npx semantic-release --ci
-  only:
-    - master
+  # only:
+  #   - master
   except:
     - tags
 
