@@ -12,7 +12,7 @@ build-stack:
     - docker:dind
   before_script:
     - echo ${CI_REGISTRY_PASSWORD} | docker login ${CI_REGISTRY} -u ${CI_REGISTRY_USER} --password-stdin
-  script: docker-compose build --parralel && docker-compose push
+  script: docker-compose build --parallel && docker-compose push
   except:
     - master
 
