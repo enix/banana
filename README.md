@@ -15,7 +15,9 @@ docker-compose up -d
 
 #### On nodes to be backed up
 
-Add to your `$PATH` the latest `bananactl` binary. You can grab it from the [gitlab releases](https://gitlab.enix.io/products/banana/releases).
+Add to your `$PATH` the latest `bananactl` binary. You can grab it from the [gitlab releases](https://gitlab.enix.io/products/banana/releases) too.
+
+You'll also need to install `duplicity` separately.
 
 #### On the admin node (can be your laptop)
 
@@ -25,9 +27,7 @@ Make sure you have `python3` and `pip3` in your `$PATH`, then install `bananadm`
 pip3 install --extra-index-url https://test.pypi.org/simple bananadm
 ```
 
-## Setting up banana
-
-### Setup Vault
+## Setting up Vault
 
 In the dev stack Vault is listening on port 7777 (https). If needed, init & unseal Vault.
 
