@@ -5,4 +5,3 @@ plugins:
     - gitlabUrl: https://gitlab.enix.io
       assets:
         - ./bananactl-*
-branch: develop
