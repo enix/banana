@@ -3,16 +3,29 @@
 Complete documentation is available here :
 https://confluence.enix.org/pages/viewpage.action?pageId=31621154
 
+## Installing banana
 
-## Setting up banana
+#### On the monitor node
 
-### Start the stack
+Grab the lastest `docker-compose.yml` from [gitlab releases](https://gitlab.enix.io/products/banana/releases) and run the stack.
 
 ```bash
-git clone -b develop https://gitlab.enix.io/products/banana.git
-cd banana
-docker-compose up -d --build
+docker-compose up -d
 ```
+
+#### On nodes to be backed up
+
+Add to your `$PATH` the latest `bananactl` binary. You can grab it from the [gitlab releases](https://gitlab.enix.io/products/banana/releases).
+
+#### On the admin node (can be your laptop)
+
+Make sure you have `python3` and `pip3` in your `$PATH`, then install `bananadm`.
+
+```bash
+pip3 install --extra-index-url https://test.pypi.org/simple bananadm
+```
+
+## Setting up banana
 
 ### Setup Vault
 
@@ -24,15 +37,24 @@ Then enable the cert auth method :
 vault auth enable cert
 ```
 
-### Add core policies needed for banana
+## Using bananadm
 
-The switch `--skip-tls-verify` will be needed in dev environment.
+First set your environment variables so `bananadm` can reach Vault.
+
+```bash
+export VAULT_ADDR=https://localhost:7777
+export VAULT_TOKEN=some.token
+```
+
+On the very first time, you'll need to init some policies:
 
 ```bash
 bananadm init
 ```
 
-## Using bananadm
+> When using the CLI in dev environment, add the switch `--skip-tls-verify` to all `bananadm` commands.
+
+`bananadm` is now ready for use and you're done setting up banana.
 
 ```bash
 bananadm -h
