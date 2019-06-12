@@ -77,6 +77,7 @@ semantic-release:
   stage: release
   image: enix/semantic-release:gitlab
   script:
+    - mv config/docker-compose.deploy.prod.yml docker-compose.yml
     - npx semantic-release --ci
   only:
     - master
