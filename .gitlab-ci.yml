@@ -81,6 +81,7 @@ semantic-release:
     - pip install --upgrade pip
     - pip install docker-compose
   script:
+    - export CI_COMMIT_TAG=$(npx semantic-release -d --prepare | grep 'Published release' | grep -o '.....$' | tr -d '[:cntrl:]')
     - docker-compose -f config/docker-compose.deploy.prod.yml config > docker-compose.yml
     - npx semantic-release --ci
   # only:
