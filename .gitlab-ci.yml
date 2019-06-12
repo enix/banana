@@ -32,10 +32,10 @@ build-stack:
   script:
     - cd /go/src/enix.io/banana/src
     - dep init
-    - go build -v -o ${REPO_DIR}/${BANANACTL}
+    - go build -v -o ${REPO_DIR}/${BANANACTL}-${GOOS}
   artifacts:
     paths:
-      - ${BANANACTL}
+      - ${BANANACTL}-${GOOS}
 
 build-admin:
   stage: build
@@ -61,3 +61,13 @@ build-agent-windows:
   <<: *build-agent
   variables:
     GOOS: windows
+
+semantic-release:
+  stage: release
+  image: enix/semantic-release:gitlab
+  script:
+    - npx semantic-release --ci
+  only:
+    - master
+  except:
+    - tags
