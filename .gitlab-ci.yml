@@ -1,0 +1,102 @@
+stages:
+  - build
+  - release
+
+variables:
+  REPO_DIR: /builds/products/banana
+
+.build-stack: &build-stack
+  stage: build
+  image: docker/compose:1.25.0-rc1
+  services:
+    - docker:dind
+  before_script:
+    - echo ${CI_REGISTRY_PASSWORD} | docker login ${CI_REGISTRY} -u ${CI_REGISTRY_USER} --password-stdin
+
+build-stack-dev:
+  <<: *build-stack
+  script:
+    - export CI_COMMIT_TAG=dev
+    - docker-compose build --parallel
+    - docker-compose push
+  except:
+    - master
+    - tags
+
+build-stack-prod:
+  <<: *build-stack
+  script:
+    - export CI_COMMIT_TAG=${CI_COMMIT_TAG:1}
+    - export COMPOSE_FLAGS='-f docker-compose.yml -f config/docker-compose.build.prod.yml'
+    - docker-compose ${COMPOSE_FLAGS} build --parallel
+    - docker-compose ${COMPOSE_FLAGS} push
+  only:
+    - tags
+
+.build-agent: &build-agent
+  stage: build
+  image:
+    name: enix/go-dep:0.5
+    entrypoint:
+      - sh
+      - -c
+  before_script:
+    - mkdir -p /go/src/enix.io/banana
+    - ln -s ${REPO_DIR}/agent/src /go/src/enix.io/banana/src
+    - cd /go/src/enix.io/banana/src
+    - unlink services
+    - unlink models
+    - cp -r ${REPO_DIR}/api/src/services .
+    - cp -r ${REPO_DIR}/api/src/models .
+  script:
+    - cd /go/src/enix.io/banana/src
+    - dep init
+    - go build -v -o ${REPO_DIR}/${BANANACTL}-${GOOS}
+  artifacts:
+    paths:
+      - ${BANANACTL}-${GOOS}
+  except:
+    - tags
+
+build-agent-linux:
+  <<: *build-agent
+  variables:
+    GOOS: linux
+
+build-agent-darwin:
+  <<: *build-agent
+  variables:
+    GOOS: darwin
+
+build-agent-windows:
+  <<: *build-agent
+  variables:
+    GOOS: windows
+
+semantic-release:
+  stage: release
+  image: enix/semantic-release:gitlab
+  before_script:
+    - apk add --update py-pip python-dev libffi-dev openssl-dev gcc libc-dev make
+    - pip install --upgrade pip
+    - pip install docker-compose
+  script:
+    - export CI_COMMIT_TAG=$(npx semantic-release -d --prepare | grep 'Published release' | grep -o '.....$' | tr -d '[:cntrl:]')
+    - docker-compose -f config/docker-compose.deploy.prod.yml config > docker-compose.yml
+    - npx semantic-release --ci
+  only:
+    - master
+  except:
+    - tags
+
+release-admin:
+  stage: release
+  image: python:3.7
+  before_script:
+    - pip3 install twine
+  script:
+    - cd admin
+    - ./setup.py sdist bdist_wheel
+    - twine upload dist/* --repository-url ${PYPI_REPOSITORY}
+  only:
+    - tags

@@ -1,0 +1,9 @@
+[Unit]
+Description=Execute banana routine every fifteen minutes
+
+[Timer]
+OnCalendar=*:0/15
+Unit=banana.service
+
+[Install]
+WantedBy=multi-user.target

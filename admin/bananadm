@@ -1,0 +1,24 @@
+#! /usr/bin/env python3
+
+import urllib3
+from libbananadm import args
+from libbananadm import vault
+
+
+def main(argv, usage_fn):
+    if not ('func' in dir(argv)):
+        usage_fn()
+        return 0
+    if argv.skip_tls_verify:
+        urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+    if not vault.get_vault_client(argv).is_authenticated():
+        print('invalid authentication data')
+        return 1
+
+    argv.func(argv)
+    return 0
+
+
+if __name__ == "__main__":
+    parser = args.init_arguments()
+    exit(main(parser.parse_args(), parser.print_help))

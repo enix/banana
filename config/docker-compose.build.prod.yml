@@ -1,0 +1,10 @@
+version: "3.4"
+
+services:
+  client:
+    build:
+      target: runner
+
+  api:
+    build:
+      target: prod

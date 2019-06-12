@@ -1,0 +1,51 @@
+version: "3.4"
+
+services:
+  client:
+    image: docker-registry.enix.io/products/banana/client:${CI_COMMIT_TAG:-dev}
+    build:
+      context: ./client
+      target: bundler
+    expose:
+      - 80
+    volumes:
+      - ./client/src:/app/src
+      - ./client/res/public:/app/public
+      - ./client/config-overrides.js:/app/config-overrides.js
+    restart: unless-stopped
+
+  api:
+    image: docker-registry.enix.io/products/banana/api:${CI_COMMIT_TAG:-dev}
+    build: ./api
+    expose:
+      - 80
+    volumes:
+      - ./api/src:/go/src/enix.io/banana/src
+    restart: unless-stopped
+    environment:
+      - REDIS_ADDR=redis:6379
+      - REDIS_PASSWD=
+
+  vault:
+    image: docker-registry.enix.io/products/banana/vault:${CI_COMMIT_TAG:-dev}
+    build:
+      context: ./config
+      dockerfile: vault/Dockerfile
+    restart: unless-stopped
+    ports:
+      - 7777:8200
+    cap_add:
+      - IPC_LOCK
+
+  nginx:
+    image: docker-registry.enix.io/products/banana/nginx:${CI_COMMIT_TAG:-dev}
+    build:
+      context: ./config
+      dockerfile: nginx/Dockerfile
+    ports:
+      - 443:443
+    restart: unless-stopped
+
+  redis:
+    image: redis:5.0
+    restart: unless-stopped
