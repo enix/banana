@@ -3,6 +3,7 @@ stages:
   - release
 
 variables:
+  REPO_DIR: /builds/products/banana
   BANANACTL: bananactl
   BANANADM: bananadm
 
@@ -24,21 +25,20 @@ build-stack:
       - -c
   before_script:
     - mkdir -p /go/src/enix.io/banana
-    - ln -s /builds/products/banana/agent/src /go/src/enix.io/banana/src
+    - ln -s ${REPO_DIR}/agent/src /go/src/enix.io/banana/src
     - cd /go/src/enix.io/banana/src
     - unlink services
     - unlink models
-    - cp -r /builds/products/banana/api/src/services .
-    - cp -r /builds/products/banana/api/src/models .
-    - mkdir dist
+    - cp -r ${REPO_DIR}/api/src/services .
+    - cp -r ${REPO_DIR}/banana/api/src/models .
   script:
     - cd /go/src/enix.io/banana/src
     - dep init
-    - go build -v -o /${BANANACTL}
+    - go build -v -o ${REPO_DIR}/${BANANACTL}
     - ls -l /
   artifacts:
     paths:
-      - /${BANANACTL}
+      - ${BANANACTL}
 
 build-agent-linux:
   <<: *build-agent
