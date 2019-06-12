@@ -2,7 +2,7 @@ version: "3.4"
 
 services:
   client:
-    image: docker-registry.enix.io/products/banana/client:${CI_COMMIT_SLUG:-dev}
+    image: docker-registry.enix.io/products/banana/client:${CI_COMMIT_REF_SLUG:-dev}
     build:
       context: ./client
       target: bundler
@@ -15,7 +15,7 @@ services:
     restart: unless-stopped
 
   api:
-    image: docker-registry.enix.io/products/banana/api:${CI_COMMIT_SLUG:-dev}
+    image: docker-registry.enix.io/products/banana/api:${CI_COMMIT_REF_SLUG:-dev}
     build:
       context: ./api
     ports:
@@ -30,7 +30,7 @@ services:
       - REDIS_PASSWD=
 
   vault:
-    image: docker-registry.enix.io/products/banana/vault:${CI_COMMIT_SLUG:-dev}
+    image: docker-registry.enix.io/products/banana/vault:${CI_COMMIT_REF_SLUG:-dev}
     build:
       context: ./config
       dockerfile: vault/Dockerfile
@@ -41,7 +41,7 @@ services:
       - IPC_LOCK
 
   nginx:
-    image: docker-registry.enix.io/products/banana/nginx:${CI_COMMIT_SLUG:-dev}
+    image: docker-registry.enix.io/products/banana/nginx:${CI_COMMIT_REF_SLUG:-dev}
     build:
       context: ./config
       dockerfile: nginx/Dockerfile

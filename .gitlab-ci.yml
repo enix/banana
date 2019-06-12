@@ -13,10 +13,9 @@ variables:
   before_script:
     - echo ${CI_REGISTRY_PASSWORD} | docker login ${CI_REGISTRY} -u ${CI_REGISTRY_USER} --password-stdin
 
-
 build-stack-dev:
   <<: *build-stack
-  script: CI_COMMIT_SLUG=dev docker-compose build --parallel && docker-compose push
+  script: CI_COMMIT_REF_SLUG=dev docker-compose build --parallel && docker-compose push
   except:
     - master
     - tags
