@@ -12,7 +12,9 @@ build-stack:
     - docker:dind
   before_script:
     - echo ${CI_REGISTRY_PASSWORD} | docker login ${CI_REGISTRY} -u ${CI_REGISTRY_USER} --password-stdin
-  script: docker-compose build && docker-compose push
+  script: docker-compose build --parralel && docker-compose push
+  except:
+    - master
 
 .build-agent: &build-agent
   stage: build
@@ -37,16 +39,6 @@ build-stack:
     paths:
       - ${BANANACTL}-${GOOS}
 
-build-admin:
-  stage: build
-  image: python:3.7
-  before_script:
-    - pip3 install twine
-  script:
-    - cd admin
-    - ./setup.py sdist bdist_wheel
-    - twine upload dist/* --repository-url ${PYPI_REPOSITORY}
-
 build-agent-linux:
   <<: *build-agent
   variables:
@@ -66,8 +58,21 @@ semantic-release:
   stage: release
   image: enix/semantic-release:gitlab
   script:
+    # - mv docker-compose.prod.yml docker-compose.yml
     - npx semantic-release --ci
   only:
     - master
   except:
+    - tags
+
+release-admin:
+  stage: release
+  image: python:3.7
+  before_script:
+    - pip3 install twine
+  script:
+    - cd admin
+    - ./setup.py sdist bdist_wheel
+    - twine upload dist/* --repository-url ${PYPI_REPOSITORY}
+  only:
     - tags

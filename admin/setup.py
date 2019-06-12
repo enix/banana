@@ -1,10 +1,11 @@
 #! /usr/bin/env python3
 
+import os
 import setuptools
 
 setuptools.setup(
     name='bananadm',
-    version='0.1.5',
+    version=os.getenv('CI_COMMIT_TAG'),
     author='Arthur Chaloin from Enix <enix.io>',
     author_email='arthur.chaloin@enix.fr',
     description='A command line tool to manage Banana instances',
