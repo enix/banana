@@ -98,4 +98,4 @@ def init_arguments():
         default='https://api.banana.enix.io',
     )
 
-    return parser.parse_args()
+    return parser

@@ -4,7 +4,7 @@ import setuptools
 
 setuptools.setup(
     name='bananadm',
-    version='0.1.4',
+    version='0.1.0',
     author='Arthur Chaloin from Enix <enix.io>',
     author_email='arthur.chaloin@enix.fr',
     description='A command line tool to manage Banana instances',
