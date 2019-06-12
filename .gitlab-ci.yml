@@ -30,12 +30,11 @@ build-stack:
     - unlink services
     - unlink models
     - cp -r ${REPO_DIR}/api/src/services .
-    - cp -r ${REPO_DIR}/banana/api/src/models .
+    - cp -r ${REPO_DIR}/api/src/models .
   script:
     - cd /go/src/enix.io/banana/src
     - dep init
     - go build -v -o ${REPO_DIR}/${BANANACTL}
-    - ls -l /
   artifacts:
     paths:
       - ${BANANACTL}
