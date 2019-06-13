@@ -29,13 +29,7 @@ pip3 install --extra-index-url https://test.pypi.org/simple bananadm
 
 ## Setting up Vault
 
-In the dev stack Vault is listening on port 7777 (https). If needed, init & unseal Vault.
-
-Then enable the cert auth method :
-
-```bash
-vault auth enable cert
-```
+If needed, init & unseal Vault. In the dev stack, Vault is listening on port 7777 (https).
 
 ## Using bananadm
 
@@ -46,13 +40,13 @@ export VAULT_ADDR=https://localhost:7777
 export VAULT_TOKEN=some.token
 ```
 
-On the very first time, you'll need to init some policies:
+> When using the CLI in dev environment, add the switch `--skip-tls-verify` to all `bananadm` commands.
+
+On the very first time, you'll need to init some stuff:
 
 ```bash
 bananadm init
 ```
-
-> When using the CLI in dev environment, add the switch `--skip-tls-verify` to all `bananadm` commands.
 
 `bananadm` is now ready for use and you're done setting up banana.
 
