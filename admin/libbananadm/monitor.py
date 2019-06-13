@@ -13,6 +13,12 @@ def init(args):
     )
     print('created policy {}'.format(monitor_policy_name))
 
+    client.sys.enable_auth_method(
+        method_type='cert',
+        path='{}/cert'.format(args.root_path),
+    )
+    print('enabled cert auth method on path {}/cert'.format(args.root_path))
+
 
 def reconfigure(args):
     client = vault.get_vault_client(args)
