@@ -58,7 +58,7 @@ def create_client(args):
     print('created policy {}'.format(access_policy_name))
 
     res = requests.post(
-        '{}/v1/auth/cert/certs/{}'.format(
+        '{}/v1/auth/banana/cert/certs/{}'.format(
             os.getenv('VAULT_ADDR'),
             args.name,
         ),
