@@ -58,7 +58,7 @@ func (config *Config) LoadDefaults() {
 		StorageHost:        "object-storage.r1.nxs.enix.io",
 		TTL:                3600,
 		Vault: services.VaultConfig{
-			Addr:              "http://localhost:7777",
+			Addr:              "https://vault.banana.enix.io:7777",
 			StorageSecretPath: "openstack",
 			RootPath:          "banana",
 		},

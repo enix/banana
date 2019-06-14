@@ -121,7 +121,7 @@ func OpenVaultConnection(config *VaultConfig, skipTLSVerify bool) error {
 		return err
 	}
 	if Credentials != nil {
-		secret, err := Vault.Client.Logical().Write("auth/cert/login", map[string]interface{}{})
+		secret, err := Vault.Client.Logical().Write("auth/banana/cert/login", map[string]interface{}{})
 		if err != nil {
 			return err
 		}
