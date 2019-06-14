@@ -55,6 +55,7 @@ build-stack-prod:
   artifacts:
     paths:
       - ${BANANACTL}-${GOOS}
+      - config/systemd/*
   except:
     - tags
 
