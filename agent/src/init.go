@@ -59,6 +59,8 @@ func (cmd *initCmd) execute(config *models.Config) error {
 	assert(err)
 	err = ioutil.WriteFile("/etc/banana/banana.json", configRaw, 00644)
 	assert(err)
+	err = ioutil.WriteFile("/etc/banana/schedule.json", []byte("{}"), 00644)
+	assert(err)
 
 	loadCredentialsToMem(config)
 	sendMessageToMonitor("initialized", config, cmd, "")

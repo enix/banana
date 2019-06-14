@@ -23,3 +23,5 @@ COPY ./tls /tls
 COPY ./nginx/conf.d /etc/nginx/conf.d
 
 COPY ./nginx/fetch_ca_certs.sh /fetch_ca_certs.sh
+
+COPY ./nginx/install_agent.sh /install_agent.sh
