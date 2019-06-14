@@ -51,7 +51,7 @@ build-stack-prod:
   script:
     - cd /go/src/enix.io/banana/src
     - dep init
-    - go build -v -o ${REPO_DIR}/${BANANACTL}-${GOOS}
+    - CGO_ENABLED=0 go build -v -o ${REPO_DIR}/${BANANACTL}-${GOOS}
   artifacts:
     paths:
       - ${BANANACTL}-${GOOS}
