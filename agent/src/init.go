@@ -33,6 +33,8 @@ func newInitCmd(args *launchArgs) (*initCmd, error) {
 
 // execute : Start the init using specified backend
 func (cmd *initCmd) execute(config *models.Config) error {
+	config.BucketName = cmd.Name
+
 	err := os.Mkdir("/etc/banana", 00755)
 	if err != nil && os.IsPermission(err) {
 		return err
