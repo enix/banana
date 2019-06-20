@@ -3,6 +3,10 @@ import { connect } from 'react-redux';
 import { mapDispatchToProps } from 'redux-saga-wrapper';
 import { Form, Divider, Select } from 'antd';
 
+import {
+  getLocalTimezoneName,
+} from '../helpers';
+
 class Settings extends Component {
 
   state = {
@@ -26,10 +30,10 @@ class Settings extends Component {
         <Select
           onChange={evt => this.onValueChange('dateFormat', evt)}
           defaultValue={this.state.fields.dateFormat}
-          style={{ width: 100, marginLeft: 50 }}
+          style={{ minWidth: 200, marginLeft: 50 }}
         >
           <Select.Option value='UTC'>UTC</Select.Option>
-          <Select.Option value='local'>Local</Select.Option>
+          <Select.Option value='local'>Local ({getLocalTimezoneName()})</Select.Option>
         </Select>
       </div>
     );

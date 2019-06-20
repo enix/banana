@@ -18,6 +18,7 @@ import Code from '../components/Code';
 import Loading from '../components/Loading';
 import {
   formatDate,
+  getSelectedTimezoneName,
   formatSnakeCase,
   getTagColor,
   getTypeTagColor,
@@ -47,7 +48,7 @@ class Agent extends Component {
       ),
     },
     {
-      title: `Time (${localStorage.getItem('dateFormat') || 'UTC'})`,
+      title: `Time (${getSelectedTimezoneName()})`,
       dataIndex: 'timestamp',
       key: 'timestamp',
       render: formatDate,
