@@ -42,7 +42,7 @@ If needed, init & unseal Vault. In the dev stack, Vault is listening on port 777
 First set your environment variables so `bananadm` can reach Vault.
 
 ```bash
-export VAULT_ADDR=https://localhost:7777
+export VAULT_ADDR=https://vault.banana.enix.io:7777
 export VAULT_TOKEN=some.token
 ```
 
@@ -100,9 +100,7 @@ All agents in the same client share all the storage secrets.
 
 * Install `bananactl` on the node(s):
 
-First, install `duplicity`, `curl` and `zip` (the last two are required by the install script).
-
-Then install `bananactl` using the following command:
+First, install `curl`. Then install `bananactl` using the following command (add `-k` tu `curl` command if needed):
 
 ```bash
 $ curl -fsS https://api.banana.enix.io/install | bash -s - '<gitlab access token>'
