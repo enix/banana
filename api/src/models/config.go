@@ -56,7 +56,7 @@ func (config *Config) LoadDefaults() {
 		ScheduleConfigPath: "/etc/banana/schedule.json",
 		BucketName:         "backup-bucket",
 		StorageHost:        "object-storage.r1.nxs.enix.io",
-		TTL:                3600,
+		TTL:                3600 * 24 * 30 * 6,
 		Vault: services.VaultConfig{
 			Addr:              "https://vault.banana.enix.io:7777",
 			StorageSecretPath: "openstack",
