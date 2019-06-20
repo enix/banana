@@ -3,6 +3,7 @@ package main
 import (
 	"crypto/x509"
 	"encoding/pem"
+	"errors"
 	"flag"
 	"io/ioutil"
 
@@ -20,13 +21,19 @@ func assert(err error) {
 func loadCredentialsToMem(config *models.Config) error {
 	privkeyBytes, err := ioutil.ReadFile(config.PrivKeyPath)
 	assert(err)
-	privkeyBlock, _ := pem.Decode([]byte(privkeyBytes))
+	privkeyBlock, rest := pem.Decode([]byte(privkeyBytes))
+	if len(rest) > 0 {
+		assert(errors.New("failed to parse private key. is it in pem format?"))
+	}
 	privkey, err := x509.ParsePKCS1PrivateKey(privkeyBlock.Bytes)
 	assert(err)
 
 	certBytes, err := ioutil.ReadFile(config.CertPath)
 	assert(err)
-	certBlock, _ := pem.Decode([]byte(certBytes))
+	certBlock, rest := pem.Decode([]byte(certBytes))
+	if len(rest) > 0 {
+		assert(errors.New("failed to parse certificate. is it in pem format?"))
+	}
 	cert, err := x509.ParseCertificate(certBlock.Bytes)
 	assert(err)
 
