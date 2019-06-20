@@ -17,6 +17,11 @@ curl > agent.zip \
 	-fLH "Private-Token: ${token}" \
 	"https://gitlab.enix.io/api/v4/projects/166/jobs/artifacts/${ref}/download?job=build-agent-linux"
 
+
+run apt update
+run apt install -y python-pip duplicity zip
+run pip install boto
+
 run unzip -o agent.zip
 
 run cp bananactl-linux /usr/bin/bananactl
