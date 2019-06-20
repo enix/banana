@@ -1,7 +1,0 @@
-FR
-Ile-de-France
-Paris
-Enix
-Root
-enix.io
-yellow-cow@enix.io
