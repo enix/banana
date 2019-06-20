@@ -59,18 +59,22 @@ func (cmd *routineCmd) runTasks(state *State, config *models.Config) error {
 		fullConfig := schedule
 		mergo.Merge(&fullConfig.Config, config)
 		if !exists || backupState.Status == "Failed" {
-			err := cmd.doBackup(name, state, &fullConfig)
-			if err != nil {
-				return err
-			}
+			_ = cmd.doBackup(name, state, &fullConfig)
+			// TODO: do something with this error
+			// at this point monitor should already knows that something fucked up
+			// but I feel bad leaving an error unused
+			// if err != nil {
+			// 	return err
+			// }
 		} else {
 			timeSinceLastBackup := time.Since(backupState.Time)
 			interval := time.Duration(schedule.Interval * float32(time.Hour) * 24)
 			if timeSinceLastBackup > interval {
-				err := cmd.doBackup(name, state, &fullConfig)
-				if err != nil {
-					return err
-				}
+				_ = cmd.doBackup(name, state, &fullConfig)
+				// TODO: same as above
+				// if err != nil {
+				// 	return err
+				// }
 			}
 		}
 	}
@@ -101,7 +105,10 @@ func (cmd *routineCmd) doBackup(name string, state *State, config *models.Schedu
 		Name:   name,
 		Target: config.Target,
 	}
-	backupCmd.execute(&config.Config)
+	err := backupCmd.execute(&config.Config)
+	if err != nil {
+		return err
+	}
 
 	state.LastBackups[name].Status = "Success"
 	state.LastBackups[name].Type = typ
