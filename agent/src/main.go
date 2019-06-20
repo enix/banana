@@ -51,7 +51,6 @@ func main() {
 	config := &models.Config{}
 	config.LoadDefaults()
 	if args.Values[0] == "init" {
-		config.Backend = ""
 		config.BucketName = ""
 		config.TTL = 0
 	}
