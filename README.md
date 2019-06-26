@@ -35,7 +35,24 @@ pip3 install --extra-index-url https://test.pypi.org/simple bananadm
 
 ## Setting up Vault
 
-If needed, init & unseal Vault. In the dev stack, Vault is listening on port 7777 (https).
+### Using an existing Vault
+
+Create a policy for `bananadm`. This policy should allow:
+
+* To enable the `cert` auth method on `/auth/banana/cert`.
+* Full access to `/banana/*` mount points.
+
+### Using the Vault in the stack
+
+The Vault in the stack is not suitable for production (yet) mostly because it uses a TLS certificate that is located in the repo with its private key. Furthermore this certificate is self-signed, so expect TLS errors from your browser.
+
+> You can trust the root CA `banana/config/tls/ca.pem` to avoid TLS warnings.
+
+* Open your browser on [vault.banana.enix.io:7777](https://vault.banana.enix.io:7777).
+* Choose any number of master keys, only one will be enough for dev purposes.
+* Download the credentials.
+* Unseal the Vault by entering the base 64 master key(s).
+* Either use the root token directly or follow the steps in [using an existing vault](###Using-an-existing-Vault) to allow bananadm to connect.
 
 ## Using bananadm
 
