@@ -17,7 +17,9 @@ def init(args):
         method_type='cert',
         path='{}/cert'.format(args.root_path),
     )
-    print('enabled cert auth method on path {}/cert'.format(args.root_path))
+    print(
+        'enabled cert auth method on path /auth/{}/cert'.format(args.root_path)
+    )
 
 
 def reconfigure(args):

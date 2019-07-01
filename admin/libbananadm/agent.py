@@ -6,7 +6,7 @@ def create_agent(args):
     print('generating temporary token to allow new agent(s) to register')
     client = vault.get_vault_client(args)
     token = client.create_token(
-        policies=['{}-agent-creation'.format(args.client)],
+        policies=['{}-{}-agent-creation'.format(args.root_path, args.client)],
         lease='1h',
     )
 

@@ -43,14 +43,17 @@ def create_client(args):
         .format(client_agents_pki)
     )
 
-    create_policy_name = '{}-agent-creation'.format(args.name)
+    create_policy_name = '{}-{}-agent-creation'.format(
+        args.root_path,
+        args.name,
+    )
     client.sys.create_or_update_policy(
         name=create_policy_name,
         policy=policies.generate_agent_install_policy(args),
     )
     print('created policy {}'.format(create_policy_name))
 
-    access_policy_name = '{}-agent-access'.format(args.name)
+    access_policy_name = '{}-{}-agent-access'.format(args.root_path, args.name)
     client.sys.create_or_update_policy(
         name=access_policy_name,
         policy=policies.generate_agent_access_policy(args),
@@ -64,7 +67,7 @@ def create_client(args):
         ),
         json={
             'display_name': args.name,
-            'policies': '{}-agent-access'.format(args.name),
+            'policies': '{}-{}-agent-access'.format(args.root_path, args.name),
             'certificate': agents_cert,
         },
         headers={
@@ -74,8 +77,6 @@ def create_client(args):
     )
     if res.status_code >= 400:
         print(res.json())
-        print('did you enable cert auth method in vault?')
-        print('\n$ vault auth enable cert')
         exit(1)
     print('allowed agent certs to login into vault')
 
