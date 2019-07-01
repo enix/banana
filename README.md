@@ -30,38 +30,57 @@ docker-compose up -d
 Make sure you have `python3` and `pip3` installed, then install `bananadm`.
 
 ```bash
-pip3 install --extra-index-url https://test.pypi.org/simple bananadm
+pip3 install bananadm
 ```
 
 ## Setting up Vault
 
-### Using an existing Vault
-
-Create a policy for `bananadm`. This policy should allow:
-
-* To enable the `cert` auth method on `/auth/banana/cert`.
-* Full access to `/banana/*` mount points.
-
 ### Using the Vault in the stack
 
-The Vault in the stack is not suitable for production (yet) mostly because it uses a TLS certificate that is located in the repo with its private key. Furthermore this certificate is self-signed, so expect TLS errors from your browser.
+DISCLAIMER: For now, it is highly recommended to run this project on a dedicated Vault. The permissions granted to `bananadm` are dangerous and can lead to a full privilege escalation on your Vault instance.
 
-> You can trust the root CA `banana/config/tls/ca.pem` to avoid TLS warnings.
+The Vault in the stack uses a self-signed certificate, so expect TLS errors from your browser.
 
 * Open your browser on [vault.banana.enix.io:7777](https://vault.banana.enix.io:7777).
 * Choose any number of master keys, only one will be enough for dev purposes.
 * Download the credentials.
 * Unseal the Vault by entering the base 64 master key(s).
-* Either use the root token directly or follow the steps in [using an existing vault](###Using-an-existing-Vault) to allow bananadm to connect.
+* Use the root token to continue to the next part.
 
-## Using bananadm
+### Base Vault setup
 
-First set your environment variables so `bananadm` can reach Vault.
+You need to allow `bananadm` to interact with Vault. To do so :
+
+* Log into Vault using any method. One possibility is to set your environment variables, just like this :
 
 ```bash
 export VAULT_ADDR=https://vault.banana.enix.io:7777
-export VAULT_TOKEN=some.token
+export VAULT_TOKEN=s.some_token
 ```
+
+* Download [the bananadm policy](https://gitlab.enix.io/products/banana/raw/master/config/vault/bananadm-policy.hcl).
+
+* Write this policy into Vault :
+
+```bash
+vault policy write bananadm bananadm-policy.hcl
+```
+
+* Issue a token with the associated permissions :
+
+```bash
+vault token create -policy=bananadm
+```
+
+* Reduce your privileges by updating your Vault token with the newly generated token :
+
+```bash
+export VAULT_TOKEN=s.freshly_generated_bananadm_token
+```
+
+## Using bananadm
+
+Make sure `VAULT_ADDR` and `VAULT_TOKEN` environment variables are set.
 
 > When using the CLI in dev environment, add the switch `--skip-tls-verify` to all `bananadm` commands.
 
@@ -76,6 +95,7 @@ bananadm init
 ```bash
 bananadm -h
 bananadm new -h
+bananadm new backend -h
 ```
 
 ## Example: Setting up a node for backup
@@ -92,8 +112,8 @@ mounted KV at path 'banana/enix/secrets'
 mounted root PKI at path 'banana/enix/root-pki'
 mounted users intermediate PKI at path 'banana/enix/users-pki'
 mounted agents intermediate PKI at path 'banana/enix/agents-pki'
-created policy enix-agent-creation
-created policy enix-agent-access
+created policy banana-enix-agent-creation
+created policy banana-enix-agent-access
 allowed agent certs to login into vault
 successfully reloaded nginx trust configuration
 successfully created client 'enix'
@@ -111,7 +131,7 @@ AWS_SECRET_ACCESS_KEY? 28664564************************
 successfully saved secret backends/openstack in KV engine banana/enix/secrets
 ```
 
-All agents in the same client share all the storage secrets.
+All agents in the same client share all the storage secrets. By default (for now), agents will try to use credentials stored in the backend named 'openstack'.
 
 ### Setup the agent(s)
 
