@@ -37,7 +37,7 @@ pip3 install bananadm
 
 ### Using the Vault in the stack
 
-> If you'd like to setup banana on your existing Vault instance, you can skip this part.
+DISCLAIMER: For now, it is highly recommended to run this project on a dedicated Vault. The permissions granted to `bananadm` are dangerous and can lead to a full privilege escalation on your Vault instance.
 
 The Vault in the stack uses a self-signed certificate, so expect TLS errors from your browser.
 
