@@ -28,9 +28,7 @@ services:
 
   vault:
     image: docker-registry.enix.io/products/banana/vault:${CI_COMMIT_TAG:-dev}
-    build:
-      context: ./config
-      dockerfile: vault/Dockerfile
+    build: ./config/vault
     restart: unless-stopped
     ports:
       - 7777:8200

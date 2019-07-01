@@ -1,7 +1,13 @@
 FROM vault
 
-COPY ./vault /config
+COPY ./vault.hcl /vault.hcl
 
-COPY ./tls /tls
+COPY ./entrypoint.sh /entrypoint.sh
 
-CMD mkdir -p /data && chown vault:vault /data && vault server -config /config/vault.hcl
+RUN mkdir -p /tls && chown vault:vault /tls
+
+RUN mkdir -p /data && chown vault:vault /data
+
+RUN apk add --update openssl
+
+CMD /entrypoint.sh
