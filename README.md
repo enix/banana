@@ -30,7 +30,7 @@ docker-compose up -d
 Make sure you have `python3` and `pip3` installed, then install `bananadm`.
 
 ```bash
-pip3 install --extra-index-url https://test.pypi.org/simple bananadm
+pip3 install bananadm
 ```
 
 ## Setting up Vault
