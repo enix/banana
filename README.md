@@ -58,7 +58,7 @@ export VAULT_ADDR=https://vault.banana.enix.io:7777
 export VAULT_TOKEN=s.some_token
 ```
 
-* Download [the bananadm policy]().
+* Download [the bananadm policy](https://gitlab.enix.io/products/banana/raw/master/config/vault/bananadm-policy.hcl).
 
 * Write this policy into Vault :
 
