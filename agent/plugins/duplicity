@@ -24,7 +24,6 @@ version)
 	;;
 
 backup)
-	>&2 echo ok
 	>&2 duplicity $2 -v8 --log-file /tmp/backup.log "$3" ${endpoint}
 	checkWarnings
 	;;
