@@ -24,7 +24,7 @@ run pip install boto
 
 run unzip -o agent.zip
 
-run cp bananactl-linux /usr/bin/bananactl
+run cp bananactl-linux /usr/local/bin/bananactl
 run cp config/systemd/* /etc/systemd/system/
 
 run systemctl start banana.timer
