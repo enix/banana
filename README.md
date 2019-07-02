@@ -35,44 +35,49 @@ pip3 install bananadm
 
 ## Setting up Vault
 
-### Using the Vault in the stack
-
-DISCLAIMER: For now, it is highly recommended to run this project on a dedicated Vault. The permissions granted to `bananadm` are dangerous and can lead to a full privilege escalation on your Vault instance.
-
-The Vault in the stack uses a self-signed certificate, so expect TLS errors from your browser.
-
-* Open your browser on [vault.banana.enix.io:7777](https://vault.banana.enix.io:7777).
-* Choose any number of master keys, only one will be enough for dev purposes.
-* Download the credentials.
-* Unseal the Vault by entering the base 64 master key(s).
-* Use the root token to continue to the next part.
-
-### Base Vault setup
-
 You need to allow `bananadm` to interact with Vault. To do so :
 
-* Log into Vault using any method. One possibility is to set your environment variables, just like this :
+> DISCLAIMER: For now, it is highly recommended to run this project on a dedicated Vault. The permissions granted to `bananadm` are dangerous and can lead to a full privilege escalation on your Vault instance.
+
+If your Vault is already up and running, you can skip to step 3.
+
+1. Init Vault :
 
 ```bash
 export VAULT_ADDR=https://vault.banana.enix.io:7777
-export VAULT_TOKEN=s.some_token
+
+# for the sake of simplicity we use a single unseal key. for production, it is highly recommended to use more
+vault operator init -tls-skip-verify -key-shares=1 -key-threshold=1
 ```
 
-* Download [the bananadm policy](https://gitlab.enix.io/products/banana/raw/master/config/vault/bananadm-policy.hcl).
-
-* Write this policy into Vault :
+2. Unseal Vault :
 
 ```bash
-vault policy write bananadm bananadm-policy.hcl
+# will prompt for the unseal key, which is the base 64 key in the previous command's output
+vault operator unseal -tls-skip-verify
 ```
 
-* Issue a token with the associated permissions :
+3. Log into Vault using any method. One possibility is to set the `VAULT_TOKEN` environment variables, just like this :
 
 ```bash
-vault token create -policy=bananadm
+export VAULT_TOKEN=s.the_root_token_in_step_1_output
 ```
 
-* Reduce your privileges by updating your Vault token with the newly generated token :
+4. Download [the bananadm policy](https://gitlab.enix.io/products/banana/raw/master/config/vault/bananadm-policy.hcl).
+
+5. Write this policy into Vault :
+
+```bash
+vault policy write -tls-skip-verify bananadm bananadm-policy.hcl
+```
+
+6. Issue a token with the associated permissions :
+
+```bash
+vault token create -tls-skip-verify -policy=bananadm
+```
+
+7. Downgrade your privileges by updating your Vault token with the newly generated token :
 
 ```bash
 export VAULT_TOKEN=s.freshly_generated_bananadm_token
@@ -82,7 +87,11 @@ export VAULT_TOKEN=s.freshly_generated_bananadm_token
 
 Make sure `VAULT_ADDR` and `VAULT_TOKEN` environment variables are set.
 
-> When using the CLI in dev environment, add the switch `--skip-tls-verify` to all `bananadm` commands.
+When using the CLI in dev environment, add the switch `--skip-tls-verify` to all `bananadm` commands :
+
+```bash
+alias bananadm="bananadm --skip-tls-verify"
+```
 
 On the very first time, you'll need to init some stuff:
 
