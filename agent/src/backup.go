@@ -51,7 +51,11 @@ func (cmd *backupCmd) execute(config *models.Config) error {
 	klog.Infof("running %s, see you on the other side\n", config.Plugin)
 	logs, err := plugin.backup(config, cmd)
 	if logs == nil {
-		sendMessageToMonitor("agent_crashed", config, cmd, err.Error())
+		if err != nil {
+			sendMessageToMonitor("agent_crashed", config, cmd, err.Error())
+		} else {
+			sendMessageToMonitor("agent_crashed", config, cmd, "")
+		}
 		return err
 	}
 	if err != nil {
