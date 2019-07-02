@@ -19,8 +19,7 @@ curl > agent.zip \
 
 
 run apt update
-run apt install -y python-pip duplicity zip
-run pip install boto
+run apt install -y python-boto duplicity zip
 
 run unzip -o agent.zip
 
