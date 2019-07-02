@@ -27,7 +27,7 @@ type ScheduledBackupConfig struct {
 // Config : Contains full confugration will be used to execute commands
 type Config struct {
 	MonitorURL         string                           `json:"monitor_url,omitempty"`
-	Backend            string                           `json:"backend,omitempty"`
+	Plugin             string                           `json:"plugin,omitempty"`
 	StatePath          string                           `json:"state_path,omitempty"`
 	PrivKeyPath        string                           `json:"private_key_path,omitempty"`
 	CertPath           string                           `json:"client_cert_path,omitempty"`
@@ -49,7 +49,7 @@ type CliConfig struct {
 func (config *Config) LoadDefaults() {
 	*config = Config{
 		MonitorURL:         "https://api.banana.enix.io",
-		Backend:            "duplicity",
+		Plugin:             "duplicity",
 		StatePath:          "/etc/banana/state.json",
 		PrivKeyPath:        "/etc/banana/privkey.pem",
 		CertPath:           "/etc/banana/cert.pem",
@@ -98,7 +98,7 @@ func (config *Config) LoadFromArgs(args *CliConfig) error {
 func (config *Config) LoadFromEnv() error {
 	env := Config{
 		MonitorURL:         os.Getenv("BANANA_MONITOR_URL"),
-		Backend:            os.Getenv("BANANA_BACKEND"),
+		Plugin:             os.Getenv("BANANA_PLUGIN"),
 		StatePath:          os.Getenv("BANANA_STATE_PATH"),
 		PrivKeyPath:        os.Getenv("BANANA_PRIVATE_KEY_PATH"),
 		CertPath:           os.Getenv("BANANA_CLIENT_CERT_PATH"),

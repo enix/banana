@@ -23,7 +23,7 @@ func loadArguments() *launchArgs {
 
 	getopt.FlagLong(&args.DisplayHelp, "help", 'h', "display this message")
 	getopt.FlagLong(&args.ConfigPath, "config", 'c', "path to config file", "banana.json")
-	getopt.FlagLong(&args.Flags.Backend, "backend", 'b', "backup engine to be used", "duplicity")
+	getopt.FlagLong(&args.Flags.Plugin, "plugin", 'p', "backup plugin to be used", "duplicity")
 	getopt.FlagLong(&args.Flags.MonitorURL, "monitor-url", 'm', "monitor API endpoint", "https://api.banana.enix.io")
 	getopt.FlagLong(&args.Flags.BucketName, "bucket", 'k', "target bucket name", "my-bucket-name")
 	getopt.FlagLong(&args.Flags.TTL, "ttl", 't', "time to live", "3600")

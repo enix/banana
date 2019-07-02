@@ -14,7 +14,7 @@ func newPingCmd(args *launchArgs) (*pingCmd, error) {
 	return &pingCmd{}, nil
 }
 
-// execute : Start the ping using specified backend
+// execute : Start the ping using specified plugin
 func (cmd *pingCmd) execute(config *models.Config) error {
 	sendMessageToMonitor("ping", config, cmd, "")
 	return nil

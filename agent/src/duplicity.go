@@ -11,7 +11,7 @@ import (
 	"enix.io/banana/src/services"
 )
 
-// duplicityBackend : BackupBackend implementation for duplicity
+// duplicityBackend : Plugin implementation for duplicity
 type duplicityBackend struct{}
 
 func checkForWarnings() bool {
@@ -57,7 +57,7 @@ func loadCredentialsToEnv() {
 	os.Setenv("PASSPHRASE", passphrase)
 }
 
-// Backup : BackupBackend's Backup call implementation for duplicity
+// Backup : Plugin's Backup call implementation for duplicity
 func (d *duplicityBackend) backup(config *models.Config, cmd *backupCmd) ([]byte, error) {
 	output, err := execute("duplicity", cmd.Type, "-v8", "--log-file", "/tmp/backup.log", cmd.Target, config.GetEndpoint(cmd.Name))
 	cmd.OpaqueID = getBackupID()
@@ -69,7 +69,7 @@ func (d *duplicityBackend) backup(config *models.Config, cmd *backupCmd) ([]byte
 	return output, err
 }
 
-// Restore : BackupBackend's Restore call implementation for duplicity
+// Restore : Plugin's Restore call implementation for duplicity
 func (d *duplicityBackend) restore(config *models.Config, cmd *restoreCmd) ([]byte, error) {
 	output, err := execute("duplicity", "--log-file", "/tmp/backup.log", "--restore-time", cmd.TargetTime, config.GetEndpoint(cmd.Name), cmd.TargetDirectory)
 
