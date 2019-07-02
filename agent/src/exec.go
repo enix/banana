@@ -33,11 +33,7 @@ func execute(cmd string, args ...string) ([]byte, []byte, error) {
 		return nil, nil, err
 	}
 
-	err = process.Wait()
-	if err != nil {
-		return nil, nil, err
-	}
-
 	fmt.Print(string(stderr))
+	err = process.Wait()
 	return stdout, stderr, err
 }
