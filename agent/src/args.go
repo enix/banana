@@ -31,6 +31,7 @@ func loadArguments() *launchArgs {
 	getopt.FlagLong(&args.Flags.StatePath, "state", 0, "state location", "/etc/banana/state.json")
 	getopt.FlagLong(&args.Flags.PrivKeyPath, "privkey", 0, "private key location", "/etc/banana/privkey.pem")
 	getopt.FlagLong(&args.Flags.CertPath, "cert", 0, "client certificate location", "/etc/banana/cert.pem")
+	getopt.FlagLong(&args.Flags.PluginsDir, "plugins-dir", 0, "directory to search for plugins", "/etc/banana/plugins.d")
 	getopt.FlagLong(&args.Flags.Vault.Addr, "vault-addr", 0, "vault API URL", "http://localhost:7777")
 	getopt.FlagLong(&args.Flags.Vault.StorageSecretPath, "vault-storage-secret", 0, "vault secret path where credentials are stored", "storage")
 	getopt.FlagLong(&args.Flags.Vault.RootPath, "vault-root-path", 0, "vault root path where all PKIs are mounted", "banana")

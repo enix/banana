@@ -34,6 +34,7 @@ type Config struct {
 	ScheduleConfigPath string                           `json:"schedule_config_path,omitempty"`
 	BucketName         string                           `json:"bucket,omitempty"`
 	StorageHost        string                           `json:"storage_host,omitempty"`
+	PluginsDir         string                           `json:"plugins_dir,omitempty"`
 	SkipTLSVerify      bool                             `json:"skip_tls_verify,omitempty"`
 	TTL                int64                            `json:"ttl,omitempty"`
 	Vault              services.VaultConfig             `json:"vault,omitempty"`
@@ -56,6 +57,7 @@ func (config *Config) LoadDefaults() {
 		ScheduleConfigPath: "/etc/banana/schedule.json",
 		BucketName:         "backup-bucket",
 		StorageHost:        "object-storage.r1.nxs.enix.io",
+		PluginsDir:         "/etc/banana/plugins.d",
 		TTL:                3600 * 24 * 30 * 6,
 		Vault: services.VaultConfig{
 			Addr:              "https://vault.banana.enix.io:7777",
@@ -105,6 +107,7 @@ func (config *Config) LoadFromEnv() error {
 		ScheduleConfigPath: os.Getenv("BANANA_SCHEDULE_CONFIG_PATH"),
 		BucketName:         os.Getenv("BANANA_BUCKET_NAME"),
 		StorageHost:        os.Getenv("BANANA_STORAGE_HOST"),
+		PluginsDir:         os.Getenv("BANANA_PLUGINS_DIR"),
 		Vault: services.VaultConfig{
 			Addr:              os.Getenv("VAULT_ADDR"),
 			RootPath:          os.Getenv("BANANA_VAULT_ROOT_PATH"),
