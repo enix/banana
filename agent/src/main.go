@@ -5,7 +5,9 @@ import (
 	"encoding/pem"
 	"errors"
 	"flag"
+	"fmt"
 	"io/ioutil"
+	"os"
 
 	"enix.io/banana/src/models"
 	"enix.io/banana/src/services"
@@ -53,6 +55,11 @@ func main() {
 	args := loadArguments()
 	if args.DisplayHelp || len(args.Values) < 1 {
 		Usage()
+	}
+
+	if args.Values[0] == "version" {
+		fmt.Println(version)
+		os.Exit(0)
 	}
 
 	config := &models.Config{}
