@@ -2,14 +2,13 @@
 
 ## Update the monitor stack
 
-* Grab the lastest `docker-compose.yml` from [gitlab releases](https://gitlab.enix.io/products/banana/releases).
-* Override the old compose file with the newly downloaded one.
-* Run `docker-compose up -d`
+1. Grab the lastest `docker-compose.yml` from [gitlab releases](https://gitlab.enix.io/products/banana/releases).
+2. Override the old compose file with the newly downloaded one.
+3. Run `docker-compose up -d`
+4. Unseal Vault again by providing the master key(s)
+5. Run `bananadm reconfigure`
 
-Please note that :
-
-* Vault's TLS certificate will be re-generated
-* You'll need to unseal Vault again by providing the master key(s)
+Please note that Vault's TLS certificate will be re-generated.
 
 ## Update the agent binary
 
