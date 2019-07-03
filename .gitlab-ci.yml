@@ -63,7 +63,7 @@ build-stack-prod:
     - unlink models
     - cp -r ${REPO_DIR}/api/src/services .
     - cp -r ${REPO_DIR}/api/src/models .
-    - cat ${REPO_DIR}/VERSION
+    - cat ${REPO_DIR}/VERSION || echo canary build ${CI_COMMIT_SHORT_SHA}
     - echo -e "package main\nconst version = \"v$(cat ${REPO_DIR}/VERSION || echo canary build ${CI_COMMIT_SHORT_SHA})\"" > version.go
   script:
     - cd /go/src/enix.io/banana/src
