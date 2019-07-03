@@ -6,6 +6,11 @@
 * Override the old compose file with the newly downloaded one.
 * Run `docker-compose up -d`
 
+Please note that :
+
+* Vault's TLS certificate will be re-generated
+* You'll need to unseal Vault again by providing the master key(s)
+
 ## Update the agent binary
 
 Run the install script again.
