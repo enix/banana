@@ -63,7 +63,8 @@ build-stack-prod:
     - unlink models
     - cp -r ${REPO_DIR}/api/src/services .
     - cp -r ${REPO_DIR}/api/src/models .
-    - echo -e "package main\nconst version = \"v$(cat ${REPO_DIR}/VERSION)\"" > version.go
+    - export VERSION=v$(cat ${REPO_DIR}/VERSION)
+    - echo -e "package main\nconst version = \"$(cat ${REPO_DIR}/VERSION && ${VERSION} || echo canary build ${CI_COMMIT_SHORT_SHA})\"" > version.go
   script:
     - cd /go/src/enix.io/banana/src
     - dep init
@@ -72,6 +73,7 @@ build-stack-prod:
     paths:
       - ${BANANACTL}-${GOOS}
       - config/systemd/*
+      - agent/plugins/*
   except:
     - tags
 
