@@ -40,5 +40,5 @@ services:
       - db:/data
 
 volumes:
-  - db:
-  - vault:
+  db:
+  vault:
