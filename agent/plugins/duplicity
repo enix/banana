@@ -1,0 +1,36 @@
+#! /usr/bin/env bash
+
+endpoint="s3://object-storage.r1.nxs.enix.io/plugintest/mybackup"
+
+set -e
+
+function checkWarnings {
+	set +e
+
+	grep -q WARNING /tmp/backup.log
+	if [[ $? -eq 0 ]]; then
+		>&2 echo "warnings were found in backup logs"
+		exit 1
+	fi
+	rm -f /tmp/backup.log
+
+	set -e
+}
+
+case $1 in
+
+version)
+	echo v1.0.0
+	;;
+
+backup)
+	>&2 duplicity $2 -v8 --log-file /tmp/backup.log "$3" ${endpoint}
+	checkWarnings
+	;;
+
+restore)
+	>&2 duplicity --log-file /tmp/backup.log --restore-time $2 ${endpoint} "$3"
+	checkWarnings
+	;;
+
+esac

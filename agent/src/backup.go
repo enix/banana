@@ -11,10 +11,9 @@ import (
 
 // backupCmd : Command implementation for 'backup'
 type backupCmd struct {
-	Name     string `json:"name"`
-	Target   string `json:"target"`
-	Type     string `json:"type"`
-	OpaqueID string `json:"opaque_id"`
+	Name   string `json:"name"`
+	Target string `json:"target"`
+	Type   string `json:"type"`
 }
 
 // newBackupCmd : Creates backup command from command line args
@@ -39,19 +38,23 @@ func newBackupCmd(args *launchArgs) (*backupCmd, error) {
 	}, nil
 }
 
-// execute : Start the backup using specified backend
+// execute : Start the backup using specified plugin
 func (cmd *backupCmd) execute(config *models.Config) error {
-	backend, err := newBackupBackend(config.Backend)
+	sendMessageToMonitor("backup_start", config, cmd, "")
+
+	plugin, err := newPlugin(config.Plugin)
 	if err != nil {
 		return err
 	}
 
-	sendMessageToMonitor("backup_start", config, cmd, "")
-	loadCredentialsToEnv()
-	klog.Infof("running %s, see you on the other side\n", config.Backend)
-	logs, err := backend.backup(config, cmd)
+	klog.Infof("running %s, see you on the other side\n", config.Plugin)
+	logs, err := plugin.backup(config, cmd)
 	if logs == nil {
-		sendMessageToMonitor("agent_crashed", config, cmd, err.Error())
+		if err != nil {
+			sendMessageToMonitor("agent_crashed", config, cmd, err.Error())
+		} else {
+			sendMessageToMonitor("agent_crashed", config, cmd, "")
+		}
 		return err
 	}
 	if err != nil {

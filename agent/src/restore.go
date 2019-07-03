@@ -34,19 +34,23 @@ func newRestoreCmd(args *launchArgs) (*restoreCmd, error) {
 	}, nil
 }
 
-// execute : Start the restore using specified backend
+// execute : Start the restore using specified plugin
 func (cmd *restoreCmd) execute(config *models.Config) error {
-	backend, err := newBackupBackend(config.Backend)
+	plugin, err := newPlugin(config.Plugin)
 	if err != nil {
 		return err
 	}
 
 	sendMessageToMonitor("restore_start", config, cmd, "")
 	loadCredentialsToEnv()
-	klog.Infof("running %s, see you on the other side\n", config.Backend)
-	logs, err := backend.restore(config, cmd)
+	klog.Infof("running %s, see you on the other side\n", config.Plugin)
+	logs, err := plugin.restore(config, cmd)
 	if logs == nil {
-		sendMessageToMonitor("agent_crashed", config, cmd, err.Error())
+		if err != nil {
+			sendMessageToMonitor("agent_crashed", config, cmd, err.Error())
+		} else {
+			sendMessageToMonitor("agent_crashed", config, cmd, "")
+		}
 		return err
 	}
 	if err != nil {

@@ -1,9 +1,24 @@
 stages:
+  - prepare
   - build
   - release
 
 variables:
   REPO_DIR: /builds/products/banana
+
+select-version:
+  stage: prepare
+  image: enix/semantic-release:gitlab
+  script:
+    - npx semantic-release -d --prepare | grep 'Published release' | grep -o '.....$' | tr -d '[:cntrl:]' > VERSION
+    - "echo version to be released: $(cat VERSION)"
+  only:
+    - master
+  except:
+    - tags
+  artifacts:
+    paths:
+      - VERSION
 
 .build-stack: &build-stack
   stage: build
@@ -48,6 +63,7 @@ build-stack-prod:
     - unlink models
     - cp -r ${REPO_DIR}/api/src/services .
     - cp -r ${REPO_DIR}/api/src/models .
+    - echo -e "package main\nconst version = \"v$(cat ${REPO_DIR}/VERSION)\"" > version.go
   script:
     - cd /go/src/enix.io/banana/src
     - dep init
@@ -82,7 +98,7 @@ semantic-release:
     - pip install --upgrade pip
     - pip install docker-compose
   script:
-    - export CI_COMMIT_TAG=$(npx semantic-release -d --prepare | grep 'Published release' | grep -o '.....$' | tr -d '[:cntrl:]')
+    - export CI_COMMIT_TAG=$(cat VERSION)
     - docker-compose -f config/docker-compose.deploy.prod.yml config > docker-compose.yml
     - npx semantic-release --ci
   only:

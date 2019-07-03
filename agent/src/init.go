@@ -31,7 +31,7 @@ func newInitCmd(args *launchArgs) (*initCmd, error) {
 	}, nil
 }
 
-// execute : Start the init using specified backend
+// execute : Start the init
 func (cmd *initCmd) execute(config *models.Config) error {
 	config.BucketName = cmd.Name
 

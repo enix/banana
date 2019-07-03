@@ -18,7 +18,7 @@ func newRoutineCmd(*launchArgs) (*routineCmd, error) {
 	return &routineCmd{}, nil
 }
 
-// execute : Start the routine using specified backend
+// execute : Start the routine using specified plugin
 func (cmd *routineCmd) execute(config *models.Config) error {
 	sendMessageToMonitor("routine_start", config, cmd, "")
 	klog.Info("starting banana routine")

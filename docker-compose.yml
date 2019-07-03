@@ -34,6 +34,8 @@ services:
       - 7777:8200
     cap_add:
       - IPC_LOCK
+    volumes:
+      - vault:/data
 
   nginx:
     image: docker-registry.enix.io/products/banana/nginx:${CI_COMMIT_TAG:-dev}
@@ -47,3 +49,9 @@ services:
   redis:
     image: redis:5.0
     restart: unless-stopped
+    volumes:
+      - db:/data
+
+volumes:
+  db:
+  vault:

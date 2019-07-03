@@ -23,7 +23,7 @@ func loadArguments() *launchArgs {
 
 	getopt.FlagLong(&args.DisplayHelp, "help", 'h', "display this message")
 	getopt.FlagLong(&args.ConfigPath, "config", 'c', "path to config file", "banana.json")
-	getopt.FlagLong(&args.Flags.Backend, "backend", 'b', "backup engine to be used", "duplicity")
+	getopt.FlagLong(&args.Flags.Plugin, "plugin", 'p', "backup plugin to be used", "duplicity")
 	getopt.FlagLong(&args.Flags.MonitorURL, "monitor-url", 'm', "monitor API endpoint", "https://api.banana.enix.io")
 	getopt.FlagLong(&args.Flags.BucketName, "bucket", 'k', "target bucket name", "my-bucket-name")
 	getopt.FlagLong(&args.Flags.TTL, "ttl", 't', "time to live", "3600")
@@ -31,6 +31,7 @@ func loadArguments() *launchArgs {
 	getopt.FlagLong(&args.Flags.StatePath, "state", 0, "state location", "/etc/banana/state.json")
 	getopt.FlagLong(&args.Flags.PrivKeyPath, "privkey", 0, "private key location", "/etc/banana/privkey.pem")
 	getopt.FlagLong(&args.Flags.CertPath, "cert", 0, "client certificate location", "/etc/banana/cert.pem")
+	getopt.FlagLong(&args.Flags.PluginsDir, "plugins-dir", 0, "directory to search for plugins", "/etc/banana/plugins.d")
 	getopt.FlagLong(&args.Flags.Vault.Addr, "vault-addr", 0, "vault API URL", "http://localhost:7777")
 	getopt.FlagLong(&args.Flags.Vault.StorageSecretPath, "vault-storage-secret", 0, "vault secret path where credentials are stored", "storage")
 	getopt.FlagLong(&args.Flags.Vault.RootPath, "vault-root-path", 0, "vault root path where all PKIs are mounted", "banana")

@@ -27,13 +27,14 @@ type ScheduledBackupConfig struct {
 // Config : Contains full confugration will be used to execute commands
 type Config struct {
 	MonitorURL         string                           `json:"monitor_url,omitempty"`
-	Backend            string                           `json:"backend,omitempty"`
+	Plugin             string                           `json:"plugin,omitempty"`
 	StatePath          string                           `json:"state_path,omitempty"`
 	PrivKeyPath        string                           `json:"private_key_path,omitempty"`
 	CertPath           string                           `json:"client_cert_path,omitempty"`
 	ScheduleConfigPath string                           `json:"schedule_config_path,omitempty"`
 	BucketName         string                           `json:"bucket,omitempty"`
 	StorageHost        string                           `json:"storage_host,omitempty"`
+	PluginsDir         string                           `json:"plugins_dir,omitempty"`
 	SkipTLSVerify      bool                             `json:"skip_tls_verify,omitempty"`
 	TTL                int64                            `json:"ttl,omitempty"`
 	Vault              services.VaultConfig             `json:"vault,omitempty"`
@@ -49,13 +50,14 @@ type CliConfig struct {
 func (config *Config) LoadDefaults() {
 	*config = Config{
 		MonitorURL:         "https://api.banana.enix.io",
-		Backend:            "duplicity",
+		Plugin:             "duplicity",
 		StatePath:          "/etc/banana/state.json",
 		PrivKeyPath:        "/etc/banana/privkey.pem",
 		CertPath:           "/etc/banana/cert.pem",
 		ScheduleConfigPath: "/etc/banana/schedule.json",
 		BucketName:         "backup-bucket",
 		StorageHost:        "object-storage.r1.nxs.enix.io",
+		PluginsDir:         "/etc/banana/plugins.d",
 		TTL:                3600 * 24 * 30 * 6,
 		Vault: services.VaultConfig{
 			Addr:              "https://vault.banana.enix.io:7777",
@@ -98,13 +100,14 @@ func (config *Config) LoadFromArgs(args *CliConfig) error {
 func (config *Config) LoadFromEnv() error {
 	env := Config{
 		MonitorURL:         os.Getenv("BANANA_MONITOR_URL"),
-		Backend:            os.Getenv("BANANA_BACKEND"),
+		Plugin:             os.Getenv("BANANA_PLUGIN"),
 		StatePath:          os.Getenv("BANANA_STATE_PATH"),
 		PrivKeyPath:        os.Getenv("BANANA_PRIVATE_KEY_PATH"),
 		CertPath:           os.Getenv("BANANA_CLIENT_CERT_PATH"),
 		ScheduleConfigPath: os.Getenv("BANANA_SCHEDULE_CONFIG_PATH"),
 		BucketName:         os.Getenv("BANANA_BUCKET_NAME"),
 		StorageHost:        os.Getenv("BANANA_STORAGE_HOST"),
+		PluginsDir:         os.Getenv("BANANA_PLUGINS_DIR"),
 		Vault: services.VaultConfig{
 			Addr:              os.Getenv("VAULT_ADDR"),
 			RootPath:          os.Getenv("BANANA_VAULT_ROOT_PATH"),
