@@ -1,7 +1,5 @@
 #! /usr/bin/env bash
 
-endpoint="s3://object-storage.r1.nxs.enix.io/plugintest/mybackup"
-
 set -e
 
 function checkWarnings {
@@ -24,12 +22,12 @@ version)
 	;;
 
 backup)
-	>&2 duplicity $2 -v8 --log-file /tmp/backup.log "$3" ${endpoint}
+	>&2 duplicity $2 -v8 --log-file /tmp/backup.log "$3" $4
 	checkWarnings
 	;;
 
 restore)
-	>&2 duplicity --log-file /tmp/backup.log --restore-time $2 ${endpoint} "$3"
+	>&2 duplicity --log-file /tmp/backup.log --restore-time $2 $4 "$3"
 	checkWarnings
 	;;
 
