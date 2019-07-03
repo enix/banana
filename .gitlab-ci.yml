@@ -9,7 +9,9 @@ variables:
 select-version:
   stage: prepare
   image: enix/semantic-release:gitlab
-  script: npx semantic-release -d --prepare | grep 'Published release' | grep -o '.....$' | tr -d '[:cntrl:]' > VERSION
+  script:
+    - npx semantic-release -d --prepare | grep 'Published release' | grep -o '.....$' | tr -d '[:cntrl:]' > VERSION
+    - "echo version to be released: $(cat VERSION)"
   artifacts:
     paths:
       - VERSION
@@ -57,7 +59,7 @@ build-stack-prod:
     - unlink models
     - cp -r ${REPO_DIR}/api/src/services .
     - cp -r ${REPO_DIR}/api/src/models .
-    - echo -e "package main\nconst version = \"v$(cat VERSION)\"" > version.go
+    - echo -e "package main\nconst version = \"v$(cat ${REPO_DIR}/VERSION)\"" > version.go
   script:
     - cd /go/src/enix.io/banana/src
     - dep init
