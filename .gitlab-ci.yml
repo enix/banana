@@ -72,6 +72,7 @@ build-stack-prod:
     paths:
       - ${BANANACTL}-${GOOS}
       - config/systemd/*
+      - agent/plugins/*
   except:
     - tags
 

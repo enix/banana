@@ -33,6 +33,8 @@ run unzip -o agent.zip
 
 run cp bananactl-linux /usr/local/bin/bananactl
 run cp config/systemd/* /etc/systemd/system/
+run mkdir -p /etc/banana/plugins.d
+run cp agent/plugins/* /etc/banana/plugins.d/
 
 if [[ -z ${isUpgrade} ]]; then
 	run systemctl start banana.timer
