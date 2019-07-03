@@ -35,13 +35,19 @@ func (p *plugin) version(config *models.Config) (string, error) {
 }
 
 func (p *plugin) backup(config *models.Config, cmd *backupCmd) ([]byte, error) {
-	loadCredentialsToEnv()
+	err := loadCredentialsToEnv()
+	if err != nil {
+		return nil, err
+	}
 	_, stderr, err := p.spawn(config, "backup", cmd.Type, cmd.Target)
 	return stderr, err
 }
 
 func (p *plugin) restore(config *models.Config, cmd *restoreCmd) ([]byte, error) {
-	loadCredentialsToEnv()
+	err := loadCredentialsToEnv()
+	if err != nil {
+		return nil, err
+	}
 	_, stderr, err := p.spawn(config, "restore", cmd.TargetTime, cmd.TargetDirectory)
 	return stderr, err
 }
