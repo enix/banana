@@ -12,6 +12,10 @@ select-version:
   script:
     - npx semantic-release -d --prepare | grep 'Published release' | grep -o '.....$' | tr -d '[:cntrl:]' > VERSION
     - "echo version to be released: $(cat VERSION)"
+  only:
+    - master
+  except:
+    - tags
   artifacts:
     paths:
       - VERSION
