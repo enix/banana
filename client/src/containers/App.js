@@ -7,6 +7,7 @@ import { Layout } from 'antd';
 import Settings from '../containers/Settings';
 import Agents from '../containers/Agents';
 import Agent from '../containers/Agent';
+import Configuration from '../containers/Configuration';
 import Header from './Header';
 
 const { Content } = Layout;
@@ -26,6 +27,7 @@ class App extends Component {
             <Content style={{ padding: '40px', background: '#fff' }}>
               <Route exact path='/' component={Agents} />
               <Route exact path='/settings' component={Settings} />
+              <Route exact path='/configure' component={Configuration} />
               <Route exact path='/agent/:org/:cn' component={Agent} />
             </Content>
           </Layout>

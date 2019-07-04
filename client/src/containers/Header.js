@@ -38,6 +38,9 @@ class Header extends Component {
             <Link to='/'>Dashboard</Link>
           </Menu.Item>
           <Menu.Item key='2'>
+            <Link to='/configure'>Scheduler</Link>
+          </Menu.Item>
+          <Menu.Item key='3'>
             <Link to='/settings'>Settings</Link>
           </Menu.Item>
         </Menu>
