@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { mapDispatchToProps } from 'redux-saga-wrapper';
+import CopyToClipboard from 'react-copy-to-clipboard';
 import {
   Form,
   Input,
@@ -56,13 +57,25 @@ class Configuration extends Component {
     this.add();
   }
 
+  generateSchedule = values => values.keys.reduce((result, key) => {
+    const plugin = values.plugin[key];
+
+    result[values.name[key]] = {
+      interval: values.interval[key],
+      plugin,
+      ...this.plugins[plugin].component.generateSchedule(values[plugin][key]),
+    };
+
+    return result;
+  }, {});
+
   handleSubmit = evt => {
     evt.preventDefault();
 
     this.props.form.validateFields((err, values) => {
       // if (!err) {
         this.setState({
-          result: 'test',
+          result: JSON.stringify(this.generateSchedule(values), null, 2),
           resultVisible: true,
         });
       // }
@@ -81,10 +94,6 @@ class Configuration extends Component {
       keys: form.getFieldValue('keys').filter(k => k !== key),
     });
   }
-
-  downloadResult = () => console.log('download');
-
-  copyResult = () => console.log('copy');
 
   render() {
     const { getFieldDecorator, getFieldValue } = this.props.form;
@@ -188,15 +197,22 @@ class Configuration extends Component {
             <Button key='back' onClick={() => this.setState({ resultVisible: false })}>
               Close
             </Button>,
-            <Button key='copy' type='primary' onClick={this.copyResult}>
-              Copy
-            </Button>,
-            <Button key='download' type='primary' onClick={this.downloadResult}>
+            <CopyToClipboard key='copy' text={this.state.result}>
+              <Button type='primary'>
+                Copy
+              </Button>
+            </CopyToClipboard>,
+            <Button
+              key='download'
+              type='primary'
+              href={`data:application/octet-stream,${encodeURIComponent(this.state.result)}`}
+              style={{ marginLeft: 5 }}
+            >
               Download
             </Button>,
           ]}
         >
-          <Code dark>{this.state.result}</Code>
+          <Code dark id='result'>{this.state.result}</Code>
         </Modal>
       </>
     );

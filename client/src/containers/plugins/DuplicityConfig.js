@@ -14,6 +14,17 @@ class DuplicityConfiguration extends Component {
 
 	nextFieldUniqueId = 0
 
+	static generateSchedule = (values) => {
+		const includes = values.includes || [];
+		const excludes = values.excludes || [];
+		const generateFlagString = flag => (str, val) => str + `${flag} ${val} `;
+
+		return {
+			full_every: values.fullEvery,
+			plugin_args: includes.reduce(generateFlagString('--include'), '').trim() + ' ' + excludes.reduce(generateFlagString('--exclude'), '').trim(),
+		};
+	}
+
 	getFormKey = key => `duplicity[${this.props._key}].${key}s`
 
 	add = subkey => {
@@ -35,7 +46,7 @@ class DuplicityConfiguration extends Component {
 	renderField = (type, key, index) => {
 		const { getFieldDecorator } = this.props.form;
 
-		return <Form.Item label={`${type[0].toUpperCase()}${type.slice(1)} directory`} key={index}>
+		return <Form.Item label={`${type[0].toUpperCase()}${type.slice(1)} rule`} key={index}>
 			{getFieldDecorator(`${this.getFormKey(type)}[${key}]`, {
 				validateTrigger: ['onChange', 'onBlur'],
 				rules: [
