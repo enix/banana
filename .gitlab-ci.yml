@@ -10,7 +10,10 @@ select-version:
   stage: prepare
   image: enix/semantic-release:gitlab
   script:
-    - npx semantic-release -d --prepare | grep 'Published release' | grep -o '.....$' | tr -d '[:cntrl:]' > VERSION
+    - set +e
+    - npx semantic-release -d --prepare | grep 'Published release' > release.txt
+    - if [ $? -ne 0 ]; then cat release.txt | grep -o '.....$' | tr -d '[:cntrl:]' > VERSION else echo > VERSION fi
+    - set -e
     - "echo version to be released: $(cat VERSION)"
   only:
     - master
