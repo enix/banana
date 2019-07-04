@@ -1,8 +1,8 @@
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 import { Icon } from 'antd';
 
-class Loading extends Component {
-  
+class Loading extends PureComponent {
+
   render() {
     return (
       <div style={{ width: '100%', textAlign: 'center' }}>
