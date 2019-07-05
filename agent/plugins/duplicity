@@ -27,7 +27,7 @@ backup)
 	;;
 
 restore)
-	>&2 duplicity --log-file /tmp/backup.log --restore-time $2 $4 "$3"
+	>&2 duplicity --log-file /tmp/backup.log --restore-time $2 $3 "${@:4}"
 	checkWarnings
 	;;
 

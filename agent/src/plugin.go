@@ -52,7 +52,11 @@ func (p *plugin) restore(config *models.Config, cmd *restoreCmd) ([]byte, error)
 	if err != nil {
 		return nil, err
 	}
-	_, stderr, err := p.spawn(config, "restore", cmd.TargetTime, cmd.TargetDirectory)
+
+	args := []string{"restore", cmd.TargetTime, config.GetEndpoint(cmd.Name)}
+	args = append(args, cmd.PluginArgs...)
+
+	_, stderr, err := p.spawn(config, args...)
 	return stderr, err
 }
 
