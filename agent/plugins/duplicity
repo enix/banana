@@ -22,7 +22,7 @@ version)
 	;;
 
 backup)
-	>&2 duplicity $2 -v8 --log-file /tmp/backup.log ${@:4} $3
+	>&2 duplicity $2 -v8 --log-file /tmp/backup.log "${@:4}" $3
 	checkWarnings
 	;;
 
