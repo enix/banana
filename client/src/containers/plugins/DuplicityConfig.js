@@ -18,10 +18,12 @@ class DuplicityConfiguration extends Component {
 		const includes = values.includes || [];
 		const excludes = values.excludes || [];
 		const generateFlagString = flag => (str, val) => str + `${flag} ${val} `;
+		const excludeFlags = excludes.reduce(generateFlagString('--exclude'), '').trim();
+		const includeFlags = includes.reduce(generateFlagString('--include'), '').trim();
 
 		return {
 			full_every: values.fullEvery,
-			plugin_args: includes.reduce(generateFlagString('--include'), '').trim() + ' ' + excludes.reduce(generateFlagString('--exclude'), '').trim(),
+			plugin_args: `${values.root} ${excludeFlags} ${includeFlags}`.trim(),
 		};
 	}
 
@@ -56,7 +58,7 @@ class DuplicityConfiguration extends Component {
 						message: `Please enter an ${type} rule`,
 					},
 				],
-			})(<Input placeholder={type === 'include' ? '/' : '/proc'} style={{ width: this.props.formWidthSm, marginRight: 8 }} />)}
+			})(<Input placeholder={type === 'include' ? '/var/lib' : '/proc'} style={{ width: this.props.formWidthSm, marginRight: 8 }} />)}
 			<Icon type='minus-circle-o' onClick={() => this.remove(type, key)} />
 		</Form.Item>;
 	}
@@ -65,7 +67,7 @@ class DuplicityConfiguration extends Component {
 		const { getFieldValue, getFieldDecorator } = this.props.form;
 		const { _key: key } = this.props;
 
-		getFieldDecorator(`duplicity[${key}].include-keys`, { initialValue: [0], required: false });
+		getFieldDecorator(`duplicity[${key}].include-keys`, { initialValue: [], required: false });
 		getFieldDecorator(`duplicity[${key}].exclude-keys`, { initialValue: [], required: false });
 		const includeItems = getFieldValue(`duplicity[${key}].include-keys`).map((key, index) => this.renderField('include', key, index));
 		const excludeItems = getFieldValue(`duplicity[${key}].exclude-keys`).map((key, index) => this.renderField('exclude', key, index));
@@ -83,6 +85,19 @@ class DuplicityConfiguration extends Component {
 						message: 'Please choose the full backups interval.',
 					}],
 				})(<InputNumber placeholder='7' style={{ width: this.formWidthSm, marginRight: 8 }} />)}
+			</Form.Item>
+
+			<Form.Item label='Root directory'>
+				{getFieldDecorator(`duplicity[${this.props._key}].root`, {
+					validateTrigger: ['onChange', 'onBlur'],
+					rules: [
+						{
+							required: true,
+							whitespace: true,
+							message: `Please choose the root directory.`,
+						},
+					],
+				})(<Input placeholder='/' style={{ width: this.props.formWidthSm, marginRight: 8 }} />)}
 			</Form.Item>
 
 			{includeItems}
