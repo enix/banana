@@ -39,7 +39,11 @@ func (p *plugin) backup(config *models.Config, cmd *backupCmd) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-	_, stderr, err := p.spawn(config, "backup", cmd.Type, cmd.Target, config.GetEndpoint(cmd.Name))
+
+	args := []string{"backup", cmd.Type, config.GetEndpoint(cmd.Name)}
+	args = append(args, cmd.PluginArgs...)
+
+	_, stderr, err := p.spawn(config, args...)
 	return stderr, err
 }
 

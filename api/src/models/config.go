@@ -19,9 +19,9 @@ import (
 // ScheduledBackupConfig : Contains informations of when to run inc/full backups, and config overrides
 type ScheduledBackupConfig struct {
 	Config
-	Target    string  `json:"target,omitempty"`
-	Interval  float32 `json:"interval,omitempty"`
-	FullEvery int     `json:"full_every,omitempty"`
+	PluginArgs []string `json:"plugin_args,omitempty"`
+	Interval   float32  `json:"interval,omitempty"`
+	FullEvery  int      `json:"full_every,omitempty"`
 }
 
 // Config : Contains full confugration will be used to execute commands
