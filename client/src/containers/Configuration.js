@@ -73,12 +73,12 @@ class Configuration extends Component {
     evt.preventDefault();
 
     this.props.form.validateFields((err, values) => {
-      // if (!err) {
+      if (!err) {
         this.setState({
           result: JSON.stringify(this.generateSchedule(values), null, 2),
           resultVisible: true,
         });
-      // }
+      }
     });
   }
 
