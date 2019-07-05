@@ -17,13 +17,13 @@ class DuplicityConfiguration extends Component {
 	static generateSchedule = (values) => {
 		const includes = values.includes || [];
 		const excludes = values.excludes || [];
-		const generateFlagString = flag => (str, val) => str + `${flag} ${val} `;
-		const excludeFlags = excludes.reduce(generateFlagString('--exclude'), '').trim();
-		const includeFlags = includes.reduce(generateFlagString('--include'), '').trim();
+		const generateFlagArray = flag => (args, val) => args.concat([flag, val]);
+		const excludeFlags = excludes.reduce(generateFlagArray('--exclude'), []);
+		const includeFlags = includes.reduce(generateFlagArray('--include'), []);
 
 		return {
-			full_every: values.fullEvery,
-			plugin_args: `${values.root} ${excludeFlags} ${includeFlags}`.trim(),
+			full_every: parseInt(values.fullEvery),
+			plugin_args: [values.root].concat(excludeFlags).concat(includeFlags),
 		};
 	}
 

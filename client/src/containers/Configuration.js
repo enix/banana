@@ -61,7 +61,7 @@ class Configuration extends Component {
     const plugin = values.plugin[key];
 
     result[values.name[key]] = {
-      interval: values.interval[key],
+      interval: parseFloat(values.interval[key]),
       plugin,
       ...this.plugins[plugin].component.generateSchedule(values[plugin][key]),
     };
