@@ -22,12 +22,12 @@ version)
 	;;
 
 backup)
-	>&2 duplicity $2 -v8 --log-file /tmp/backup.log ${@:4} $3
+	>&2 duplicity $2 -v8 --log-file /tmp/backup.log "${@:4}" $3
 	checkWarnings
 	;;
 
 restore)
-	>&2 duplicity --log-file /tmp/backup.log --restore-time $2 $4 "$3"
+	>&2 duplicity --log-file /tmp/backup.log --restore-time $2 $3 "${@:4}"
 	checkWarnings
 	;;
 

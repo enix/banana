@@ -10,9 +10,9 @@ import (
 
 // restoreCmd : Command implementation for 'backup'
 type restoreCmd struct {
-	Name            string `json:"name"`
-	TargetTime      string `json:"target_timestamp"`
-	TargetDirectory string `json:"target_directory"`
+	Name       string   `json:"name"`
+	TargetTime string   `json:"target_timestamp"`
+	PluginArgs []string `json:"plugin_args"`
 }
 
 // newRestoreCmd : Creates restore command from command line args
@@ -28,9 +28,9 @@ func newRestoreCmd(args *launchArgs) (*restoreCmd, error) {
 	}
 
 	return &restoreCmd{
-		Name:            args.Values[1],
-		TargetTime:      args.Values[2],
-		TargetDirectory: args.Values[3],
+		Name:       args.Values[1],
+		TargetTime: args.Values[2],
+		PluginArgs: args.Values[3:],
 	}, nil
 }
 
