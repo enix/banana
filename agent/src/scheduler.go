@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/json"
-	"fmt"
 	"time"
 
 	"enix.io/banana/src/models"
@@ -91,19 +90,15 @@ func (cmd *routineCmd) doBackup(name string, state *State, config *models.Schedu
 	state.LastBackups[name].Status = "Failed"
 	klog.Infof("backing up %s", name)
 
-	if config.Target == "" {
-		return fmt.Errorf("missing target directory in schedule for backup %s", name)
-	}
-
 	typ := "incremental"
 	if state.LastBackups[name].Type == "" || state.LastBackups[name].IncrCountSinceLastFull >= config.FullEvery-1 {
 		typ = "full"
 	}
 
 	backupCmd := &backupCmd{
-		Type:   typ,
-		Name:   name,
-		Target: config.Target,
+		Type:       typ,
+		Name:       name,
+		PluginArgs: config.PluginArgs,
 	}
 	err := backupCmd.execute(&config.Config)
 	if err != nil {

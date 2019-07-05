@@ -42,7 +42,8 @@ Run a backup with the given parameters.
 ```javascript
 argv[1] = "backup"
 argv[2] = "full" | "incremental"
-argv[3] = target to be backed up
+argv[3] = storage url
+argv[4...] = plugin_args from schedule configuration
 ```
 
 #### Output
@@ -52,8 +53,8 @@ No output is expected for now (will be used to output metadata(s)).
 #### Examples
 
 ```
-$ ./plugin backup incremental /etc
-$ ./plugin backup full mongodb://user:pass@localhost:27017
+$ ./plugin backup incremental s3://object-storage.r1.nxs.enix.io/bucket/backup-name --include / --exclude /proc
+$ ./plugin backup full s3://object-storage.r1.nxs.enix.io/bucket/backup-name mongodb://user:pass@localhost:27017
 ```
 
 ### Restore

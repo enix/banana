@@ -1,9 +1,9 @@
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 
 import './Code.less';
 
-class Code extends Component {
-  
+class Code extends PureComponent {
+
   render() {
     return (
       <pre className={`code ${this.props.dark ? 'dark' : ''}`}>

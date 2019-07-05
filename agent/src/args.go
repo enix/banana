@@ -40,7 +40,14 @@ func loadArguments() *launchArgs {
 	opts := getopt.CommandLine
 	opts.Parse(os.Args)
 	for opts.NArgs() > 0 {
-		args.Values = append(args.Values, opts.Arg(0))
+		nextArg := opts.Arg(0)
+
+		if nextArg == "-" {
+			args.Values = append(args.Values, opts.Args()[1:]...)
+			break
+		}
+
+		args.Values = append(args.Values, nextArg)
 		opts.Parse(opts.Args())
 	}
 

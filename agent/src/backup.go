@@ -11,9 +11,9 @@ import (
 
 // backupCmd : Command implementation for 'backup'
 type backupCmd struct {
-	Name   string `json:"name"`
-	Target string `json:"target"`
-	Type   string `json:"type"`
+	Name       string   `json:"name"`
+	Type       string   `json:"type"`
+	PluginArgs []string `json:"plugin_args"`
 }
 
 // newBackupCmd : Creates backup command from command line args
@@ -28,13 +28,13 @@ func newBackupCmd(args *launchArgs) (*backupCmd, error) {
 		return nil, errors.New("no backup name specified")
 	}
 	if len(args.Values) < 4 {
-		return nil, errors.New("no target folder specified")
+		return nil, errors.New("no targets specified")
 	}
 
 	return &backupCmd{
-		Type:   args.Values[1],
-		Name:   args.Values[2],
-		Target: args.Values[3],
+		Type:       args.Values[1],
+		Name:       args.Values[2],
+		PluginArgs: args.Values[3:],
 	}, nil
 }
 

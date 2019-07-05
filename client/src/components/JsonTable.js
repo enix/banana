@@ -1,10 +1,10 @@
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 import PropsType from 'prop-types';
 import { Table } from 'antd';
 
 import Code from './Code';
 
-class JsonTable extends Component {
+class JsonTable extends PureComponent {
 
   columns = [
     {

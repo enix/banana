@@ -4,10 +4,13 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os/exec"
+
+	"k8s.io/klog"
 )
 
 // execute : Execute binaries using our own stdio
 func execute(cmd string, args ...string) ([]byte, []byte, error) {
+	klog.Info("spawning plugin with arguments: ", args)
 	process := exec.Command(cmd, args...)
 
 	stdoutPipe, err := process.StdoutPipe()
