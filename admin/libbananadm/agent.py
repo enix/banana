@@ -1,5 +1,6 @@
 import os
 from libbananadm import vault
+from tabulate import tabulate
 
 
 def create_agent(args):
@@ -20,3 +21,13 @@ def create_agent(args):
             args.client,
         )
     )
+
+
+def list_agents(args):
+    mount_point = '{}/{}/agents-pki'.format(args.root_path, args.client)
+    users = filter(
+        lambda x: x[0] != '{} Agent Intermediate CA'.format(args.client),
+        vault.list_cn_from_pki(args, mount_point),
+    )
+
+    print(tabulate(users, headers=['Name', 'Serial']))

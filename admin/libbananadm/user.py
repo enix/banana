@@ -1,5 +1,6 @@
 import os
 from libbananadm import vault
+from tabulate import tabulate
 
 
 def create_user(args):
@@ -23,3 +24,13 @@ def create_user(args):
     os.system('rm {}.key'.format(args.name))
 
     print('successfully wrote {}.p12'.format(args.name))
+
+
+def list_users(args):
+    mount_point = '{}/{}/users-pki'.format(args.root_path, args.client)
+    users = filter(
+        lambda x: x[0] != '{} User Intermediate CA'.format(args.client),
+        vault.list_cn_from_pki(args, mount_point),
+    )
+
+    print(tabulate(users, headers=['Name', 'Serial']))

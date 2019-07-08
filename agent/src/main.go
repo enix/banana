@@ -8,6 +8,9 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"os/signal"
+	"strconv"
+	"syscall"
 
 	"enix.io/banana/src/models"
 	"enix.io/banana/src/services"
@@ -16,8 +19,37 @@ import (
 
 func assert(err error) {
 	if err != nil {
-		panic(err)
+		if version == "develop" {
+			panic(err)
+		} else {
+			klog.Fatal(err)
+		}
 	}
+}
+
+func createLockfile() {
+	pid := os.Getpid()
+	bytes, err := ioutil.ReadFile("/tmp/banana.lock")
+
+	if err == nil || !os.IsNotExist(err) {
+		assert(fmt.Errorf(
+			"refusing to start as PID %s is already running. if it is not the case, you can delete /tmp/banana.lock",
+			string(bytes),
+		))
+	}
+
+	ioutil.WriteFile("/tmp/banana.lock", []byte(strconv.Itoa(pid)), 00644)
+}
+
+func deleteLockfile() {
+	os.Remove("/tmp/banana.lock")
+}
+
+func handleSignals(sigs chan os.Signal) {
+	sig := <-sigs
+	fmt.Printf("received signal %v, exiting...", sig)
+	deleteLockfile()
+	os.Exit(0)
 }
 
 func loadCredentialsToMem(config *models.Config) error {
@@ -62,6 +94,13 @@ func main() {
 		os.Exit(0)
 	}
 
+	createLockfile()
+	defer deleteLockfile()
+
+	sigs := make(chan os.Signal, 1)
+	signal.Notify(sigs, syscall.SIGINT, syscall.SIGTERM)
+	go handleSignals(sigs)
+
 	config := &models.Config{}
 	config.LoadDefaults()
 	if args.Values[0] == "init" {
@@ -80,7 +119,7 @@ func main() {
 	if args.Values[0] != "init" {
 		loadCredentialsToMem(config)
 	}
-	err = services.OpenVaultConnection(&config.Vault, config.SkipTLSVerify)
+	err = services.OpenVaultConnection(config.Vault, config.SkipTLSVerify)
 	assert(err)
 
 	err = cmd.execute(config)

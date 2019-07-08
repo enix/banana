@@ -3,6 +3,8 @@ import requests
 from libbananadm import vault
 from libbananadm import policies
 from libbananadm import monitor
+from tabulate import tabulate
+from hvac import exceptions
 
 
 def create_client(args):
@@ -11,8 +13,15 @@ def create_client(args):
     client_kv = '{}/{}/secrets'.format(args.root_path, args.name)
     client_users_pki = '{}/{}/users-pki'.format(args.root_path, args.name)
     client_agents_pki = '{}/{}/agents-pki'.format(args.root_path, args.name)
-    client.sys.enable_secrets_engine('kv-v2', path=client_kv)
-    print('mounted KV at path \'{}\''.format(client_kv))
+
+    try:
+        client.sys.enable_secrets_engine('kv-v2', path=client_kv)
+        print('mounted KV at path \'{}\''.format(client_kv))
+    except exceptions.InvalidRequest as error:
+        if 'existing mount' in error.errors[0]:
+            print('error: client {} already exists'.format(args.name))
+            exit(1)
+        raise error
 
     client.sys.enable_secrets_engine('pki', path=client_pki, config={
         'max_lease_ttl': '43800h',
@@ -82,3 +91,17 @@ def create_client(args):
 
     monitor.reconfigure(args)
     print('successfully created client \'{}\''.format(args.name))
+
+
+def list_clients(args):
+    client = vault.get_vault_client(args)
+    secrets_engines = client.sys.list_mounted_secrets_engines()
+    output = []
+
+    for key in secrets_engines['data']:
+        parts = key.split('/')
+        if parts[0] != 'banana' or parts[2] != 'root-pki':
+            continue
+        output.append([parts[1]])
+
+    print(tabulate(output, headers=['Name']))

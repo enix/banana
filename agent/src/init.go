@@ -53,7 +53,15 @@ func (cmd *initCmd) execute(config *models.Config) error {
 
 	cert, _ := out.Data["certificate"].(string)
 	privkey, _ := out.Data["private_key"].(string)
+
+	schedule := config.ScheduledBackups
+	config.ScheduledBackups = nil
+
 	configRaw, _ := json.MarshalIndent(config, "", "  ")
+	scheduleRaw, _ := json.MarshalIndent(schedule, "", "  ")
+	if schedule == nil {
+		scheduleRaw = []byte("{}")
+	}
 
 	err = ioutil.WriteFile(config.CertPath, []byte(cert), 00644)
 	assert(err)
@@ -61,7 +69,7 @@ func (cmd *initCmd) execute(config *models.Config) error {
 	assert(err)
 	err = ioutil.WriteFile("/etc/banana/banana.json", configRaw, 00644)
 	assert(err)
-	err = ioutil.WriteFile("/etc/banana/schedule.json", []byte("{}"), 00644)
+	err = ioutil.WriteFile(config.ScheduleConfigPath, scheduleRaw, 00644)
 	assert(err)
 
 	loadCredentialsToMem(config)

@@ -2,9 +2,9 @@ package main
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io/ioutil"
-	"os"
 	"strings"
 	"time"
 
@@ -34,15 +34,16 @@ func sendToMonitor(config *models.Config, message *models.AgentMessage) error {
 	if res.StatusCode != 200 {
 		err, _ := ioutil.ReadAll(res.Body)
 		klog.Error(string(err))
-		os.Exit(1)
+		return errors.New(string(err))
 	}
+
 	return nil
 }
 
 // sendMessageToMonitor : Convenience function to create and send a message
 func sendMessageToMonitor(typ string, config *models.Config, cmd command, logs string) {
 	if config.MonitorURL == "" {
-		klog.Fatal("monitor URL not set, set using -m")
+		assert(errors.New("monitor URL not set, set using -m"))
 	}
 
 	rawCommand := map[string]interface{}{}
@@ -63,7 +64,5 @@ func sendMessageToMonitor(typ string, config *models.Config, cmd command, logs s
 
 	msg.Signature, _ = msg.Config.Sign(services.Credentials.PrivateKey)
 	err := sendToMonitor(config, msg)
-	if err != nil {
-		klog.Fatal(err)
-	}
+	assert(err)
 }
