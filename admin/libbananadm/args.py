@@ -48,28 +48,41 @@ def init_arguments():
         help='ask monitor\'s nginx to re-fetch all CA certs'
     ).set_defaults(func=reconfigure)
 
-    parser_create = subparsers.add_parser(
+    parser_list = subparsers.add_parser(
+        'list',
+        help='list clients|users|backends'
+    )
+    subparsers_list = parser_list.add_subparsers(
+        title='types of resources',
+    )
+
+    subparsers_list.add_parser(
+        'clients',
+        help='list clients stored in vault',
+    ).set_defaults(func=client.list_clients)
+
+    parser_new = subparsers.add_parser(
         'new',
         help='create a client|user|agent|backend'
     )
-    subparsers_create = parser_create.add_subparsers(
+    subparsers_new = parser_new.add_subparsers(
         title='types that can be created',
     )
 
-    subparsers_create.add_parser(
+    subparsers_new.add_parser(
         'client',
         help='create a client',
     ).set_defaults(func=create_client)
-    subparsers_create.add_parser(
+    subparsers_new.add_parser(
         'user',
         help='create a user',
     ).set_defaults(func=create_user)
-    subparsers_create.add_parser(
+    subparsers_new.add_parser(
         'agent',
         help='create a agent',
     ).set_defaults(func=create_agent)
 
-    parser_backend_secret = subparsers_create.add_parser(
+    parser_backend_secret = subparsers_new.add_parser(
         'backend',
         help='add a backend secret',
     )

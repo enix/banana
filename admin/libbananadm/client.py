@@ -82,3 +82,13 @@ def create_client(args):
 
     monitor.reconfigure(args)
     print('successfully created client \'{}\''.format(args.name))
+
+
+def list_clients(args):
+    client = vault.get_vault_client(args)
+    secrets_engines = client.sys.list_mounted_secrets_engines()
+    for key in secrets_engines['data']:
+        parts = key.split('/')
+        if parts[0] != "banana" or parts[2] != "root-pki":
+            continue
+        print('*', parts[1])
