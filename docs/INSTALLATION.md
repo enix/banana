@@ -182,6 +182,8 @@ success! join your new agent(s) using:
 bananactl --vault-addr=https://vault.banana.enix.io:7777 init s.BVYt1Hj3eLn6NDPS2fJIKzfO enix <agent name>
 ```
 
+> The `new agent` command generates a token with a 1h TTL which has the required permissions to issue certificates from the client's agents PKI. The generated `bananactl` command can then be runned an unlimited amount of times to register multiple agents, while the token is still valid.
+
 * Copy/paste the command on each node that you'd like to initialize.
 
 * Edit the `/etc/banana/schedule.json` file on each node with your backup configuration:
