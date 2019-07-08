@@ -191,9 +191,11 @@ bananactl --vault-addr=https://vault.banana.enix.io:7777 init s.BVYt1Hj3eLn6NDPS
 ```json
 {
 	"my-backup-name": {
-		"target": "/etc",
 		"interval": 0.042,
-		"full_every": 2
+		"full_every": 2,
+		"plugin_args": [
+			"/etc"
+		]
 	}
 }
 ```
