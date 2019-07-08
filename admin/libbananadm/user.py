@@ -1,6 +1,7 @@
 import os
 from libbananadm import vault
 from cryptography import x509, hazmat
+from tabulate import tabulate
 
 
 def create_user(args):
@@ -32,6 +33,8 @@ def list_users(args):
     response = client.secrets.pki.list_certificates(
         mount_point=mount_point,
     )
+    output = []
+
     for key in response['data']['keys']:
         user_cert = client.secrets.pki.read_certificate(
             serial=key,
@@ -49,4 +52,6 @@ def list_users(args):
         )[0].value
 
         if name != args.client + ' User Intermediate CA':
-            print('*', name)
+            output.append([name, key])
+
+    print(tabulate(output, headers=['Name', 'Serial']))
