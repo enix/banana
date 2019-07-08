@@ -59,7 +59,14 @@ def init_arguments():
     subparsers_list.add_parser(
         'clients',
         help='list clients stored in vault',
-    ).set_defaults(func=client.list_clients)
+    ).set_defaults(func=client.list_and_print_clients)
+
+    list_users = subparsers_list.add_parser(
+        'users',
+        help='list users for a given client',
+    )
+    list_users.add_argument('client', help='client name')
+    list_users.set_defaults(func=user.list_users)
 
     parser_new = subparsers.add_parser(
         'new',

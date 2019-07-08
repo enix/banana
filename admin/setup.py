@@ -19,5 +19,6 @@ setuptools.setup(
         'urllib3',
         'requests>=2.21.0',
         'hvac',
+        'cryptography',
     ],
 )
