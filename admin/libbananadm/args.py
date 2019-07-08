@@ -68,6 +68,13 @@ def init_arguments():
     list_users.add_argument('client', help='client name')
     list_users.set_defaults(func=user.list_users)
 
+    list_agents = subparsers_list.add_parser(
+        'agents',
+        help='list agents for a given client',
+    )
+    list_agents.add_argument('client', help='client name')
+    list_agents.set_defaults(func=agent.list_agents)
+
     parser_new = subparsers.add_parser(
         'new',
         help='create a client|user|agent|backend'

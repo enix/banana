@@ -1,5 +1,6 @@
 import hvac
 import os
+from cryptography import x509, hazmat
 
 
 def get_vault_client(args):
@@ -57,3 +58,31 @@ def create_intermediate_ca(args, root_path, int_path, type):
         'default_lease_ttl': '17520h',
     }, mount_point=int_path)
     return int_cert
+
+
+def list_cn_from_pki(args, mount_point):
+    client = get_vault_client(args)
+    response = client.secrets.pki.list_certificates(
+        mount_point=mount_point,
+    )
+    output = []
+
+    for key in response['data']['keys']:
+        cert_data = client.secrets.pki.read_certificate(
+            serial=key,
+            mount_point=mount_point,
+        )
+
+        cert_str = cert_data['data']['certificate']
+        cert = x509.load_pem_x509_certificate(
+            cert_str.encode('ascii'),
+            hazmat.backends.default_backend(),
+        )
+
+        name = cert.subject.get_attributes_for_oid(
+            x509.NameOID.COMMON_NAME,
+        )[0].value
+
+        output.append([name, key])
+
+    return output

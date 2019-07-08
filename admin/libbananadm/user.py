@@ -1,6 +1,5 @@
 import os
 from libbananadm import vault
-from cryptography import x509, hazmat
 from tabulate import tabulate
 
 
@@ -28,30 +27,10 @@ def create_user(args):
 
 
 def list_users(args):
-    client = vault.get_vault_client(args)
     mount_point = '{}/{}/users-pki'.format(args.root_path, args.client)
-    response = client.secrets.pki.list_certificates(
-        mount_point=mount_point,
+    users = filter(
+        lambda x: x[0] != '{} User Intermediate CA'.format(args.client),
+        vault.list_cn_from_pki(args, mount_point),
     )
-    output = []
 
-    for key in response['data']['keys']:
-        user_cert = client.secrets.pki.read_certificate(
-            serial=key,
-            mount_point=mount_point,
-        )
-
-        cert_str = user_cert['data']['certificate']
-        cert = x509.load_pem_x509_certificate(
-            cert_str.encode('ascii'),
-            hazmat.backends.default_backend(),
-        )
-
-        name = cert.subject.get_attributes_for_oid(
-            x509.NameOID.COMMON_NAME,
-        )[0].value
-
-        if name != args.client + ' User Intermediate CA':
-            output.append([name, key])
-
-    print(tabulate(output, headers=['Name', 'Serial']))
+    print(tabulate(users, headers=['Name', 'Serial']))
