@@ -50,7 +50,7 @@ def init_arguments():
 
     parser_list = subparsers.add_parser(
         'list',
-        help='list clients|users|backends'
+        help='list clients|users|agents|backends'
     )
     subparsers_list = parser_list.add_subparsers(
         title='types of resources',
@@ -74,6 +74,13 @@ def init_arguments():
     )
     list_agents.add_argument('client', help='client name')
     list_agents.set_defaults(func=agent.list_agents)
+
+    list_backends = subparsers_list.add_parser(
+        'backends',
+        help='list backends for a given client',
+    )
+    list_backends.add_argument('client', help='client name')
+    list_backends.set_defaults(func=backend.list_backends)
 
     parser_new = subparsers.add_parser(
         'new',
