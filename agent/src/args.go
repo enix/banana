@@ -4,6 +4,7 @@ import (
 	"os"
 
 	"enix.io/banana/src/models"
+	"enix.io/banana/src/services"
 	"github.com/pborman/getopt/v2"
 )
 
@@ -19,6 +20,11 @@ type launchArgs struct {
 func loadArguments() *launchArgs {
 	args := launchArgs{
 		ConfigPath: "/etc/banana/banana.json",
+		Flags: models.CliConfig{
+			Config: models.Config{
+				Vault: &services.VaultConfig{},
+			},
+		},
 	}
 
 	getopt.FlagLong(&args.DisplayHelp, "help", 'h', "display this message")

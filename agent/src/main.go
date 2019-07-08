@@ -119,7 +119,7 @@ func main() {
 	if args.Values[0] != "init" {
 		loadCredentialsToMem(config)
 	}
-	err = services.OpenVaultConnection(&config.Vault, config.SkipTLSVerify)
+	err = services.OpenVaultConnection(config.Vault, config.SkipTLSVerify)
 	assert(err)
 
 	err = cmd.execute(config)
