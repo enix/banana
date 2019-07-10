@@ -10,9 +10,8 @@ func InitializeRoutes(router *gin.Engine) {
 	router.GET("/agents", handleClientRequest(serveAgentList))
 	router.GET("/agents/:id", handleClientRequest(serveAgent))
 	router.GET("/agents/:id/messages", handleClientRequest(serveAgentMesssages))
-	// router.GET("/agents/:id/backups", handleClientRequest(serveAgentBackups))
-	router.GET("/agents/:id/backups", handleClientRequest(serveBackupMetadata))
+	router.GET("/agents/:id/messages/:messageID/artifacts", handleClientRequest(serveBackupArtifacts))
 	router.POST("/agents/notify", handleClientRequest(receiveAgentMesssage))
-	router.POST("/agents/metadata/:id", handleClientRequest(receiveBackupMetadata))
+	router.POST("/agents/artifacts/:id", handleClientRequest(receiveBackupArtifacts))
 	router.GET("/housekeeper/ws", handleHouseKeeperConnection)
 }
