@@ -1,11 +1,11 @@
 package main
 
 import (
+	"bytes"
 	"encoding/json"
 	"errors"
 	"fmt"
 	"io/ioutil"
-	"strings"
 	"time"
 
 	"enix.io/banana/src/models"
@@ -13,18 +13,10 @@ import (
 	"k8s.io/klog"
 )
 
-// sendToMonitor : Sign given message and POST it to the monitor API
-func sendToMonitor(config *models.Config, message *models.AgentMessage) error {
+func fireAPIRequest(config *models.Config, url string, data []byte) error {
 	fmt.Print("waiting for monitor... ")
-
 	httpClient := services.GetHTTPClient(config.SkipTLSVerify)
-	oname := services.Credentials.Cert.Subject.Organization[0]
-	cname := services.Credentials.Cert.Subject.CommonName
-	message.SenderID = fmt.Sprintf("%s:%s", oname, cname)
-
-	url := fmt.Sprintf("%s/agents/notify", config.MonitorURL)
-	rawMessage, _ := json.Marshal(message)
-	res, err := httpClient.Post(url, "application/json", strings.NewReader(string(rawMessage)))
+	res, err := httpClient.Post(url, "application/json", bytes.NewReader(data))
 	if err != nil {
 		return err
 	}
@@ -38,6 +30,17 @@ func sendToMonitor(config *models.Config, message *models.AgentMessage) error {
 	}
 
 	return nil
+}
+
+// sendToMonitor : Sign given message and POST it to the monitor API
+func sendToMonitor(config *models.Config, message *models.AgentMessage) error {
+	oname := services.Credentials.Cert.Subject.Organization[0]
+	cname := services.Credentials.Cert.Subject.CommonName
+	message.SenderID = fmt.Sprintf("%s:%s", oname, cname)
+	url := fmt.Sprintf("%s/agents/notify", config.MonitorURL)
+	rawMessage, _ := json.Marshal(message)
+
+	return fireAPIRequest(config, url, rawMessage)
 }
 
 // sendMessageToMonitor : Convenience function to create and send a message

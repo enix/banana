@@ -34,17 +34,15 @@ func (p *plugin) version(config *models.Config) (string, error) {
 	return string(stdout), err
 }
 
-func (p *plugin) backup(config *models.Config, cmd *backupCmd) ([]byte, error) {
+func (p *plugin) backup(config *models.Config, cmd *backupCmd) ([]byte, []byte, error) {
 	err := loadCredentialsToEnv()
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	args := []string{"backup", cmd.Type, config.GetEndpoint(cmd.Name)}
 	args = append(args, cmd.PluginArgs...)
-
-	_, stderr, err := p.spawn(config, args...)
-	return stderr, err
+	return p.spawn(config, args...)
 }
 
 func (p *plugin) restore(config *models.Config, cmd *restoreCmd) ([]byte, error) {

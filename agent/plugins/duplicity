@@ -20,11 +20,8 @@ function generateMetadata {
 		if [ ! -z ${key} ]; then local ${key}="${value}"; fi
 	done
 
-	> /tmp/metadata.json jq -n \
-		--argjson size $(echo ${TotalDestinationSizeChange} | awk '{printf $1}') \
-		'{ size: $size }'
-
 	jq -n \
+		--argjson size $(echo ${TotalDestinationSizeChange} | awk '{printf $1}') \
 		--arg StartTime "${StartTime}" \
 		--arg EndTime "${EndTime}" \
 		--arg ElapsedTime "${ElapsedTime}" \
@@ -41,21 +38,24 @@ function generateMetadata {
 		--arg TotalDestinationSizeChange "${TotalDestinationSizeChange}" \
 		--arg Errors "${Errors}" \
 		'{
-			StartTime: $StartTime,
-			EndTime: $EndTime,
-			ElapsedTime: $ElapsedTime,
-			SourceFiles: $SourceFiles,
-			SourceFileSize: $SourceFileSize,
-			NewFiles: $NewFiles,
-			NewFileSize: $NewFileSize,
-			DeletedFiles: $DeletedFiles,
-			ChangedFiles: $ChangedFiles,
-			ChangedFileSize: $ChangedFileSize,
-			ChangedDeltaSize: $ChangedDeltaSize,
-			DeltaEntries: $DeltaEntries,
-			RawDeltaSize: $RawDeltaSize,
-			TotalDestinationSizeChange: $TotalDestinationSizeChange,
-			Errors: $Errors,
+			size: $size,
+			plugin_data: {
+				StartTime: $StartTime,
+				EndTime: $EndTime,
+				ElapsedTime: $ElapsedTime,
+				SourceFiles: $SourceFiles,
+				SourceFileSize: $SourceFileSize,
+				NewFiles: $NewFiles,
+				NewFileSize: $NewFileSize,
+				DeletedFiles: $DeletedFiles,
+				ChangedFiles: $ChangedFiles,
+				ChangedFileSize: $ChangedFileSize,
+				ChangedDeltaSize: $ChangedDeltaSize,
+				DeltaEntries: $DeltaEntries,
+				RawDeltaSize: $RawDeltaSize,
+				TotalDestinationSizeChange: $TotalDestinationSizeChange,
+				Errors: $Errors,
+			},
 		}'
 }
 
@@ -66,7 +66,7 @@ version)
 	;;
 
 backup)
-	duplicity $2 -v4 --log-fd 3 "${@:4}" $3 3> >(grep WARNING > /tmp/banana-errors) | >&2 tee >(generateMetadata | gzip > test.zip)
+	duplicity $2 -v4 --log-fd 3 "${@:4}" $3 3> >(grep WARNING > /tmp/banana-errors) | >&2 tee >(generateMetadata | gzip)
 	checkWarnings
 	;;
 
