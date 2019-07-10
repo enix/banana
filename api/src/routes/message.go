@@ -39,7 +39,7 @@ func receiveAgentMesssage(context *gin.Context, issuer *requestIssuer) (int, int
 		sendHouseKeeperEvent(&msg, issuer)
 	}
 
-	return http.StatusOK, "ok"
+	return http.StatusOK, msg.GetSortedSetScore()
 }
 
 // serveAgentMesssages : Returns the last messages from a given agent
