@@ -73,7 +73,7 @@ func (cmd *initCmd) execute(config *models.Config) error {
 	assert(err)
 
 	loadCredentialsToMem(config)
-	sendMessageToMonitor("initialized", config, cmd, "")
+	sendMessageToMonitor("initialized", config, cmd, nil, "")
 	return nil
 }
 
