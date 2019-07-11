@@ -18,6 +18,7 @@ type AgentMessage struct {
 	Config    Config                 `json:"config"`
 	Command   map[string]interface{} `json:"command"`
 	Logs      string                 `json:"logs"`
+	Metadata  BackupMetadata         `json:"metadata,omitempty"`
 	Signature string                 `json:"signature,omitempty"`
 }
 

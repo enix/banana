@@ -54,6 +54,10 @@ func handleClientRequest(handler requestHandler) func(*gin.Context) {
 			context.JSON(status, map[string]string{"error": dataAsError.Error()})
 			return
 		}
+		if dataAsByteSlice, ok := data.([]byte); ok {
+			context.Data(status, "application/octet-stream", dataAsByteSlice)
+			return
+		}
 		if dataAsString, ok := data.(string); ok {
 			context.JSON(status, map[string]string{"response": dataAsString})
 			return

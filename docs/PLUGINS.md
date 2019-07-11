@@ -48,13 +48,15 @@ argv[4...] = plugin_args from schedule configuration
 
 #### Output
 
-No output is expected for now (will be used to output metadata(s)).
+The plugin should write on standard output a JSON representation of the `BackupMetadata` struct. In additon, it can write on file descriptor 3 plugin-specific datas that will be downloadable from the UI. Those datas should be in `gzip` format.
 
 #### Examples
 
 ```
 $ ./plugin backup incremental s3://object-storage.r1.nxs.enix.io/bucket/backup-name --include / --exclude /proc
+{ "size": 1234 }
 $ ./plugin backup full s3://object-storage.r1.nxs.enix.io/bucket/backup-name mongodb://user:pass@localhost:27017
+{ "size": 1234 }s
 ```
 
 ### Restore

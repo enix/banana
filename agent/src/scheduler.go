@@ -19,29 +19,29 @@ func newRoutineCmd(*launchArgs) (*routineCmd, error) {
 
 // execute : Start the routine using specified plugin
 func (cmd *routineCmd) execute(config *models.Config) error {
-	sendMessageToMonitor("routine_start", config, cmd, "")
+	sendMessageToMonitor("routine_start", config, cmd, nil, "")
 	klog.Info("starting banana routine")
 
 	state := &State{}
 	err := state.loadFromDisk(config)
 	if err != nil {
-		sendMessageToMonitor("routine_crashed", config, cmd, err.Error())
+		sendMessageToMonitor("routine_crashed", config, cmd, nil, err.Error())
 		return err
 	}
 
 	err = cmd.runTasks(state, config)
 	if err != nil {
-		sendMessageToMonitor("routine_failed", config, cmd, err.Error())
+		sendMessageToMonitor("routine_failed", config, cmd, nil, err.Error())
 		return err
 	}
 
 	err = state.saveToDisk(config)
 	if err != nil {
-		sendMessageToMonitor("routine_crashed", config, cmd, err.Error())
+		sendMessageToMonitor("routine_crashed", config, cmd, nil, err.Error())
 		return err
 	}
 
-	sendMessageToMonitor("routine_done", config, cmd, "")
+	sendMessageToMonitor("routine_done", config, cmd, nil, "")
 	return nil
 }
 

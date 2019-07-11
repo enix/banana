@@ -12,6 +12,27 @@ function checkWarnings {
 	rm -f /tmp/banana-errors
 }
 
+function generateMetadata {
+	while read -r line; do
+		key=$(echo "${line}" | sed -E 's/([a-zA-Z]*).*/\1/')
+		value=$(echo "${line}" | sed -E 's/[^ ]* *(.*)/\1/')
+
+		if [ ! -z ${key} ]; then local ${key}="${value}"; fi
+	done
+
+	jq -n \
+		--argjson size $(echo ${TotalDestinationSizeChange} | awk '{printf $1}') \
+		'{ size: $size }'
+}
+
+function cleanLogs {
+	grep -v '^A ' | grep -v '^M ' | grep -v '^D ' >&2
+}
+
+function generateArtifacts {
+	cat | gzip >&3
+}
+
 case $1 in
 
 version)
@@ -19,12 +40,13 @@ version)
 	;;
 
 backup)
-	>&2 duplicity $2 -v4 --log-fd 3 "${@:4}" $3 3> >(grep WARNING > /tmp/banana-errors)
+	duplicity $2 -v5 --log-fd 3 "${@:4}" $3 3> >(grep WARNING > /tmp/banana-errors) \
+	| tee >(generateMetadata) >(generateArtifacts) >(cleanLogs) >/dev/null
 	checkWarnings
 	;;
 
 restore)
-	>&2 duplicity -v4 --log-fd 3 --restore-time $2 $3 "${@:4}" 3> >(grep WARNING > /tmp/banana-errors)
+	>&2 duplicity -v5 --log-fd 3 --restore-time $2 $3 "${@:4}" 3> >(grep WARNING > /tmp/banana-errors)
 	checkWarnings
 	;;
 

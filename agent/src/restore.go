@@ -41,24 +41,24 @@ func (cmd *restoreCmd) execute(config *models.Config) error {
 		return err
 	}
 
-	sendMessageToMonitor("restore_start", config, cmd, "")
+	sendMessageToMonitor("restore_start", config, cmd, nil, "")
 	loadCredentialsToEnv()
 	klog.Infof("running %s, see you on the other side\n", config.Plugin)
 	logs, err := plugin.restore(config, cmd)
 	if logs == nil {
 		if err != nil {
-			sendMessageToMonitor("agent_crashed", config, cmd, err.Error())
+			sendMessageToMonitor("agent_crashed", config, cmd, nil, err.Error())
 		} else {
-			sendMessageToMonitor("agent_crashed", config, cmd, "")
+			sendMessageToMonitor("agent_crashed", config, cmd, nil, "")
 		}
 		return err
 	}
 	if err != nil {
-		sendMessageToMonitor("restore_failed", config, cmd, string(logs))
+		sendMessageToMonitor("restore_failed", config, cmd, nil, string(logs))
 		return err
 	}
 
-	sendMessageToMonitor("restore_done", config, cmd, string(logs))
+	sendMessageToMonitor("restore_done", config, cmd, nil, string(logs))
 	return err
 }
 

@@ -1,11 +1,12 @@
 package main
 
 import (
+	"bytes"
 	"encoding/json"
 	"errors"
 	"fmt"
+	"io"
 	"io/ioutil"
-	"strings"
 	"time"
 
 	"enix.io/banana/src/models"
@@ -13,35 +14,44 @@ import (
 	"k8s.io/klog"
 )
 
-// sendToMonitor : Sign given message and POST it to the monitor API
-func sendToMonitor(config *models.Config, message *models.AgentMessage) error {
+func fireAPIRequest(config *models.Config, url string, data io.Reader) (string, error) {
 	fmt.Print("waiting for monitor... ")
-
 	httpClient := services.GetHTTPClient(config.SkipTLSVerify)
-	oname := services.Credentials.Cert.Subject.Organization[0]
-	cname := services.Credentials.Cert.Subject.CommonName
-	message.SenderID = fmt.Sprintf("%s:%s", oname, cname)
-
-	url := fmt.Sprintf("%s/agents/notify", config.MonitorURL)
-	rawMessage, _ := json.Marshal(message)
-	res, err := httpClient.Post(url, "application/json", strings.NewReader(string(rawMessage)))
+	res, err := httpClient.Post(url, "application/json", data)
 	if err != nil {
-		return err
+		return "", err
 	}
 	defer res.Body.Close()
 
 	fmt.Println(res.Status)
+	response, _ := ioutil.ReadAll(res.Body)
 	if res.StatusCode != 200 {
-		err, _ := ioutil.ReadAll(res.Body)
-		klog.Error(string(err))
-		return errors.New(string(err))
+		klog.Error(string(response))
+		return "", errors.New(string(response))
 	}
 
-	return nil
+	return string(response), nil
+}
+
+// sendToMonitor : Sign given message and POST it to the monitor API
+func sendToMonitor(config *models.Config, message *models.AgentMessage) (string, error) {
+	oname := services.Credentials.Cert.Subject.Organization[0]
+	cname := services.Credentials.Cert.Subject.CommonName
+	message.SenderID = fmt.Sprintf("%s:%s", oname, cname)
+	url := fmt.Sprintf("%s/agents/notify", config.MonitorURL)
+	rawMessage, _ := json.Marshal(message)
+
+	return fireAPIRequest(config, url, bytes.NewReader(rawMessage))
 }
 
 // sendMessageToMonitor : Convenience function to create and send a message
-func sendMessageToMonitor(typ string, config *models.Config, cmd command, logs string) {
+func sendMessageToMonitor(
+	typ string,
+	config *models.Config,
+	cmd command,
+	metadata *models.BackupMetadata,
+	logs string) string {
+
 	if config.MonitorURL == "" {
 		assert(errors.New("monitor URL not set, set using -m"))
 	}
@@ -51,18 +61,24 @@ func sendMessageToMonitor(typ string, config *models.Config, cmd command, logs s
 		rawCommand = cmd.jsonMap()
 	}
 
+	if metadata == nil {
+		metadata = &models.BackupMetadata{}
+	}
+
 	msg := &models.AgentMessage{
 		Message: models.Message{
 			Version:   1,
 			Timestamp: time.Now().UnixNano() / int64(time.Millisecond),
 			Type:      typ,
 		},
-		Config:  *config,
-		Command: rawCommand,
-		Logs:    logs,
+		Config:   *config,
+		Command:  rawCommand,
+		Metadata: *metadata,
+		Logs:     logs,
 	}
 
 	msg.Signature, _ = msg.Config.Sign(services.Credentials.PrivateKey)
-	err := sendToMonitor(config, msg)
+	res, err := sendToMonitor(config, msg)
 	assert(err)
+	return res
 }

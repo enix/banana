@@ -25,26 +25,24 @@ func newPlugin(name string) (*plugin, error) {
 	return &plugin{name}, nil
 }
 
-func (p *plugin) spawn(config *models.Config, args ...string) ([]byte, []byte, error) {
-	return execute(config.PluginsDir+"/"+p.name, args...)
+func (p *plugin) spawn(config *models.Config, args ...string) ([]byte, []byte, *os.File, error) {
+	return executeWithExtraFD(config.PluginsDir+"/"+p.name, args...)
 }
 
 func (p *plugin) version(config *models.Config) (string, error) {
-	stdout, _, err := p.spawn(config, "version")
+	stdout, _, _, err := p.spawn(config, "version")
 	return string(stdout), err
 }
 
-func (p *plugin) backup(config *models.Config, cmd *backupCmd) ([]byte, error) {
+func (p *plugin) backup(config *models.Config, cmd *backupCmd) ([]byte, []byte, *os.File, error) {
 	err := loadCredentialsToEnv()
 	if err != nil {
-		return nil, err
+		return nil, nil, nil, err
 	}
 
 	args := []string{"backup", cmd.Type, config.GetEndpoint(cmd.Name)}
 	args = append(args, cmd.PluginArgs...)
-
-	_, stderr, err := p.spawn(config, args...)
-	return stderr, err
+	return p.spawn(config, args...)
 }
 
 func (p *plugin) restore(config *models.Config, cmd *restoreCmd) ([]byte, error) {
@@ -56,7 +54,7 @@ func (p *plugin) restore(config *models.Config, cmd *restoreCmd) ([]byte, error)
 	args := []string{"restore", cmd.TargetTime, config.GetEndpoint(cmd.Name)}
 	args = append(args, cmd.PluginArgs...)
 
-	_, stderr, err := p.spawn(config, args...)
+	_, stderr, _, err := p.spawn(config, args...)
 	return stderr, err
 }
 
