@@ -8,6 +8,8 @@
     "babel-plugin-import": "^1.11.0",
     "customize-cra": "^0.2.12",
     "deepmerge": "^2.1.0",
+    "filesize": "^4.1.2",
+    "group-by": "^0.0.1",
     "immutability-helper": "^2.7.0",
     "key-mirror": "^1.0.1",
     "less": "^3.9.0",
