@@ -48,7 +48,7 @@ argv[4...] = plugin_args from schedule configuration
 
 #### Output
 
-The plugin should write on standard output a JSON representation of the `BackupMetadata` struct. In additon, it can write on file descriptor 3 plugin-specific datas that will be downloadable from the UI.
+The plugin should write on standard output a JSON representation of the `BackupMetadata` struct. In additon, it can write on file descriptor 3 plugin-specific datas that will be downloadable from the UI. Those datas should be in `gzip` format.
 
 #### Examples
 
