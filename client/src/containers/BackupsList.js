@@ -83,6 +83,15 @@ class MessagesList extends Component {
             <span>
               <Divider type='vertical' />
               <a
+                href={`https://api.banana.enix.io/agents/${this.props.agentID}/messages/${item.timestamp}/artifacts.gzip`}
+                target='_blank'
+                rel='noopener noreferrer'
+              >
+                <Icon type='link' /> Download artifacts
+              </a>
+
+              <Divider type='vertical' />
+              <a
                 href={`https://console.nxs.enix.io/project/containers/container/${item.config.bucket}/${item.command.name}`}
                 target='_blank'
                 rel='noopener noreferrer'

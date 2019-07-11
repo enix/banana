@@ -4,7 +4,6 @@ import { mapDispatchToProps } from 'redux-saga-wrapper';
 import {
   Table,
   Tag,
-  Modal,
   Divider,
   Icon,
   Button,
@@ -14,8 +13,6 @@ import {
 } from 'antd';
 
 import MessageModals from './MessageModals';
-import JsonTable from '../components/JsonTable';
-import Code from '../components/Code';
 import Loading from '../components/Loading';
 import {
   formatDate,
@@ -23,7 +20,6 @@ import {
   formatSnakeCase,
   getTagColor,
   getTypeTagColor,
-  generateRestoreCmd,
 } from '../helpers';
 
 class MessagesList extends Component {
@@ -55,22 +51,22 @@ class MessagesList extends Component {
       key: 'timestamp',
       render: formatDate,
     },
-    {
-      title: `Backup name`,
-      dataIndex: 'command.name',
-      key: 'name',
-      render: name => name ? name : '-',
-    },
-    {
-      title: `Backup type`,
-      dataIndex: 'command.type',
-      key: 'backup_type',
-      render: (type) => !type ? '-' : (
-        <Tag color={getTypeTagColor(type)} key={type}>
-          {formatSnakeCase(type)}
-        </Tag>
-      ),
-    },
+    // {
+    //   title: `Backup name`,
+    //   dataIndex: 'command.name',
+    //   key: 'name',
+    //   render: name => name ? name : '-',
+    // },
+    // {
+    //   title: `Backup type`,
+    //   dataIndex: 'command.type',
+    //   key: 'backup_type',
+    //   render: (type) => !type ? '-' : (
+    //     <Tag color={getTypeTagColor(type)} key={type}>
+    //       {formatSnakeCase(type)}
+    //     </Tag>
+    //   ),
+    // },
     {
       title: 'Actions',
       key: 'action',
@@ -89,6 +85,14 @@ class MessagesList extends Component {
 
           {item.type === 'backup_done' && (
             <span>
+              <Divider type='vertical' />
+              <a
+                href={`https://api.banana.enix.io/agents/${this.props.agentID}/messages/${item.timestamp}/artifacts.gzip`}
+                target='_blank'
+                rel='noopener noreferrer'
+              >
+                <Icon type='link' /> Download artifacts
+              </a>
               <Divider type='vertical' />
               <a
                 href={`https://console.nxs.enix.io/project/containers/container/${item.config.bucket}/${item.command.name}`}

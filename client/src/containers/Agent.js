@@ -11,6 +11,7 @@ class Agents extends Component {
 
   componentDidMount() {
     const { org, cn } = this.props.match.params;
+    this.setState({ org, cn });
     this.props.actions.getAgent(org, cn);
     this.props.actions.getAgentMessages(org, cn);
   }
@@ -31,14 +32,20 @@ class Agents extends Component {
           <Col span={18}>
             <h3>Backup list</h3>
           </Col>
-          <BackupsList agentMessages={this.props.agentMessages} />
+          <BackupsList
+            agentMessages={this.props.agentMessages}
+            agentID={`${this.state.org}:${this.state.cn}`}
+          />
         </div>
 
         <div style={{ marginTop: 30 }}>
           <Col span={18} >
             <h3>Messages history</h3>
           </Col>
-          <MessagesList agentMessages={this.props.agentMessages} />
+          <MessagesList
+            agentMessages={this.props.agentMessages}
+            agentID={`${this.state.org}:${this.state.cn}`}
+          />
         </div>
       </div>
     );
