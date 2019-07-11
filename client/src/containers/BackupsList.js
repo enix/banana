@@ -121,7 +121,6 @@ class MessagesList extends Component {
       return acc;
     }
 
-    console.log(it)
     const mostRecent = acc.find(b => b.command.name === it.command.name);
     if (!mostRecent) {
       it.metadata.totalSize = it.metadata.size;

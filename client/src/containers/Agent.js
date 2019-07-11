@@ -9,6 +9,11 @@ import Loading from '../components/Loading';
 
 class Agents extends Component {
 
+  state = {
+    org: null,
+    cn: null,
+  }
+
   componentDidMount() {
     const { org, cn } = this.props.match.params;
     this.setState({ org, cn });
