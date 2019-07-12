@@ -42,8 +42,10 @@ Run a backup with the given parameters.
 ```javascript
 argv[1] = "backup"
 argv[2] = "full" | "incremental"
-argv[3] = storage url
-argv[4...] = plugin_args from schedule configuration
+argv[3] = storage endpoint
+argv[4] = bucket name
+argv[5] = bucket prefix
+argv[6...] = plugin_args from schedule configuration
 ```
 
 #### Output
