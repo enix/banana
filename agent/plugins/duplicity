@@ -1,6 +1,9 @@
 #! /usr/bin/env bash
 
 set -e
+storageUrl="s3://$3/$4/$5"
+
+echo $storageUrl >&2
 
 function checkWarnings {
 	if [ -s /tmp/banana-errors ]; then
@@ -40,13 +43,13 @@ version)
 	;;
 
 backup)
-	duplicity $2 -v5 --log-fd 3 "${@:4}" $3 3> >(grep WARNING > /tmp/banana-errors) \
+	duplicity $2 -v5 --log-fd 3 "${@:6}" ${storageUrl} 3> >(grep WARNING > /tmp/banana-errors) \
 	| tee >(generateMetadata) >(generateArtifacts) >(cleanLogs) >/dev/null
 	checkWarnings
 	;;
 
 restore)
-	>&2 duplicity -v5 --log-fd 3 --restore-time $2 $3 "${@:4}" 3> >(grep WARNING > /tmp/banana-errors)
+	>&2 duplicity -v5 --log-fd 3 --restore-time $2 ${storageUrl} "${@:6}" 3> >(grep WARNING > /tmp/banana-errors)
 	checkWarnings
 	;;
 

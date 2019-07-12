@@ -40,7 +40,7 @@ func (p *plugin) backup(config *models.Config, cmd *backupCmd) ([]byte, []byte, 
 		return nil, nil, nil, err
 	}
 
-	args := []string{"backup", cmd.Type, config.GetEndpoint(cmd.Name)}
+	args := []string{"backup", cmd.Type, config.StorageHost, config.BucketName, cmd.Name}
 	args = append(args, cmd.PluginArgs...)
 	return p.spawn(config, args...)
 }

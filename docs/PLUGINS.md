@@ -68,8 +68,10 @@ Restore a backup to the given target directory.
 ```javascript
 argv[1] = "restore"
 argv[2] = timestamp/backup id to restore
-argv[3] = storage url
-argv[4...] = user specified plugin args
+argv[3] = storage endpoint
+argv[4] = bucket name
+argv[5] = bucket prefix
+argv[6...] = user specified plugin args
 ```
 
 #### Output
