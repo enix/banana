@@ -13,6 +13,7 @@ import (
 
 	"enix.io/banana/src/services"
 	"github.com/imdario/mergo"
+	"github.com/phayes/permbits"
 	"k8s.io/klog"
 )
 
@@ -70,6 +71,10 @@ func (config *Config) LoadDefaults() {
 
 // LoadFromFile : Load configuration from given filename
 func (config *Config) LoadFromFile(path string) error {
+	if err := checkPermissions(path); err != nil {
+		return err
+	}
+
 	bytes, err := ioutil.ReadFile(path)
 	if err != nil {
 		klog.V(2).Info("warning: can't load config file " + path + ", using config from env and command-line only")
@@ -79,6 +84,10 @@ func (config *Config) LoadFromFile(path string) error {
 	json.Unmarshal(bytes, config)
 
 	if len(config.ScheduleConfigPath) > 0 {
+		if err := checkPermissions(config.ScheduleConfigPath); err != nil {
+			return err
+		}
+
 		bytes, err := ioutil.ReadFile(config.ScheduleConfigPath)
 		if err != nil {
 			klog.V(2).Info("warning: can't load schedule config file " + config.ScheduleConfigPath)
@@ -145,4 +154,22 @@ func (config *Config) Sign(privkey *rsa.PrivateKey) (string, error) {
 	base64sig := make([]byte, base64.StdEncoding.EncodedLen(len(sig)))
 	base64.StdEncoding.Encode(base64sig, sig)
 	return string(base64sig), err
+}
+
+func checkPermissions(filename string) error {
+	permissions, err := permbits.Stat(filename)
+	if err != nil {
+		return err
+	}
+
+	if permissions.GroupRead() ||
+		permissions.GroupWrite() ||
+		permissions.GroupExecute() ||
+		permissions.OtherRead() ||
+		permissions.OtherWrite() ||
+		permissions.OtherExecute() {
+		return fmt.Errorf("config file %s has too open permissions! please reduce them to rw-------", filename)
+	}
+
+	return nil
 }
