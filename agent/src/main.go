@@ -107,8 +107,9 @@ func main() {
 		config.BucketName = ""
 		config.TTL = 0
 	}
-	config.LoadFromFile(args.ConfigPath)
-	err := config.LoadFromEnv()
+	err := config.LoadFromFile(args.ConfigPath)
+	assert(err)
+	err = config.LoadFromEnv()
 	assert(err)
 	err = config.LoadFromArgs(&args.Flags)
 	assert(err)

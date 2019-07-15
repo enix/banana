@@ -35,23 +35,23 @@ func (p *plugin) version(config *models.Config) (string, error) {
 }
 
 func (p *plugin) backup(config *models.Config, cmd *backupCmd) ([]byte, []byte, *os.File, error) {
-	err := loadCredentialsToEnv()
+	err := loadCredentialsToEnv(config)
 	if err != nil {
 		return nil, nil, nil, err
 	}
 
-	args := []string{"backup", cmd.Type, config.GetEndpoint(cmd.Name)}
+	args := []string{"backup", cmd.Type, config.StorageHost, config.BucketName, cmd.Name}
 	args = append(args, cmd.PluginArgs...)
 	return p.spawn(config, args...)
 }
 
 func (p *plugin) restore(config *models.Config, cmd *restoreCmd) ([]byte, error) {
-	err := loadCredentialsToEnv()
+	err := loadCredentialsToEnv(config)
 	if err != nil {
 		return nil, err
 	}
 
-	args := []string{"restore", cmd.TargetTime, config.GetEndpoint(cmd.Name)}
+	args := []string{"restore", cmd.TargetTime, config.StorageHost, config.BucketName, cmd.Name}
 	args = append(args, cmd.PluginArgs...)
 
 	_, stderr, _, err := p.spawn(config, args...)
@@ -66,7 +66,7 @@ func generateAndUploadPassphrase() (string, error) {
 	})
 }
 
-func loadCredentialsToEnv() error {
+func loadCredentialsToEnv(config *models.Config) error {
 	accessToken, err := services.Vault.GetStorageAccessToken()
 	if err != nil {
 		return err
@@ -89,5 +89,10 @@ func loadCredentialsToEnv() error {
 	os.Setenv("AWS_ACCESS_KEY_ID", accessToken)
 	os.Setenv("AWS_SECRET_ACCESS_KEY", secretToken)
 	os.Setenv("PASSPHRASE", passphrase)
+
+	for key, value := range config.PluginEnv {
+		os.Setenv(key, value)
+	}
+
 	return nil
 }

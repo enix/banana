@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"io/ioutil"
 	"os"
 	"os/exec"
@@ -43,6 +44,8 @@ func executeWithExtraFD(cmd string, args ...string) ([]byte, []byte, *os.File, e
 
 	err = process.Wait()
 	extraPipeW.Close()
+
+	fmt.Println(string(stderr))
 	return stdout, stderr, extraPipeR, err
 }
 
