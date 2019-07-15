@@ -30,9 +30,15 @@ class MessagesList extends Component {
 
   columns = [
     {
-      title: `Backup name`,
+      title: 'Name',
       dataIndex: 'command.name',
       key: 'name',
+      render: name => name ? name : '-',
+    },
+    {
+      title: 'Plugin',
+      dataIndex: 'config.plugin',
+      key: 'plugin',
       render: name => name ? name : '-',
     },
     {
@@ -42,7 +48,7 @@ class MessagesList extends Component {
       render: formatDate,
     },
     {
-      title: `Type (last)`,
+      title: 'Type (last)',
       dataIndex: 'command.type',
       key: 'backup_type',
       render: (type) => !type ? '-' : (
@@ -52,13 +58,13 @@ class MessagesList extends Component {
       ),
     },
     {
-      title: `Size (last)`,
+      title: 'Size (last)',
       dataIndex: 'metadata.size',
       key: 'size',
       render: size => size ? filesize(size) : '-',
     },
     {
-      title: `Size (total)`,
+      title: 'Size (total)',
       dataIndex: 'metadata.totalSize',
       key: 'total_size',
       render: size => size ? filesize(size) : '-',
