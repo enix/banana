@@ -23,9 +23,6 @@ func newRestoreCmd(args *launchArgs) (*restoreCmd, error) {
 	if len(args.Values) < 3 {
 		return nil, errors.New("no target date specified")
 	}
-	if len(args.Values) < 4 {
-		return nil, errors.New("no target folder specified")
-	}
 
 	return &restoreCmd{
 		Name:       args.Values[1],

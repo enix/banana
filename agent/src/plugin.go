@@ -51,7 +51,7 @@ func (p *plugin) restore(config *models.Config, cmd *restoreCmd) ([]byte, error)
 		return nil, err
 	}
 
-	args := []string{"restore", cmd.TargetTime, config.GetEndpoint(cmd.Name)}
+	args := []string{"restore", cmd.TargetTime, config.StorageHost, config.BucketName, cmd.Name}
 	args = append(args, cmd.PluginArgs...)
 
 	_, stderr, _, err := p.spawn(config, args...)
