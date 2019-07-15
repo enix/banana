@@ -8,6 +8,18 @@ dockerExec=""
 
 rm -f ${tempFile} ${tempFile}.gzip
 
+function listTables {
+	query="
+		SELECT
+			table_name AS \"Table\",
+			round(((data_length + index_length) / 1024 / 1024), 2) as size
+		FROM information_schema.TABLES
+		WHERE table_schema = \"$6\"
+		ORDER BY size DESC;"
+
+	echo ${query} | ${dockerExec} mysql ${@:6}
+}
+
 case $1 in
 
 version)
@@ -28,6 +40,8 @@ backup)
 		jq -n \
 			--argjson size $(wc -c ${tempFile}.gzip | awk '{printf $1}') \
 			'{ size: $size }'
+
+		listTables "$@" | tee >(cat >&2) >(gzip >&3) > /dev/null
 
 		duplicity full -v5 ${tempFile}.gzip ${storageUrl} >&2
 	fi
