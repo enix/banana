@@ -37,7 +37,7 @@ function generateArtifacts {
 case $1 in
 
 version)
-	echo v1.0.0
+	echo v1.0.0 "(duplicity v$(duplicity --version | awk '{printf $2}'))"
 	;;
 
 backup)

@@ -2,13 +2,16 @@
 
 storageUrl="s3://$3/$4/$5"
 tempFile="/tmp/mysqldump.sql"
-dockerExec="docker exec -ie MYSQL_PWD=root mysql"
 defaultArgs="--quote-names --quick --add-drop-table --add-locks --allow-keywords --disable-keys --extended-insert --single-transaction --create-options --comments --net_buffer_length=16384"
+dockerExec=""
+# dockerExec="docker exec -ie MYSQL_PWD=${MYSQL_PWD} mysql"
+
+rm -f ${tempFile} ${tempFile}.gzip
 
 case $1 in
 
 version)
-	echo v1.0.0
+	echo v1.0.0 "(mysqldump v$(${dockerExec} mysqldump --version | awk '{printf $3}'))"
 	;;
 
 backup)
@@ -19,6 +22,8 @@ backup)
 		cat ${tempFile} >&2
 		exit 1
 	else
+		set -e
+
 		gzip < ${tempFile} > ${tempFile}.gzip
 		jq -n \
 			--argjson size $(wc -c ${tempFile}.gzip | awk '{printf $1}') \
@@ -29,8 +34,9 @@ backup)
 	;;
 
 restore)
-	rm -f ${tempFile}.gzip
+	set -e
 	>&2 duplicity -v5 --restore-time $2 ${storageUrl} ${tempFile}.gzip
-	gunzip < ${tempFile}.gzip | ${dockerExec} mysql
+	gunzip < ${tempFile}.gzip | ${dockerExec} mysql ${@:6} >&2
+	;;
 
 esac
