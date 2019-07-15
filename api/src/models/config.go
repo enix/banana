@@ -27,7 +27,6 @@ type ScheduledBackupConfig struct {
 // Config : Contains full confugration will be used to execute commands
 type Config struct {
 	MonitorURL         string                           `json:"monitor_url,omitempty"`
-	Plugin             string                           `json:"plugin,omitempty"`
 	StatePath          string                           `json:"state_path,omitempty"`
 	PrivKeyPath        string                           `json:"private_key_path,omitempty"`
 	CertPath           string                           `json:"client_cert_path,omitempty"`
@@ -35,9 +34,11 @@ type Config struct {
 	BucketName         string                           `json:"bucket,omitempty"`
 	StorageHost        string                           `json:"storage_host,omitempty"`
 	PluginsDir         string                           `json:"plugins_dir,omitempty"`
+	Plugin             string                           `json:"plugin,omitempty"`
 	SkipTLSVerify      bool                             `json:"skip_tls_verify,omitempty"`
 	TTL                int64                            `json:"ttl,omitempty"`
 	Vault              *services.VaultConfig            `json:"vault,omitempty"`
+	PluginEnv          map[string]string                `json:"plugin_env,omitempty"`
 	ScheduledBackups   map[string]ScheduledBackupConfig `json:"schedule,omitempty"`
 }
 

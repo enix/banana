@@ -39,7 +39,6 @@ func (cmd *restoreCmd) execute(config *models.Config) error {
 	}
 
 	sendMessageToMonitor("restore_start", config, cmd, nil, "")
-	loadCredentialsToEnv()
 	klog.Infof("running %s, see you on the other side\n", config.Plugin)
 	logs, err := plugin.restore(config, cmd)
 	if logs == nil {
