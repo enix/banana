@@ -1,0 +1,31 @@
+#! /usr/bin/env bash
+
+storageUrl="s3://$3/$4/$5"
+tempFile="/tmp/mysqldump.txt"
+dockerExec="docker exec -te MYSQL_PWD=root mysql"
+defaultArgs="--quote-names --quick --add-drop-table --add-locks --allow-keywords --disable-keys --extended-insert --single-transaction --create-options --comments --net_buffer_length=16384"
+
+case $1 in
+
+version)
+	echo v1.0.0
+	;;
+
+backup)
+	rm -f ${tempFile}
+
+	${dockerExec} mysqldump ${defaultArgs} ${@:6} > ${tempFile}
+	if [ $? -ne 0 ]; then
+		cat ${tempFile} >&2
+		exit 1
+	else
+		cat ${tempFile} | gzip > ${tempFile}.gzip
+		jq -n \
+			--argjson size $(wc -c ${tempFile}.gzip | awk '{printf $1}') \
+			'{ size: $size }'
+
+		duplicity full -v5 ${tempFile}.gzip ${storageUrl} >&2
+	fi
+	;;
+
+esac
