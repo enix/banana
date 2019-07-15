@@ -19,7 +19,6 @@ import {
   getSelectedTimezoneName,
   formatSnakeCase,
   getTagColor,
-  getTypeTagColor,
 } from '../helpers';
 
 class MessagesList extends Component {
