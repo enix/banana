@@ -47,7 +47,7 @@ def reconfigure(args):
             os.getenv('VAULT_ADDR'),
             token['auth']['client_token'],
         ),
-        verify=not args.skip_tls_verify,
+        verify=not args.tls_skip_verify,
     )
     if res.status_code >= 400:
         print(res.json())

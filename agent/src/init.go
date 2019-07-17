@@ -21,7 +21,7 @@ type initCmd struct {
 // newInitCmd : Creates init command from command line args
 func newInitCmd(args *launchArgs) (*initCmd, error) {
 	if len(args.Values) < 4 {
-		return nil, errors.New("usage: bananactl init <company name> <agent name> <token>")
+		return nil, errors.New("usage: bananactl init <token> <company name> <agent name>")
 	}
 
 	return &initCmd{
@@ -63,14 +63,10 @@ func (cmd *initCmd) execute(config *models.Config) error {
 		scheduleRaw = []byte("{}")
 	}
 
-	err = ioutil.WriteFile(config.CertPath, []byte(cert), 00644)
-	assert(err)
-	err = ioutil.WriteFile(config.PrivKeyPath, []byte(privkey), 00644)
-	assert(err)
-	err = ioutil.WriteFile("/etc/banana/banana.json", configRaw, 00644)
-	assert(err)
-	err = ioutil.WriteFile(config.ScheduleConfigPath, scheduleRaw, 00644)
-	assert(err)
+	writeFileWithoutOverwrite(config.CertPath, []byte(cert))
+	writeFileWithoutOverwrite(config.PrivKeyPath, []byte(privkey))
+	writeFileWithoutOverwrite("/etc/banana/banana.json", configRaw)
+	writeFileWithoutOverwrite(config.ScheduleConfigPath, scheduleRaw)
 
 	loadCredentialsToMem(config)
 	sendMessageToMonitor("initialized", config, cmd, nil, "")
@@ -82,4 +78,13 @@ func (cmd *initCmd) jsonMap() (out map[string]interface{}) {
 	raw, _ := json.Marshal(cmd)
 	json.Unmarshal(raw, &out)
 	return
+}
+
+func writeFileWithoutOverwrite(filename string, data []byte) {
+	_, err := os.Stat(filename)
+	if os.IsNotExist(err) {
+		ioutil.WriteFile(filename, data, 00644)
+	} else {
+		assert(fmt.Errorf("failed to initialize agent: %s: file already exists", filename))
+	}
 }

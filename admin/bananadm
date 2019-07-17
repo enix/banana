@@ -9,7 +9,7 @@ def main(argv, usage_fn):
     if not ('func' in dir(argv)):
         usage_fn()
         return 0
-    if argv.skip_tls_verify:
+    if argv.tls_skip_verify:
         urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
     if not vault.get_vault_client(argv).is_authenticated():
         print('invalid authentication data')
