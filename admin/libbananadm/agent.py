@@ -15,7 +15,7 @@ def create_agent(args):
     print(
         'bananactl {} --vault-addr={} init {} {} <agent name>'
         .format(
-            '--skip-tls-verify' if args.skip_tls_verify else '',
+            '--tls-skip-verify' if args.skip_tls_verify else '',
             os.getenv('VAULT_ADDR'),
             token['auth']['client_token'],
             args.client,

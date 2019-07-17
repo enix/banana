@@ -7,7 +7,7 @@
 3. Run `docker-compose up -d`.
 4. Unseal Vault again by providing the master key(s) : `vault operator unseal -tls-skip-verify`
 5. Upgrade bananadm: `pip install bananadm -U`
-6. Run `bananadm --skip-tls-verify reconfigure`
+6. Run `bananadm --tls-skip-verify reconfigure`
 
 Please note that Vault's TLS certificate will be re-generated.
 

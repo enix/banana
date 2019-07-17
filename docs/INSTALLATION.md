@@ -82,10 +82,10 @@ export VAULT_TOKEN=s.freshly_generated_bananadm_token
 
 Make sure `VAULT_ADDR` and `VAULT_TOKEN` environment variables are set.
 
-When using the CLI in dev environment, add the switch `--skip-tls-verify` to all `bananadm` commands :
+When using the CLI in dev environment, add the switch `--tls-skip-verify` to all `bananadm` commands :
 
 ```bash
-alias bananadm="bananadm --skip-tls-verify"
+alias bananadm="bananadm --tls-skip-verify"
 ```
 
 On the very first time, you'll need to init some stuff:
