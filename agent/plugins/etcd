@@ -1,0 +1,48 @@
+#! /usr/bin/env bash
+
+set -e
+
+storageUrl="s3://$3/$4/$5"
+tempFile="/tmp/snapshot.bin"
+dockerContainerName="etcd"
+
+if [ -z ${dockerContainerName} ]; then
+	dockerExec=""
+else
+	dockerExec="docker exec -ie ETCDCTL_API=3 ${dockerContainerName}"
+fi
+
+rm -f ${tempFile}
+
+case $1 in
+
+version)
+	echo v1.0.0 "(etcdctl v$(${dockerExec} etcdctl version | head -n1 | awk '{printf $3}'))"
+	;;
+
+backup)
+	${dockerExec} etcdctl snapshot save ${tempFile} "${@:6}" >&2
+
+	if [ ! -z ${dockerContainerName} ]; then
+		docker cp ${dockerContainerName}:${tempFile} ${tempFile} >&2
+	fi
+
+	jq -n \
+		--argjson size $(wc -c ${tempFile} | awk '{printf $1}') \
+		'{ size: $size }'
+
+	duplicity full -v5 ${tempFile} ${storageUrl} >&2
+	rm -f ${tempFile}
+	;;
+
+restore)
+	>&2 duplicity -v5 --restore-time $2 ${storageUrl} ${tempFile}
+
+	if [ ! -z ${dockerContainerName} ]; then
+		docker cp ${tempFile} ${dockerContainerName}:${tempFile} >&2
+	fi
+
+	>&2 ${dockerExec} etcdctl snapshot restore ${tempFile} ${@:6}
+	;;
+
+esac

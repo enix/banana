@@ -19,7 +19,7 @@ import {
   getTypeTagColor,
 } from '../helpers';
 
-class MessagesList extends Component {
+class BackupsList extends Component {
 
   state = {
     detailsIndex: 0,
@@ -173,4 +173,4 @@ class MessagesList extends Component {
 
 const mapStateToProps = (state, props) => ({});
 
-export default connect(mapStateToProps, mapDispatchToProps)(MessagesList);
+export default connect(mapStateToProps, mapDispatchToProps)(BackupsList);

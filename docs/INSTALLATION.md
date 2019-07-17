@@ -82,10 +82,10 @@ export VAULT_TOKEN=s.freshly_generated_bananadm_token
 
 Make sure `VAULT_ADDR` and `VAULT_TOKEN` environment variables are set.
 
-When using the CLI in dev environment, add the switch `--skip-tls-verify` to all `bananadm` commands :
+When using the CLI in dev environment, add the switch `--tls-skip-verify` to all `bananadm` commands :
 
 ```bash
-alias bananadm="bananadm --skip-tls-verify"
+alias bananadm="bananadm --tls-skip-verify"
 ```
 
 On the very first time, you'll need to init some stuff:
@@ -125,6 +125,8 @@ successfully created client 'enix'
 
 * Set some storage credentials:
 
+> By default, the agent will try to use the backend named 'openstack'. If you'd like to use a different name, you should edit in consequence the `vault.storage_secret_path` key in `banana.json` _for each agent_.
+
 ```bash
 $ bananadm new backend s3
 
@@ -150,23 +152,7 @@ downloading latest agent release...
   % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
                                  Dload  Upload   Total   Spent    Left  Speed
 100 5028k  100 5028k    0     0  25.3M      0 --:--:-- --:--:-- --:--:-- 25.3M
-$ apt update
 [...]
-$ apt install -y python-pip duplicity zip
-[...]
-$ pip install boto
-Collecting boto
-[...]
-Successfully installed boto-2.49.0
-$ unzip -o agent.zip
-Archive:  agent.zip
-  inflating: bananactl-linux
-  inflating: config/systemd/banana.service
-  inflating: config/systemd/banana.timer
-$ cp bananactl-linux /usr/bin/bananactl
-$ cp config/systemd/banana.service config/systemd/banana.timer /etc/systemd/system/
-$ systemctl start banana.timer
-$ systemctl enable banana.timer
 success!
 ```
 

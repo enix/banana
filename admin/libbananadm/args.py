@@ -117,7 +117,7 @@ def init_arguments():
     ).set_defaults(func=lambda args: create_backend_secret(args, 's3'))
 
     parser.add_argument(
-        '--skip-tls-verify',
+        '--tls-skip-verify',
         help='ignore TLS errors',
         action='store_true'
     )
