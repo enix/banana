@@ -20,5 +20,6 @@ setuptools.setup(
         'requests>=2.21.0',
         'hvac',
         'cryptography',
+        'tabulate',
     ],
 )
