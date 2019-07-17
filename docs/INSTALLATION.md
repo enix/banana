@@ -150,23 +150,7 @@ downloading latest agent release...
   % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
                                  Dload  Upload   Total   Spent    Left  Speed
 100 5028k  100 5028k    0     0  25.3M      0 --:--:-- --:--:-- --:--:-- 25.3M
-$ apt update
 [...]
-$ apt install -y python-pip duplicity zip
-[...]
-$ pip install boto
-Collecting boto
-[...]
-Successfully installed boto-2.49.0
-$ unzip -o agent.zip
-Archive:  agent.zip
-  inflating: bananactl-linux
-  inflating: config/systemd/banana.service
-  inflating: config/systemd/banana.timer
-$ cp bananactl-linux /usr/bin/bananactl
-$ cp config/systemd/banana.service config/systemd/banana.timer /etc/systemd/system/
-$ systemctl start banana.timer
-$ systemctl enable banana.timer
 success!
 ```
 
