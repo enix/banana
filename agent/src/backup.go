@@ -27,9 +27,9 @@ func newBackupCmd(args *launchArgs) (*backupCmd, error) {
 	if len(args.Values) < 3 {
 		return nil, errors.New("no backup name specified")
 	}
-	if len(args.Values) < 4 {
-		return nil, errors.New("no targets specified")
-	}
+	// if len(args.Values) < 4 {
+	// 	return nil, errors.New("no targets specified")
+	// }
 
 	return &backupCmd{
 		Type:       args.Values[1],
