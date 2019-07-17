@@ -36,7 +36,7 @@ type Config struct {
 	StorageHost        string                           `json:"storage_host,omitempty"`
 	PluginsDir         string                           `json:"plugins_dir,omitempty"`
 	Plugin             string                           `json:"plugin,omitempty"`
-	SkipTLSVerify      bool                             `json:"skip_tls_verify,omitempty"`
+	SkipTLSVerify      bool                             `json:"tls_skip_verify,omitempty"`
 	TTL                int64                            `json:"ttl,omitempty"`
 	Vault              *services.VaultConfig            `json:"vault,omitempty"`
 	PluginEnv          map[string]string                `json:"plugin_env,omitempty"`

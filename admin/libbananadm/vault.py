@@ -4,7 +4,7 @@ from cryptography import x509, hazmat
 
 
 def get_vault_client(args):
-    verify = False if args.skip_tls_verify else True
+    verify = False if args.tls_skip_verify else True
     vault = hvac.Client(
         url=os.getenv('VAULT_ADDR'),
         token=os.getenv('VAULT_TOKEN'),

@@ -82,7 +82,7 @@ def create_client(args):
         headers={
             'X-Vault-Token': os.getenv('VAULT_TOKEN'),
         },
-        verify=not args.skip_tls_verify,
+        verify=not args.tls_skip_verify,
     )
     if res.status_code >= 400:
         print(res.json())
