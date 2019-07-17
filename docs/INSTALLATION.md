@@ -125,6 +125,8 @@ successfully created client 'enix'
 
 * Set some storage credentials:
 
+> By default, the agent will try to use the backend named 'openstack'. If you'd like to use a different name, you should edit in consequence the `vault.storage_secret_path` key in `banana.json` _for each agent_.
+
 ```bash
 $ bananadm new backend s3
 
