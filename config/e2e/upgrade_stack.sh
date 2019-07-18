@@ -4,6 +4,8 @@ set -e
 source ~/.ssh/environment
 sudo -i
 
+env
+
 # upgrade the stack
 docker-compose -f /root/docker-compose.yml up -d
 
