@@ -7,7 +7,8 @@ sudo -i
 docker-compose -f /root/docker-compose.yml up -d
 
 # unseal vault
-vault operator unseal -tls-skip-verify ${VAULT_UNSEAL_KEY}
+echo vault operator unseal ${VAULT_UNSEAL_KEY} -tls-skip-verify
+vault operator unseal ${VAULT_UNSEAL_KEY} -tls-skip-verify
 
 # reload nginx configuration
 bananadm --tls-skip-verify reconfigure
