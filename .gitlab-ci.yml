@@ -119,7 +119,11 @@ e2e-tests:
 
 generate-compose-file:
     stage: pre-release
-    image: docker/compose:1.24.1
+    image:
+      name: docker/compose:1.24.1
+      entrypoint:
+        - /bin/sh
+        - -c
     script:
       - export CI_COMMIT_TAG=$(cat VERSION)
       - docker-compose -f config/docker-compose.deploy.prod.yml config > docker-compose.yml
