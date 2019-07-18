@@ -17,8 +17,8 @@ select-version:
     - if [ $? -eq 0 ]; then cat release.txt | grep -o '.....$' | tr -d '[:cntrl:]' > VERSION; fi
     - set -e
     - "echo version to be released: $(cat VERSION)"
-  only:
-    - master
+  # only:
+  #   - master
   except:
     - tags
   artifacts:
@@ -139,11 +139,8 @@ release-admin:
   before_script:
     - pip3 install twine
   script:
-    - export CI_COMMIT_TAG=$(cat VERSION)
     - cd admin
     - ./setup.py sdist bdist_wheel
     - twine upload dist/* --repository-url ${PYPI_REPOSITORY}
-  # only:
-  #   - master
-  except:
+  only:
     - tags
