@@ -1,5 +1,8 @@
 #! /usr/bin/env bash
 
+set -e
+sudo -i
+
 # upgrade the stack
 docker-compose -f /root/docker-compose.yml up -d
 
