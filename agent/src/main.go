@@ -108,7 +108,9 @@ func main() {
 		config.TTL = 0
 	}
 	err := config.LoadFromFile(args.ConfigPath)
-	assert(err)
+	if err != nil && !os.IsNotExist(err) {
+		assert(err)
+	}
 	err = config.LoadFromEnv()
 	assert(err)
 	err = config.LoadFromArgs(&args.Flags)
