@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"math/rand"
 	"os"
+	"strings"
 	"time"
 
 	"enix.io/banana/src/models"
@@ -40,7 +41,8 @@ func (p *plugin) backup(config *models.Config, cmd *backupCmd) ([]byte, []byte, 
 		return nil, nil, nil, err
 	}
 
-	args := []string{"backup", cmd.Type, config.StorageHost, config.BucketName, cmd.Name}
+	encodedName := strings.ReplaceAll(cmd.Name, " ", "-")
+	args := []string{"backup", cmd.Type, config.StorageHost, config.BucketName, encodedName}
 	args = append(args, cmd.PluginArgs...)
 	return p.spawn(config, args...)
 }
@@ -51,7 +53,8 @@ func (p *plugin) restore(config *models.Config, cmd *restoreCmd) ([]byte, error)
 		return nil, err
 	}
 
-	args := []string{"restore", cmd.TargetTime, config.StorageHost, config.BucketName, cmd.Name}
+	encodedName := strings.ReplaceAll(cmd.Name, " ", "-")
+	args := []string{"restore", cmd.TargetTime, config.StorageHost, config.BucketName, encodedName}
 	args = append(args, cmd.PluginArgs...)
 
 	_, stderr, _, err := p.spawn(config, args...)
