@@ -1,6 +1,7 @@
 stages:
   - prepare
   - build
+  - pre-release
   - test
   - release
 
@@ -116,17 +117,24 @@ e2e-tests:
   except:
     - tags
 
+generate-compose-file:
+    stage: pre-release
+    image: docker/compose:1.24.1
+    script:
+      - export CI_COMMIT_TAG=$(cat VERSION)
+      - docker-compose -f config/docker-compose.deploy.prod.yml config > docker-compose.yml
+    # only:
+      # - master
+    except:
+      - tags
+    artifacts:
+      paths:
+        - docker-compose.yml
 
 semantic-release:
   stage: release
   image: enix/semantic-release:gitlab
-  before_script:
-    - apk add --update py-pip python-dev libffi-dev openssl-dev gcc libc-dev make
-    - pip install --upgrade pip
-    - pip install docker-compose
   script:
-    - export CI_COMMIT_TAG=$(cat VERSION)
-    - docker-compose -f config/docker-compose.deploy.prod.yml config > docker-compose.yml
     - npx semantic-release --ci
   only:
     - master
