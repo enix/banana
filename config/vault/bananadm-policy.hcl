@@ -18,6 +18,11 @@ path "auth/banana/cert/certs/*" {
   capabilities = ["create", "update"]
 }
 
+# list secret engines
+path "sys/mounts" {
+  capabilities = ["read"]
+}
+
 # mount new secret engines under /banana
 path "sys/mounts/banana/*" {
   capabilities = ["create", "update"]
