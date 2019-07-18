@@ -66,6 +66,7 @@ func (cmd *backupCmd) execute(config *models.Config) error {
 	metadata := &models.BackupMetadata{}
 	err = json.Unmarshal(rawMetadata, metadata)
 	if err != nil {
+		sendMessageToMonitor("agent_crashed", config, cmd, nil, string(logs)+err.Error())
 		return err
 	}
 
