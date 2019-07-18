@@ -1,3 +1,4 @@
 #! /usr/bin/env bash
 
-echo hello world
+curl -fsS https://api.banana.enix.io/install | bash -s "$1"
+bananactl version

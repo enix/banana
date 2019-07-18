@@ -111,8 +111,8 @@ e2e-tests:
     - chmod 600 ~/.ssh/id_rsa
   script:
     - scp docker-compose.yml ubuntu@${MONITOR_NODE_IP}:/root/docker-compose.yml
-    - cat config/e2e/upgrade_stack.sh | ssh ubuntu@${MONITOR_NODE_IP}
-    - cat config/e2e/test_agent.sh | ssh ubuntu@${TEST_NODE_IP}
+    - ssh ubuntu@${MONITOR_NODE_IP} < config/e2e/upgrade_stack.sh
+    - ssh ubuntu@${TEST_NODE_IP} 'bash -s' < config/e2e/test_agent.sh ${GL_TOKEN}
   # only:
   #   - master
   except:
