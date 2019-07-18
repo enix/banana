@@ -46,11 +46,13 @@ select-version:
 build-stack-prod:
   <<: *build-stack
   script:
-    - export CI_COMMIT_TAG=${CI_COMMIT_TAG:1}
+    - export CI_COMMIT_TAG=$(cat VERSION)
     - export COMPOSE_FLAGS='-f docker-compose.yml -f config/docker-compose.build.prod.yml'
     - docker-compose ${COMPOSE_FLAGS} build --parallel
     - docker-compose ${COMPOSE_FLAGS} push
-  only:
+  # only:
+  #   - master
+  except:
     - tags
 
 .build-agent: &build-agent
@@ -107,7 +109,6 @@ e2e-tests:
     - cp ${SSH_PRIVKEY} ~/.ssh/id_rsa
     - chmod 600 ~/.ssh/id_rsa
   script:
-    - cat ~/.ssh/id_rsa
     - echo "echo > ~/hello-from-gitlab-ci" | ssh ubuntu@${TEST_NODE_IP}
     - echo "echo > ~/hello-from-gitlab-ci" | ssh ubuntu@${MONITOR_NODE_IP}
   # only:
@@ -138,8 +139,11 @@ release-admin:
   before_script:
     - pip3 install twine
   script:
+    - export CI_COMMIT_TAG=$(cat VERSION)
     - cd admin
     - ./setup.py sdist bdist_wheel
     - twine upload dist/* --repository-url ${PYPI_REPOSITORY}
-  only:
+  # only:
+  #   - master
+  except:
     - tags
