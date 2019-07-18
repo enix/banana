@@ -110,8 +110,9 @@ e2e-tests:
     - cp ${SSH_PRIVKEY} ~/.ssh/id_rsa
     - chmod 600 ~/.ssh/id_rsa
   script:
-    - echo "echo > ~/hello-from-gitlab-ci" | ssh ubuntu@${TEST_NODE_IP}
-    - echo "echo > ~/hello-from-gitlab-ci" | ssh ubuntu@${MONITOR_NODE_IP}
+    - scp docker-compose.yml ubuntu@${MONITOR_NODE_IP}:/root/docker-compose.yml
+    - cat config/e2e/upgrade_stack.sh | ssh ubuntu@${MONITOR_NODE_IP}
+    - cat config/e2e/test_agent.sh | ssh ubuntu@${TEST_NODE_IP}
   # only:
   #   - master
   except:
