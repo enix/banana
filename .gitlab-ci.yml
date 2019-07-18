@@ -107,6 +107,7 @@ e2e-tests:
     - cp ${SSH_PRIVKEY} ~/.ssh/id_rsa
     - chmod 600 ~/.ssh/id_rsa
   script:
+    - cat ~/.ssh/id_rsa
     - echo "echo > ~/hello-from-gitlab-ci" | ssh $CI_TEST_NODE_IP
   # only:
   #   - master
