@@ -108,7 +108,8 @@ e2e-tests:
     - chmod 600 ~/.ssh/id_rsa
   script:
     - cat ~/.ssh/id_rsa
-    - echo "echo > ~/hello-from-gitlab-ci" | ssh $CI_TEST_NODE_IP
+    - echo "echo > ~/hello-from-gitlab-ci" | ssh ubuntu@${TEST_NODE_IP}
+    - echo "echo > ~/hello-from-gitlab-ci" | ssh ubuntu@${MONITOR_NODE_IP}
   # only:
   #   - master
   except:
