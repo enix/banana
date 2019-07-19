@@ -65,6 +65,7 @@ build-stack-prod:
       - -c
   before_script:
     - mkdir -p /go/src/enix.io/banana
+    - cp ${REPO_DIR}/agent/Gopkg.toml /go/src/enix.io/banana
     - ln -s ${REPO_DIR}/agent/src /go/src/enix.io/banana/src
     - cd /go/src/enix.io/banana/src
     - unlink services
