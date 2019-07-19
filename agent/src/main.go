@@ -109,6 +109,8 @@ func main() {
 		config.TTL = 0
 	}
 	err := config.LoadFromFile(args.ConfigPath)
+	fmt.Println(err)
+	fmt.Println(config.Vault)
 	if err != nil && !os.IsNotExist(err) {
 		assert(err)
 	}
