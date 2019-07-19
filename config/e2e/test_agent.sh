@@ -1,7 +1,9 @@
 #! /usr/bin/env bash
 
+echo $2
 # update the agent
 curl -fsSLk https://api.banana.enix.io/install | bash -s "$1" "$2"
+echo version that will be tested: $(bananactl version)
 
 cat /etc/banana/banana.json
 # run a test backup
