@@ -1,6 +1,8 @@
 stages:
   - prepare
   - build
+  - pre-release
+  - test
   - release
 
 variables:
@@ -45,11 +47,13 @@ build-stack-dev:
 build-stack-prod:
   <<: *build-stack
   script:
-    - export CI_COMMIT_TAG=${CI_COMMIT_TAG:1}
+    - export CI_COMMIT_TAG=$(cat VERSION)
     - export COMPOSE_FLAGS='-f docker-compose.yml -f config/docker-compose.build.prod.yml'
     - docker-compose ${COMPOSE_FLAGS} build --parallel
     - docker-compose ${COMPOSE_FLAGS} push
   only:
+    - master
+  except:
     - tags
 
 .build-agent: &build-agent
@@ -62,6 +66,7 @@ build-stack-prod:
   before_script:
     - mkdir -p /go/src/enix.io/banana
     - ln -s ${REPO_DIR}/agent/src /go/src/enix.io/banana/src
+    - cp ${REPO_DIR}/agent/Gopkg.* /go/src/enix.io/banana/src
     - cd /go/src/enix.io/banana/src
     - unlink services
     - unlink models
@@ -71,7 +76,7 @@ build-stack-prod:
     - echo -e "package main\nconst version = \"$(cat ${REPO_DIR}/VERSION > /dev/null && echo ${VERSION} || echo canary build ${CI_COMMIT_SHORT_SHA})\"" > version.go
   script:
     - cd /go/src/enix.io/banana/src
-    - dep init
+    - dep ensure
     - CGO_ENABLED=0 go build -v -o ${REPO_DIR}/${BANANACTL}-${GOOS}
   artifacts:
     paths:
@@ -96,16 +101,47 @@ build-agent-windows:
   variables:
     GOOS: windows
 
+e2e-tests:
+  stage: test
+  image: kroniak/ssh-client
+  before_script:
+    - mkdir -p ~/.ssh
+    - chmod 700 ~/.ssh
+    - echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config
+    - cp ${SSH_PRIVKEY} ~/.ssh/id_rsa
+    - chmod 600 ~/.ssh/id_rsa
+  script:
+    - scp docker-compose.yml ubuntu@${MONITOR_NODE_IP}:/root/docker-compose.yml
+    - ssh ubuntu@${MONITOR_NODE_IP} < config/e2e/upgrade_stack.sh
+    - scp bananactl-linux ubuntu@${TEST_NODE_IP}:~
+    - ssh ubuntu@${TEST_NODE_IP} "sudo bash -s ${GL_TOKEN} ${CI_COMMIT_REF_NAME}" < config/e2e/test_agent.sh
+  only:
+    - master
+  except:
+    - tags
+
+generate-compose-file:
+    stage: pre-release
+    image:
+      name: docker/compose:1.24.1
+      entrypoint:
+        - /bin/sh
+        - -c
+    script:
+      - export CI_COMMIT_TAG=$(cat VERSION)
+      - docker-compose -f config/docker-compose.deploy.prod.yml config > docker-compose.yml
+    only:
+      - master
+    except:
+      - tags
+    artifacts:
+      paths:
+        - docker-compose.yml
+
 semantic-release:
   stage: release
   image: enix/semantic-release:gitlab
-  before_script:
-    - apk add --update py-pip python-dev libffi-dev openssl-dev gcc libc-dev make
-    - pip install --upgrade pip
-    - pip install docker-compose
   script:
-    - export CI_COMMIT_TAG=$(cat VERSION)
-    - docker-compose -f config/docker-compose.deploy.prod.yml config > docker-compose.yml
     - npx semantic-release --ci
   only:
     - master

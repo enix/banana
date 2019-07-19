@@ -83,7 +83,7 @@ func (cmd *initCmd) jsonMap() (out map[string]interface{}) {
 func writeFileWithoutOverwrite(filename string, data []byte) {
 	_, err := os.Stat(filename)
 	if os.IsNotExist(err) {
-		ioutil.WriteFile(filename, data, 00644)
+		ioutil.WriteFile(filename, data, 00600)
 	} else {
 		assert(fmt.Errorf("failed to initialize agent: %s: file already exists", filename))
 	}

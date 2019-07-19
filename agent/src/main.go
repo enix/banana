@@ -19,6 +19,7 @@ import (
 
 func assert(err error) {
 	if err != nil {
+		deleteLockfile()
 		if version == "develop" {
 			panic(err)
 		} else {
@@ -32,10 +33,10 @@ func createLockfile() {
 	bytes, err := ioutil.ReadFile("/tmp/banana.lock")
 
 	if err == nil || !os.IsNotExist(err) {
-		assert(fmt.Errorf(
+		klog.Fatalf(
 			"refusing to start as PID %s is already running. if it is not the case, you can delete /tmp/banana.lock",
 			string(bytes),
-		))
+		)
 	}
 
 	ioutil.WriteFile("/tmp/banana.lock", []byte(strconv.Itoa(pid)), 00644)
@@ -108,7 +109,9 @@ func main() {
 		config.TTL = 0
 	}
 	err := config.LoadFromFile(args.ConfigPath)
-	assert(err)
+	if err != nil && !os.IsNotExist(err) {
+		assert(err)
+	}
 	err = config.LoadFromEnv()
 	assert(err)
 	err = config.LoadFromArgs(&args.Flags)

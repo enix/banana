@@ -1,0 +1,19 @@
+[[constraint]]
+  name = "github.com/imdario/mergo"
+  branch = "master"
+
+[[constraint]]
+  branch = "master"
+  name = "github.com/pborman/getopt"
+
+[[constraint]]
+  branch = "master"
+  name = "github.com/phayes/permbits"
+
+[[constraint]]
+  name = "k8s.io/klog"
+  version = "0.3.3"
+
+[prune]
+  go-tests = true
+  unused-packages = true

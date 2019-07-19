@@ -26,7 +26,7 @@ curl > agent.zip \
 
 if [[ -z ${isUpgrade} ]]; then
 	run apt update
-	run apt install -y python-boto duplicity zip
+	run apt install -y python-boto duplicity zip jq
 fi
 
 run unzip -o agent.zip
