@@ -1,6 +1,6 @@
 [[constraint]]
   name = "github.com/imdario/mergo"
-  version = "master"
+  branch = "master"
 
 [[constraint]]
   branch = "master"
