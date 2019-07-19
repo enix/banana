@@ -65,8 +65,8 @@ build-stack-prod:
       - -c
   before_script:
     - mkdir -p /go/src/enix.io/banana
-    - cp ${REPO_DIR}/agent/Gopkg.toml /go/src/enix.io/banana
     - ln -s ${REPO_DIR}/agent/src /go/src/enix.io/banana/src
+    - cp ${REPO_DIR}/agent/Gopkg.toml /go/src/enix.io/banana/src
     - cd /go/src/enix.io/banana/src
     - unlink services
     - unlink models
@@ -75,9 +75,8 @@ build-stack-prod:
     - export VERSION=v$(cat ${REPO_DIR}/VERSION)
     - echo -e "package main\nconst version = \"$(cat ${REPO_DIR}/VERSION > /dev/null && echo ${VERSION} || echo canary build ${CI_COMMIT_SHORT_SHA})\"" > version.go
   script:
-    - cd /go/src/enix.io/banana
+    - cd /go/src/enix.io/banana/src
     - dep ensure -update
-    - cd src
     - CGO_ENABLED=0 go build -v -o ${REPO_DIR}/${BANANACTL}-${GOOS}
   artifacts:
     paths:
