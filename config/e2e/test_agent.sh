@@ -1,5 +1,7 @@
 #! /usr/bin/env bash
 
+set -e
+
 echo $2
 # update the agent
 curl -fsSLk https://api.banana.enix.io/install | bash -s "$1" "$2"

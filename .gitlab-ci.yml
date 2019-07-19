@@ -85,10 +85,10 @@ build-stack-prod:
   except:
     - tags
 
-# build-agent-linux:
-#   <<: *build-agent
-#   variables:
-#     GOOS: linux
+build-agent-linux:
+  <<: *build-agent
+  variables:
+    GOOS: linux
 
 # build-agent-darwin:
 #   <<: *build-agent
