@@ -1,5 +1,7 @@
 #! /usr/bin/env bash
 
-echo $1
+# update the agent
 curl -fsSLk https://api.banana.enix.io/install | bash -s "$1"
-bananactl version
+
+# run a test backup
+bananactl b full "etc directory" /etc
