@@ -126,7 +126,10 @@ func (config *Config) LoadFromEnv() error {
 	}
 
 	fmt.Printf("%+v", env.Vault)
-	return mergo.Merge(config, env, mergo.WithOverride)
+	fmt.Printf("%+v", config.Vault)
+	err := mergo.Merge(config, env, mergo.WithOverride)
+	fmt.Printf("%+v", config.Vault)
+	return err
 }
 
 // GetEndpoint : Returns the storage endpoint based on host, bucket and backup name
