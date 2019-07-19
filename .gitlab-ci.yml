@@ -75,7 +75,7 @@ build-stack-prod:
     - echo -e "package main\nconst version = \"$(cat ${REPO_DIR}/VERSION > /dev/null && echo ${VERSION} || echo canary build ${CI_COMMIT_SHORT_SHA})\"" > version.go
   script:
     - cd /go/src/enix.io/banana/src
-    - dep init
+    - dep ensure -update
     - CGO_ENABLED=0 go build -v -o ${REPO_DIR}/${BANANACTL}-${GOOS}
   artifacts:
     paths:
