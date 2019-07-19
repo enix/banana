@@ -18,8 +18,8 @@ select-version:
     - if [ $? -eq 0 ]; then cat release.txt | grep -o '.....$' | tr -d '[:cntrl:]' > VERSION; fi
     - set -e
     - "echo version to be released: $(cat VERSION)"
-  # only:
-  #   - master
+  only:
+    - master
   except:
     - tags
   artifacts:
@@ -34,15 +34,15 @@ select-version:
   before_script:
     - echo ${CI_REGISTRY_PASSWORD} | docker login ${CI_REGISTRY} -u ${CI_REGISTRY_USER} --password-stdin
 
-# build-stack-dev:
-#   <<: *build-stack
-#   script:
-#     - export CI_COMMIT_TAG=dev
-#     - docker-compose build --parallel
-#     - docker-compose push
-#   except:
-#     - master
-#     - tags
+build-stack-dev:
+  <<: *build-stack
+  script:
+    - export CI_COMMIT_TAG=dev
+    - docker-compose build --parallel
+    - docker-compose push
+  except:
+    - master
+    - tags
 
 build-stack-prod:
   <<: *build-stack
@@ -51,8 +51,8 @@ build-stack-prod:
     - export COMPOSE_FLAGS='-f docker-compose.yml -f config/docker-compose.build.prod.yml'
     - docker-compose ${COMPOSE_FLAGS} build --parallel
     - docker-compose ${COMPOSE_FLAGS} push
-  # only:
-  #   - master
+  only:
+    - master
   except:
     - tags
 
@@ -91,15 +91,15 @@ build-agent-linux:
   variables:
     GOOS: linux
 
-# build-agent-darwin:
-#   <<: *build-agent
-#   variables:
-#     GOOS: darwin
+build-agent-darwin:
+  <<: *build-agent
+  variables:
+    GOOS: darwin
 
-# build-agent-windows:
-#   <<: *build-agent
-#   variables:
-#     GOOS: windows
+build-agent-windows:
+  <<: *build-agent
+  variables:
+    GOOS: windows
 
 e2e-tests:
   stage: test
@@ -115,8 +115,8 @@ e2e-tests:
     - ssh ubuntu@${MONITOR_NODE_IP} < config/e2e/upgrade_stack.sh
     - scp bananactl-linux ubuntu@${TEST_NODE_IP}:~
     - ssh ubuntu@${TEST_NODE_IP} "sudo bash -s ${GL_TOKEN} ${CI_COMMIT_REF_NAME}" < config/e2e/test_agent.sh
-  # only:
-  #   - master
+  only:
+    - master
   except:
     - tags
 
@@ -130,8 +130,8 @@ generate-compose-file:
     script:
       - export CI_COMMIT_TAG=$(cat VERSION)
       - docker-compose -f config/docker-compose.deploy.prod.yml config > docker-compose.yml
-    # only:
-      # - master
+    only:
+      - master
     except:
       - tags
     artifacts:
