@@ -10,4 +10,5 @@ echo version that will be tested: $(bananactl version)
 
 cat /etc/banana/banana.json
 # run a test backup
+env | grep VAULT
 bananactl b full "etc directory" /etc
