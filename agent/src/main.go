@@ -116,15 +116,19 @@ func main() {
 	}
 	err = config.LoadFromEnv()
 	assert(err)
+	fmt.Println(config.Vault)
 	err = config.LoadFromArgs(&args.Flags)
 	assert(err)
 
+	fmt.Println(config.Vault)
 	cmd, err := newCommand(args)
 	assert(err)
 
+	fmt.Println(config.Vault)
 	if args.Values[0] != "init" {
 		loadCredentialsToMem(config)
 	}
+	fmt.Println(config.Vault)
 	err = services.OpenVaultConnection(config.Vault, config.SkipTLSVerify)
 	assert(err)
 
