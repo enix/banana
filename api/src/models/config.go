@@ -125,6 +125,7 @@ func (config *Config) LoadFromEnv() error {
 		},
 	}
 
+	fmt.Printf("%+v", env.Vault)
 	return mergo.Merge(config, env, mergo.WithOverride)
 }
 
