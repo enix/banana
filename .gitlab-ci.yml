@@ -15,7 +15,7 @@ select-version:
     - set +e
     - git describe --tags $(git rev-list --tags --max-count=1) | cut -c2- > VERSION
     - npx semantic-release -d --prepare | grep 'Published release' > release.txt
-    - if [ $? -eq 0 ]; then cat release.txt | grep -o '.....$' | tr -d '[:cntrl:]' > VERSION; fi
+    - if [ $? -eq 0 ]; then cat release.txt | awk '{printf $8}' | tr -d '[:cntrl:]' > VERSION; fi
     - set -e
     - "echo version to be released: $(cat VERSION)"
   only:
