@@ -23,8 +23,8 @@ select-version:
     - cat release.txt | awk '{printf $8}' | tr -d '[:cntrl:]'
     - set -e
     - "echo version to be released: $(cat VERSION)"
-  only:
-    - master
+  # only:
+  #   - master
   except:
     - tags
   artifacts:
