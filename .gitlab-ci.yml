@@ -120,6 +120,17 @@ e2e-tests:
   except:
     - tags
 
+test-admin:
+  stage: test
+  image: python:3.7
+  script:
+    - cd admin
+    - ./setup.py test
+    - ./setup.py install --dry-run -v
+    - ./bananadm
+  except:
+    - tags
+
 generate-compose-file:
     stage: pre-release
     image:
