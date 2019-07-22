@@ -14,8 +14,13 @@ select-version:
   script:
     - set +e
     - git describe --tags $(git rev-list --tags --max-count=1) | cut -c2- > VERSION
+    - cat VERSION
     - npx semantic-release -d --prepare | grep 'Published release' > release.txt
     - if [ $? -eq 0 ]; then cat release.txt | awk '{printf $8}' | tr -d '[:cntrl:]' > VERSION; fi
+    - cat VERSION
+    - cat release.txt
+    - cat release.txt | awk '{printf $8}'
+    - cat release.txt | awk '{printf $8}' | tr -d '[:cntrl:]'
     - set -e
     - "echo version to be released: $(cat VERSION)"
   only:
