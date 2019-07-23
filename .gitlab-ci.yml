@@ -164,7 +164,7 @@ release-agent:
   image:
     name: skandyla/fpm
     entrypoint:
-      - /bin/sh
+      - /bin/bash
       - -c
   before_script:
     - apt update
