@@ -19,6 +19,8 @@ select-version:
     - npx semantic-release -d --prepare | grep 'Published release' > release.txt
     - echo $?
     - crash
+    - echo $?
+    - crash
     - if [ $? -eq 0 ]; then cat release.txt | awk '{printf $7}' | tr -d '[:cntrl:]' > VERSION; else echo no new version will be released; fi
     - set -e
     - "echo next version: $(cat VERSION)"
