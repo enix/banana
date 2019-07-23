@@ -162,9 +162,9 @@ semantic-release:
 release-agent:
   stage: release
   image:
-    name: skandyla/fpm
+    name: isim/fpm
     entrypoint:
-      - /bin/bash
+      - /bin/sh
       - -c
   before_script:
     - apt update
