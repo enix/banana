@@ -26,7 +26,7 @@ func newPlugin(name string) (*plugin, error) {
 	return &plugin{name}, nil
 }
 
-func (p *plugin) spawn(config *models.Config, args ...string) ([]byte, []byte, *os.File, error) {
+func (p *plugin) spawn(config *models.Config, args ...string) ([]byte, []byte, []byte, error) {
 	return executeWithExtraFD(config.PluginsDir+"/"+p.name, args...)
 }
 
@@ -35,7 +35,7 @@ func (p *plugin) version(config *models.Config) (string, error) {
 	return string(stdout), err
 }
 
-func (p *plugin) backup(config *models.Config, cmd *backupCmd) ([]byte, []byte, *os.File, error) {
+func (p *plugin) backup(config *models.Config, cmd *backupCmd) ([]byte, []byte, []byte, error) {
 	err := loadCredentialsToEnv(config)
 	if err != nil {
 		return nil, nil, nil, err
