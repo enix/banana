@@ -1,15 +1,13 @@
 # Installing banana
 
-The following assumes that thoose domains are pointing to the monitor IP:
+The following assumes that this domain is pointing to the monitor IP:
 
-* `banana.enix.io`
-* `api.banana.enix.io`
-* `vault.banana.enix.io`
+* `banana.dev.enix.io`
 
 If this is not the case, you should edit your `/etc/hosts` file in consequence :
 
 ```
-<ip of the monitor node>	banana.enix.io api.banana.enix.io vault.banana.enix.io
+<ip of the monitor node>	banana.dev.enix.io
 ```
 
 #### On the monitor node
@@ -39,7 +37,7 @@ If your Vault is already up and running, you can skip to step 3.
 1. Init Vault :
 
 ```bash
-export VAULT_ADDR=https://vault.banana.enix.io:7777
+export VAULT_ADDR=https://banana.dev.enix.io:7777
 
 # for the sake of simplicity we use a single unseal key. for production, it is highly recommended to use more
 vault operator init -tls-skip-verify -key-shares=1 -key-threshold=1
@@ -146,7 +144,7 @@ All agents in the same client share all the storage secrets. By default (for now
 First, install `curl`. Then install `bananactl` using the following command (add `-k` tu `curl` command if needed):
 
 ```bash
-$ curl -fsS https://api.banana.enix.io/install | bash -s - '<gitlab access token>'
+$ curl -fsS https://banana.dev.enix.io/install | bash -s - '<gitlab access token>'
 
 downloading latest agent release...
   % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
@@ -165,7 +163,7 @@ client in which create the agent(s)? enix
 generating temporary token to allow new agent(s) to register
 success! join your new agent(s) using:
 
-bananactl --vault-addr=https://vault.banana.enix.io:7777 init s.BVYt1Hj3eLn6NDPS2fJIKzfO enix <agent name>
+bananactl --vault-addr=https://banana.dev.enix.io:7777 init s.BVYt1Hj3eLn6NDPS2fJIKzfO enix <agent name>
 ```
 
 > The `new agent` command generates a token with a 1h TTL which has the required permissions to issue certificates from the client's agents PKI. The generated `bananactl` command can then be runned an unlimited amount of times to register multiple agents, while the token is still valid.
@@ -208,4 +206,4 @@ Verifying - Enter Export Password: ****
 successfully wrote arthur.p12
 ```
 
-* Open your bowser on [banana.enix.io](https://banana.enix.io) and authenticate using the generated p12 file.
+* Open your bowser on [banana.dev.enix.io](https://banana.dev.enix.io) and authenticate using the generated p12 file.
