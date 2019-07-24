@@ -5,7 +5,8 @@ storageUrl="s3://$3/$4/$5"
 
 function checkWarnings {
 	if [ -s /tmp/banana-errors ]; then
-		>&2 echo "warnings were found in backup logs"
+		>&2 echo "warnings were found in backup logs:"
+		>&2 cat /tmp/banana-errors
 		rm -f /tmp/banana-errors
 		exit 1
 	fi
