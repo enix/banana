@@ -3,7 +3,8 @@
 ## Introduction
 
 Banana is an enterprise-grade, fully secured, backuping system.
-It has been developed has an alternative to [backuppc](http://backuppc.sourceforge.net) which is quite powerful ... but may put your content at risk.
+
+It has been developed as an alternative to [backuppc](http://backuppc.sourceforge.net) which is quite powerful ... but may put your content at risk.
 
 The Banana project aims to backup thousands of nodes, without requiring direct (centralized) access to them.
 All backups are ciphered prior to their push to a storage backend.
@@ -19,20 +20,20 @@ The current status of the project is *alpha*.
 	* Storage only sees encrypted backups
 	* Central components do not have access to storage and do not have access to any credentials
 	* vault do not have access to storage, neither to nodes
-	* Nodes can reach storage, vault and central components, the opposite is not true
-* Minimal security implication on nodes
+	* Nodes can reach storage, vault and central components, the opposite is **not** true
+* Minimal security risks on nodes
 	* Nodes push their status (excluding any credential) to a centralized component
 	* Nodes get temporary backup ciphering key from *vault*
-	* Nodes encrypts their backup
-* Backup monitoring and alerting through central component
-* A Web UI in order to get consolidated information about all backup jobs and status
+	* Nodes encrypts their backup prior to pushing them.
+* All Backups are monitored, including alerting, through central component
+* A Web UI provides consolidated information about all backup jobs and status
 * Support for various backup types through a plugin based implementation
 	* FileSystem
 	* Databases (Mysql, Etcd, ...)
 * Support for multiple storage backends: S3, Swift, NFS, Samba, ...
 * Encryption-at-rest on storage backends
 
-## Project structure
+## Project composition
 
 Banana is componed of :
 * *bananaui*: A centralised "watch tower"
