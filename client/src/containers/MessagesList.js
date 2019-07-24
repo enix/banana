@@ -86,7 +86,7 @@ class MessagesList extends Component {
             <span>
               <Divider type='vertical' />
               <a
-                href={`https://api.banana.enix.io/agents/${this.props.agentID}/messages/${item.timestamp}/artifacts.gzip`}
+                href={`https://banana.dev.enix.io/api/agents/${this.props.agentID}/messages/${item.timestamp}/artifacts.gzip`}
                 target='_blank'
                 rel='noopener noreferrer'
               >

@@ -129,7 +129,7 @@ def init_arguments():
     parser.add_argument(
         '--monitor-addr',
         help='monitor API address',
-        default='https://api.banana.enix.io',
+        default='https://banana.dev.enix.io/api',
     )
 
     return parser
