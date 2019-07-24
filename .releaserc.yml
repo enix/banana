@@ -7,3 +7,4 @@ plugins:
   #     assets:
   #       - ./bananactl-*
   #       - ./docker-compose.yml
+branch: develop
