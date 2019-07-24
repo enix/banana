@@ -35,7 +35,7 @@ The current status of the project is *alpha*.
 
 ## Project composition
 
-Banana is componed of :
+Banana is compound of :
 * *bananaui*: A centralised "watch tower"
 * *bananactl*: An agent to be launched on any node to backup
 * *bananadm*: An administrative configuration helper
