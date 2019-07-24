@@ -16,5 +16,5 @@ Please note that Vault's TLS certificate will be re-generated.
 Run the install script again.
 
 ```bash
-curl -fsS https://api.banana.enix.io/install | bash -s - '<gitlab access token>'
+curl -fsS https://banana.dev.enix.io/install | bash -s - '<gitlab access token>'
 ```

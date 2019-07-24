@@ -1,8 +1,8 @@
 #! /usr/bin/env sh
 
-subject="/C=FR/ST=Ile-De-France/L=Paris/O=Enix/OU=Banana/CN=vault.banana.enix.io"
-cert="/tls/vault.banana.enix.io.pem"
-key="/tls/vault.banana.enix.io.key"
+subject="/C=FR/ST=Ile-De-France/L=Paris/O=Enix/OU=Banana/CN=banana.dev.enix.io"
+cert="/tls/banana.dev.enix.io.pem"
+key="/tls/banana.dev.enix.io.key"
 
 openssl req \
 	-new \

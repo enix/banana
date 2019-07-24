@@ -14,12 +14,14 @@ select-version:
   script:
     - set +e
     - git describe --tags $(git rev-list --tags --max-count=1) | cut -c2- > VERSION
-    - npx semantic-release -d --prepare | grep 'Published release' > release.txt
-    - if [ $? -eq 0 ]; then cat release.txt | awk '{printf $7}' | tr -d '[:cntrl:]' > VERSION; fi
+    - "echo current version: $(cat VERSION)"
+    - npx semantic-release
+    - npx semantic-release -d --prepare | grep 'Published release' > release.txt; EXIT_CODE=$?
+    - if [ ${EXIT_CODE} -eq 0 ]; then cat release.txt | awk '{printf $7}' | tr -d '[:cntrl:]' > VERSION; else echo no new version will be released; fi
     - set -e
-    - "echo version to be released: $(cat VERSION)"
-  # only:
-  #   - master
+    - "echo next version: $(cat VERSION)"
+  only:
+    - master
   except:
     - tags
   artifacts:
@@ -154,6 +156,49 @@ semantic-release:
   image: enix/semantic-release:gitlab
   script:
     - npx semantic-release --ci
+  only:
+    - master
+  except:
+    - tags
+
+release-agent:
+  stage: release
+  image:
+    name: skandyla/fpm
+    entrypoint: ['']
+  before_script:
+    - apt update
+    - apt install -y dpkg-dev apt-utils git
+    - mkdir -p ~/.ssh
+    - ssh-keyscan github.com > ~/.ssh/known_hosts
+    - chmod 400 ${SSH_PRIVKEY}
+    - git config --global user.email "banana@enix.io"
+    - git config --global user.name "Banana CI robot"
+    - cp ${SSH_PRIVKEY} ~/.ssh/id_rsa
+    - export VERSION=$(cat VERSION)
+  script:
+    - git clone git@github.com:enix/packages.git
+    - |
+      fpm \
+        -s dir \
+        -t deb \
+        -n ${AGENT_PACKAGE_NAME} \
+        -v ${VERSION} \
+        --after-install agent/post_install.sh \
+        --deb-pre-depends zip \
+        --deb-pre-depends jq \
+        --deb-pre-depends duplicity \
+        --deb-pre-depends python-boto \
+        bananactl-linux=/usr/local/bin/bananactl \
+        agent/plugins/=/etc/banana/plugins.d/ \
+        config/systemd/=/etc/systemd/system/
+    - cd packages
+    - mv ../${AGENT_PACKAGE_NAME}_${VERSION}_amd64.deb dists/unstable/main/binary-amd64/
+    - dpkg-scanpackages . /dev/null > dists/unstable/main/binary-amd64/Packages
+    - apt-ftparchive release dists/unstable > dists/unstable/Release
+    - git add --all
+    - git commit -m "publish version ${VERSION}"
+    - git push origin master
   only:
     - master
   except:

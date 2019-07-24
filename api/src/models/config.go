@@ -51,7 +51,7 @@ type CliConfig struct {
 // LoadDefaults : Prepare some default values in configuration
 func (config *Config) LoadDefaults() {
 	*config = Config{
-		MonitorURL:         "https://api.banana.enix.io",
+		MonitorURL:         "https://banana.dev.enix.io/api",
 		Plugin:             "duplicity",
 		StatePath:          "/etc/banana/state.json",
 		PrivKeyPath:        "/etc/banana/privkey.pem",
@@ -62,7 +62,7 @@ func (config *Config) LoadDefaults() {
 		PluginsDir:         "/etc/banana/plugins.d",
 		TTL:                3600 * 24 * 30 * 6,
 		Vault: &services.VaultConfig{
-			Addr:              "https://vault.banana.enix.io:7777",
+			Addr:              "https://banana.dev.enix.io:7777",
 			StorageSecretPath: "openstack",
 			RootPath:          "banana",
 		},

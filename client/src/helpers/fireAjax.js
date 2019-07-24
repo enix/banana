@@ -22,7 +22,7 @@ async function fireAjax(config) {
     return await axios({
       ...defaultAjaxConfig,
       ...config,
-      url: `https://api.banana.enix.io${config.uri}`,
+      url: `https://banana.dev.enix.io/api${config.uri}`,
     });
   }
   catch (error) {
