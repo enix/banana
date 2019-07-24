@@ -62,7 +62,7 @@ func (config *Config) LoadDefaults() {
 		PluginsDir:         "/etc/banana/plugins.d",
 		TTL:                3600 * 24 * 30 * 6,
 		Vault: &services.VaultConfig{
-			Addr:              "https://banana.dev.enix.io:7777",
+			Addr:              "https://banana.dev.enix.io:8200",
 			StorageSecretPath: "openstack",
 			RootPath:          "banana",
 		},

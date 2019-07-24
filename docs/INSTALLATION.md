@@ -37,7 +37,7 @@ If your Vault is already up and running, you can skip to step 3.
 1. Init Vault :
 
 ```bash
-export VAULT_ADDR=https://banana.dev.enix.io:7777
+export VAULT_ADDR=https://banana.dev.enix.io:8200
 
 # for the sake of simplicity we use a single unseal key. for production, it is highly recommended to use more
 vault operator init -tls-skip-verify -key-shares=1 -key-threshold=1
@@ -163,7 +163,7 @@ client in which create the agent(s)? enix
 generating temporary token to allow new agent(s) to register
 success! join your new agent(s) using:
 
-bananactl --vault-addr=https://banana.dev.enix.io:7777 init s.BVYt1Hj3eLn6NDPS2fJIKzfO enix <agent name>
+bananactl --vault-addr=https://banana.dev.enix.io:8200 init s.BVYt1Hj3eLn6NDPS2fJIKzfO enix <agent name>
 ```
 
 > The `new agent` command generates a token with a 1h TTL which has the required permissions to issue certificates from the client's agents PKI. The generated `bananactl` command can then be runned an unlimited amount of times to register multiple agents, while the token is still valid.

@@ -31,7 +31,7 @@ services:
     build: ./config/vault
     restart: unless-stopped
     ports:
-      - 7777:8200
+      - 8200:8200
     cap_add:
       - IPC_LOCK
     volumes:
