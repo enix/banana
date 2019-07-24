@@ -20,8 +20,8 @@ select-version:
     - if [ ${EXIT_CODE} -eq 0 ]; then cat release.txt | awk '{printf $7}' | tr -d '[:cntrl:]' > VERSION; else echo no new version will be released; fi
     - set -e
     - "echo next version: $(cat VERSION)"
-  # only:
-  #   - master
+  only:
+    - master
   except:
     - tags
   artifacts:
@@ -36,15 +36,15 @@ select-version:
   before_script:
     - echo ${CI_REGISTRY_PASSWORD} | docker login ${CI_REGISTRY} -u ${CI_REGISTRY_USER} --password-stdin
 
-# build-stack-dev:
-#   <<: *build-stack
-#   script:
-#     - export CI_COMMIT_TAG=dev
-#     - docker-compose build --parallel
-#     - docker-compose push
-#   except:
-#     - master
-#     - tags
+build-stack-dev:
+  <<: *build-stack
+  script:
+    - export CI_COMMIT_TAG=dev
+    - docker-compose build --parallel
+    - docker-compose push
+  except:
+    - master
+    - tags
 
 build-stack-prod:
   <<: *build-stack
@@ -122,16 +122,16 @@ e2e-tests:
   except:
     - tags
 
-# test-admin:
-#   stage: test
-#   image: python:3.7
-#   script:
-#     - cd admin
-#     - ./setup.py test
-#     - ./setup.py install --dry-run -v
-#     - ./bananadm
-#   except:
-#     - tags
+test-admin:
+  stage: test
+  image: python:3.7
+  script:
+    - cd admin
+    - ./setup.py test
+    - ./setup.py install --dry-run -v
+    - ./bananadm
+  except:
+    - tags
 
 generate-compose-file:
     stage: pre-release
@@ -199,8 +199,8 @@ release-agent:
     - git add --all
     - git commit -m "publish version ${VERSION}"
     - git push origin master
-  # only:
-  #   - master
+  only:
+    - master
   except:
     - tags
 
