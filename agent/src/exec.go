@@ -1,7 +1,8 @@
 package main
 
 import (
-	"fmt"
+	"bytes"
+	"io"
 	"io/ioutil"
 	"os"
 	"os/exec"
@@ -33,19 +34,21 @@ func executeWithExtraFD(cmd string, args ...string) ([]byte, []byte, *os.File, e
 		return nil, nil, nil, err
 	}
 
+	var stderrBuffer bytes.Buffer
+	stderrTee := io.TeeReader(stderrPipe, &stderrBuffer)
+	io.Copy(os.Stderr, stderrTee)
+
 	stdout, err := ioutil.ReadAll(stdoutPipe)
 	if err != nil {
 		return nil, nil, nil, err
 	}
-	stderr, err := ioutil.ReadAll(stderrPipe)
+	stderr, err := ioutil.ReadAll(&stderrBuffer)
 	if err != nil {
 		return nil, nil, nil, err
 	}
 
 	err = process.Wait()
 	extraPipeW.Close()
-
-	fmt.Println(string(stderr))
 	return stdout, stderr, extraPipeR, err
 }
 
