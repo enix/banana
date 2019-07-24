@@ -46,12 +46,12 @@ Banana depends on other components in order to work :
 
 ## Installation
 
-See the [install guide](https://gitlab.enix.io/products/banana/blob/master/docs/INSTALLATION.md) to install banana.
+See the [install guide](docs/INSTALLATION.md) to install banana.
 
 ## Upgrade
 
-See the [upgrade guide](https://gitlab.enix.io/products/banana/blob/master/docs/UPGRADE.md) to upgrade banana.
+See the [upgrade guide](docs/UPGRADE.md) to upgrade banana.
 
 ## Plugins
 
-See the [plugin reference](https://gitlab.enix.io/products/banana/blob/master/docs/PLUGINS.md) to install or implement plugins.
+See the [plugin reference](docs/PLUGINS.md) to install or implement plugins.
