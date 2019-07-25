@@ -5,10 +5,7 @@ stages:
   - test
   - release
 
-variables:
-  REPO_DIR: /builds/products/banana
-
-select-version:
+select version:
   stage: prepare
   image: enix/semantic-release:gitlab
   script:
@@ -35,7 +32,7 @@ select-version:
   before_script:
     - echo ${CI_REGISTRY_PASSWORD} | docker login ${CI_REGISTRY} -u ${CI_REGISTRY_USER} --password-stdin
 
-build-stack-dev:
+build stack dev:
   <<: *build-stack
   script:
     - export CI_COMMIT_TAG=dev
@@ -45,7 +42,7 @@ build-stack-dev:
     - master
     - tags
 
-build-stack-prod:
+build stack prod:
   <<: *build-stack
   script:
     - export CI_COMMIT_TAG=$(cat VERSION)
@@ -66,19 +63,19 @@ build-stack-prod:
       - -c
   before_script:
     - mkdir -p /go/src/enix.io/banana
-    - ln -s ${REPO_DIR}/agent/src /go/src/enix.io/banana/src
-    - cp ${REPO_DIR}/agent/Gopkg.* /go/src/enix.io/banana/src
+    - ln -s ${CI_PROJECT_DIR}/agent/src /go/src/enix.io/banana/src
+    - cp ${CI_PROJECT_DIR}/agent/Gopkg.* /go/src/enix.io/banana/src
     - cd /go/src/enix.io/banana/src
     - unlink services
     - unlink models
-    - cp -r ${REPO_DIR}/api/src/services .
-    - cp -r ${REPO_DIR}/api/src/models .
-    - export VERSION=v$(cat ${REPO_DIR}/VERSION)
-    - echo -e "package main\nconst version = \"$(cat ${REPO_DIR}/VERSION > /dev/null && echo ${VERSION} || echo canary build ${CI_COMMIT_SHORT_SHA})\"" > version.go
+    - cp -r ${CI_PROJECT_DIR}/api/src/services .
+    - cp -r ${CI_PROJECT_DIR}/api/src/models .
+    - export VERSION=v$(cat ${CI_PROJECT_DIR}/VERSION)
+    - echo -e "package main\nconst version = \"$(cat ${CI_PROJECT_DIR}/VERSION > /dev/null && echo ${VERSION} || echo canary build ${CI_COMMIT_SHORT_SHA})\"" > version.go
   script:
     - cd /go/src/enix.io/banana/src
     - dep ensure
-    - CGO_ENABLED=0 go build -v -o ${REPO_DIR}/${BANANACTL}-${GOOS}
+    - CGO_ENABLED=0 go build -v -o ${CI_PROJECT_DIR}/${BANANACTL}-${GOOS}
   artifacts:
     paths:
       - ${BANANACTL}-${GOOS}
@@ -87,22 +84,22 @@ build-stack-prod:
   except:
     - tags
 
-build-agent-linux:
+build agent linux:
   <<: *build-agent
   variables:
     GOOS: linux
 
-build-agent-darwin:
+build agent darwin:
   <<: *build-agent
   variables:
     GOOS: darwin
 
-build-agent-windows:
+build agent windows:
   <<: *build-agent
   variables:
     GOOS: windows
 
-e2e-tests:
+e2e tests:
   stage: test
   image: kroniak/ssh-client
   before_script:
@@ -121,7 +118,7 @@ e2e-tests:
   except:
     - tags
 
-test-admin:
+test admin:
   stage: test
   image: python:3.7
   script:
@@ -132,7 +129,7 @@ test-admin:
   except:
     - tags
 
-generate-compose-file:
+generate compose file:
     stage: pre-release
     image:
       name: docker/compose:1.24.1
@@ -150,7 +147,7 @@ generate-compose-file:
       paths:
         - docker-compose.yml
 
-semantic-release:
+semantic release:
   stage: release
   image: enix/semantic-release:gitlab
   script:
@@ -160,7 +157,7 @@ semantic-release:
   except:
     - tags
 
-release-agent:
+release agent on apt:
   stage: release
   image:
     name: skandyla/fpm
@@ -203,14 +200,33 @@ release-agent:
   except:
     - tags
 
-release-admin:
+release admin on pip:
   stage: release
   image: python:3.7
   before_script:
     - pip3 install twine
+    - export CI_COMMIT_TAG=$(cat VERSION)
   script:
     - cd admin
     - ./setup.py sdist bdist_wheel
     - twine upload dist/* --repository-url ${PYPI_REPOSITORY}
   only:
+    - master
+  except:
+    - tags
+
+release images on docker hub:
+  stage: release
+  image: docker:stable
+  services:
+    - docker:dind
+  before_script:
+    - echo ${DOCKER_HUB_PASSWORD} | docker login -u ${DOCKER_HUB_USER} --password-stdin
+  script:
+    - export VERSION=$(cat VERSION)
+    - docker tag ${CI_REGISTRY_IMAGE}/api:${VERSION} ${DOCKER_HUB_REPOSITORY}/bananapi:${VERSION}
+    - docker push ${DOCKER_HUB_REPOSITORY}/bananapi:${VERSION}
+  # only:
+  #   - master
+  except:
     - tags
