@@ -141,17 +141,10 @@ All agents in the same client share all the storage secrets. By default (for now
 
 * Install `bananactl` on the node(s):
 
-First, install `curl`. Then install `bananactl` using the following command (add `-k` tu `curl` command if needed):
-
-```bash
-$ curl -fsS https://banana.dev.enix.io/install | bash -s - '<gitlab access token>'
-
-downloading latest agent release...
-  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
-                                 Dload  Upload   Total   Spent    Left  Speed
-100 5028k  100 5028k    0     0  25.3M      0 --:--:-- --:--:-- --:--:-- 25.3M
-[...]
-success!
+```
+echo 'deb [trusted=yes] https://raw.githubusercontent.com/enix/packages/master' unstable main >> /etc/apt/sources.list
+apt update
+apt install bananagent
 ```
 
 * Create an agent join command using `bananadm`:
