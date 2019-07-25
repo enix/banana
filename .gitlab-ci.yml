@@ -227,10 +227,13 @@ release images on docker hub:
     - export VERSION=$(cat VERSION)
     - docker pull ${CI_REGISTRY_IMAGE}/ui:${VERSION}
     - docker pull ${CI_REGISTRY_IMAGE}/api:${VERSION}
-    - docker tag ${CI_REGISTRY_IMAGE}/ui:${VERSION} ${DOCKER_HUB_REPOSITORY}/bananapi:${VERSION}
+    - docker pull ${CI_REGISTRY_IMAGE}/settings:${VERSION}
+    - docker tag ${CI_REGISTRY_IMAGE}/ui:${VERSION} ${DOCKER_HUB_REPOSITORY}/bananui:${VERSION}
     - docker tag ${CI_REGISTRY_IMAGE}/api:${VERSION} ${DOCKER_HUB_REPOSITORY}/bananapi:${VERSION}
+    - docker tag ${CI_REGISTRY_IMAGE}/settings:${VERSION} ${DOCKER_HUB_REPOSITORY}/bananasettings:${VERSION}
     - docker push ${DOCKER_HUB_REPOSITORY}/bananui:${VERSION}
     - docker push ${DOCKER_HUB_REPOSITORY}/bananapi:${VERSION}
+    - docker push ${DOCKER_HUB_REPOSITORY}/bananasettings:${VERSION}
   # only:
   #   - master
   except:
