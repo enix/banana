@@ -2,7 +2,7 @@ plugins:
   - '@semantic-release/commit-analyzer'
   - '@semantic-release/release-notes-generator'
   - - '@semantic-release/github'
-    - githubUrl: https://github.com/enix/banana.git
+    - repositoryUrl: https://github.com/enix/banana.git
   # - - '@semantic-release/gitlab'
   #   - gitlabUrl: https://gitlab.enix.io
   #     assets:
