@@ -54,6 +54,33 @@ build stack prod:
   except:
     - tags
 
+.build-bananadm: &build-bananadm
+  stage: build
+  image: docker:stable
+  services:
+    - docker:dind
+  script:
+    - cd admin
+    - echo ${CI_REGISTRY_PASSWORD} | docker login ${CI_REGISTRY} -u ${CI_REGISTRY_USER} --password-stdin
+    - docker build . -t ${CI_REGISTRY_IMAGE}/admin:${VERSION}
+    - docker push ${CI_REGISTRY_IMAGE}/admin:${VERSION}
+  except:
+    - tags
+
+build bananadm dev:
+  <<: *build-bananadm
+  variables:
+    VERSION: dev
+  except:
+    - master
+
+build bananadm prod:
+  <<: *build-bananadm
+  before_script:
+    - export VERSION=$(cat VERSION)
+  only:
+    - master
+
 .build-agent: &build-agent
   stage: build
   image:
