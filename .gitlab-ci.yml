@@ -118,16 +118,16 @@ e2e tests:
   except:
     - tags
 
-test admin:
-  stage: test
-  image: python:3.7
-  script:
-    - cd admin
-    - ./setup.py test
-    - ./setup.py install --dry-run -v
-    - ./bananadm
-  except:
-    - tags
+# test admin:
+#   stage: test
+#   image: python:3.7
+#   script:
+#     - cd admin
+#     - ./setup.py test
+#     - ./setup.py install --dry-run -v
+#     - ./bananadm
+#   except:
+#     - tags
 
 generate compose file:
     stage: pre-release
@@ -222,6 +222,7 @@ release images on docker hub:
     - docker:dind
   before_script:
     - echo ${DOCKER_HUB_PASSWORD} | docker login -u ${DOCKER_HUB_USER} --password-stdin
+    - echo ${CI_REGISTRY_PASSWORD} | docker login ${CI_REGISTRY} -u ${CI_REGISTRY_USER} --password-stdin
   script:
     - export VERSION=$(cat VERSION)
     - docker pull ${CI_REGISTRY_IMAGE}/api:${VERSION}
