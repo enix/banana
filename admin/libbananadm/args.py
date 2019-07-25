@@ -7,10 +7,6 @@ from libbananadm import monitor
 from libbananadm import input
 
 
-def reconfigure(args):
-    monitor.reconfigure(args)
-
-
 def create_user(args):
     args.client = input.prompt('client in which create the user')
     args.name = input.prompt('username')
@@ -38,15 +34,21 @@ def init_arguments():
     parser = argparse.ArgumentParser()
     subparsers = parser.add_subparsers(title='subcommands')
 
-    subparsers.add_parser(
+    parser_init = subparsers.add_parser(
         'init',
         help='setup monitor policies'
-    ).set_defaults(func=monitor.init)
+    )
+    parser_init.set_defaults(func=monitor.init)
+    parser_init.add_argument(
+        '--from-scratch',
+        help='init banana in a freshly launched Vault instance',
+        action='store_true'
+    )
 
     subparsers.add_parser(
         'reconfigure',
         help='ask monitor\'s nginx to re-fetch all CA certs'
-    ).set_defaults(func=reconfigure)
+    ).set_defaults(func=monitor.reconfigure)
 
     parser_list = subparsers.add_parser(
         'list',
