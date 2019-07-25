@@ -152,8 +152,8 @@ semantic release:
   image: enix/semantic-release:gitlab
   script:
     - npx semantic-release --ci
-  only:
-    - master
+  # only:
+  #   - master
   except:
     - tags
 
