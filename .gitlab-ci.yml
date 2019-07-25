@@ -111,7 +111,7 @@ e2e tests:
   script:
     - scp docker-compose.yml ubuntu@${MONITOR_NODE_IP}:/root/docker-compose.yml
     - ssh ubuntu@${MONITOR_NODE_IP} < config/e2e/upgrade_stack.sh
-    - scp bananactl-linux ubuntu@${TEST_NODE_IP}:~
+    - scp ${BANANACTL}-linux ubuntu@${TEST_NODE_IP}:~
     - ssh ubuntu@${TEST_NODE_IP} "sudo bash -s ${GL_TOKEN} ${CI_COMMIT_REF_NAME}" < config/e2e/test_agent.sh
   only:
     - master
@@ -185,7 +185,7 @@ release agent on apt:
         --deb-pre-depends jq \
         --deb-pre-depends duplicity \
         --deb-pre-depends python-boto \
-        bananactl-linux=/usr/local/bin/bananactl \
+        ${BANANACTL}-linux=/usr/local/bin/${BANANACTL} \
         agent/plugins/=/etc/banana/plugins.d/ \
         config/systemd/=/etc/systemd/system/
     - cd packages

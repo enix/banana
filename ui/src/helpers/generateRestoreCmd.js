@@ -12,7 +12,7 @@ function generateRestoreCmd({ command: { name, target, opaque_id } }) {
     return;
   }
 
-  return `bananactl restore ${name} ${opaque_id} ${trimSlash(target)}.bak`;
+  return `bananagent restore ${name} ${opaque_id} ${trimSlash(target)}.bak`;
 }
 
 export default generateRestoreCmd;

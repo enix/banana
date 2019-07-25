@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
 	"io/ioutil"
 	"os"
@@ -21,7 +20,7 @@ type initCmd struct {
 // newInitCmd : Creates init command from command line args
 func newInitCmd(args *launchArgs) (*initCmd, error) {
 	if len(args.Values) < 4 {
-		return nil, errors.New("usage: bananactl init <token> <company name> <agent name>")
+		return nil, fmt.Errorf("usage: %s init <token> <company name> <agent name>", os.Args[0])
 	}
 
 	return &initCmd{

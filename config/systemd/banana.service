@@ -5,7 +5,7 @@ After=network.target
 [Service]
 Type=simple
 User=root
-ExecStart=/usr/local/bin/bananactl routine
+ExecStart=/usr/local/bin/bananagent routine
 
 [Install]
 WantedBy=multi-user.target

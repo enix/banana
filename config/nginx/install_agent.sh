@@ -13,7 +13,7 @@ function run {
 cd /tmp
 
 set +e
-which bananactl
+which bananagent
 if [[ $? -eq 0 ]]; then
 	isUpgrade="yes"
 fi
@@ -31,7 +31,7 @@ fi
 
 run unzip -o agent.zip
 
-run cp bananactl-linux /usr/local/bin/bananactl
+run cp bananagent-linux /usr/local/bin/bananagent
 run cp config/systemd/* /etc/systemd/system/
 run mkdir -p /etc/banana/plugins.d
 run cp agent/plugins/* /etc/banana/plugins.d/

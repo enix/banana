@@ -139,7 +139,7 @@ All agents in the same client share all the storage secrets. By default (for now
 
 ### Setup the agent(s)
 
-* Install `bananactl` on the node(s):
+* Install `bananagent` on the node(s):
 
 ```
 echo 'deb [trusted=yes] https://raw.githubusercontent.com/enix/packages/master' unstable main >> /etc/apt/sources.list
@@ -156,10 +156,10 @@ client in which create the agent(s)? enix
 generating temporary token to allow new agent(s) to register
 success! join your new agent(s) using:
 
-bananactl --vault-addr=https://banana.dev.enix.io:8200 init s.BVYt1Hj3eLn6NDPS2fJIKzfO enix <agent name>
+bananagent --vault-addr=https://banana.dev.enix.io:8200 init s.BVYt1Hj3eLn6NDPS2fJIKzfO enix <agent name>
 ```
 
-> The `new agent` command generates a token with a 1h TTL which has the required permissions to issue certificates from the client's agents PKI. The generated `bananactl` command can then be runned an unlimited amount of times to register multiple agents, while the token is still valid.
+> The `new agent` command generates a token with a 1h TTL which has the required permissions to issue certificates from the client's agents PKI. The generated `bananagent` command can then be runned an unlimited amount of times to register multiple agents, while the token is still valid.
 
 * Copy/paste the command on each node that you'd like to initialize.
 

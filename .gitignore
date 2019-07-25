@@ -62,7 +62,7 @@ typings/
 
 # executables
 banana
-bananactl
+bananagent
 
 # certs & keys
 /security

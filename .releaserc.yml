@@ -6,6 +6,6 @@ plugins:
   # - - '@semantic-release/gitlab'
   #   - gitlabUrl: https://gitlab.enix.io
   #     assets:
-  #       - ./bananactl-*
+  #       - ./bananagent-*
   #       - ./docker-compose.yml
 branch: develop
