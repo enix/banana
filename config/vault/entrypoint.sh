@@ -4,6 +4,9 @@ subject="/C=FR/ST=Ile-De-France/L=Paris/O=Enix/OU=Banana/CN=banana.dev.enix.io"
 cert="/tls/banana.dev.enix.io.pem"
 key="/tls/banana.dev.enix.io.key"
 
+mkdir -p /data && chown vault:vault /data
+mkdir -p /tls && chown vault:vault /tls
+
 apk add --update openssl
 
 openssl req \
@@ -15,8 +18,5 @@ openssl req \
 	-subj ${subject} \
 	-keyout ${key} \
 	-out ${cert}
-
-mkdir -p /data && chown vault:vault /data
-mkdir -p /tls && chown vault:vault /tls
 
 vault server -config /settings/vault/vault.hcl
