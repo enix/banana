@@ -224,6 +224,7 @@ release images on docker hub:
     - echo ${DOCKER_HUB_PASSWORD} | docker login -u ${DOCKER_HUB_USER} --password-stdin
   script:
     - export VERSION=$(cat VERSION)
+    - docker pull ${CI_REGISTRY_IMAGE}/api:${VERSION}
     - docker tag ${CI_REGISTRY_IMAGE}/api:${VERSION} ${DOCKER_HUB_REPOSITORY}/bananapi:${VERSION}
     - docker push ${DOCKER_HUB_REPOSITORY}/bananapi:${VERSION}
   # only:
