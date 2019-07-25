@@ -188,7 +188,7 @@ This example configuration will :
 * Create a user :
 
 ```bash
-$ bananadm new user
+$ bananadm new user > cert.p12
 
 client in which create the user? enix
 username? arthur
@@ -196,7 +196,7 @@ issuing certificate with CN 'arthur' using PKI banana/enix/users-pki
 creating p12 file
 Enter Export Password: ****
 Verifying - Enter Export Password: ****
-successfully wrote arthur.p12
+successfully wrote p12 data to stdout
 ```
 
 * Open your bowser on [banana.dev.enix.io](https://banana.dev.enix.io) and authenticate using the generated p12 file.
