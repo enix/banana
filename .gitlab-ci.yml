@@ -255,12 +255,15 @@ release images on docker hub:
     - docker pull ${CI_REGISTRY_IMAGE}/ui:${VERSION}
     - docker pull ${CI_REGISTRY_IMAGE}/api:${VERSION}
     - docker pull ${CI_REGISTRY_IMAGE}/settings:${VERSION}
+    - docker pull ${CI_REGISTRY_IMAGE}/admin:${VERSION}
     - docker tag ${CI_REGISTRY_IMAGE}/ui:${VERSION} ${DOCKER_HUB_REPOSITORY}/bananui:${VERSION}
     - docker tag ${CI_REGISTRY_IMAGE}/api:${VERSION} ${DOCKER_HUB_REPOSITORY}/bananapi:${VERSION}
     - docker tag ${CI_REGISTRY_IMAGE}/settings:${VERSION} ${DOCKER_HUB_REPOSITORY}/bananasettings:${VERSION}
+    - docker tag ${CI_REGISTRY_IMAGE}/admin:${VERSION} ${DOCKER_HUB_REPOSITORY}/bananadm:${VERSION}
     - docker push ${DOCKER_HUB_REPOSITORY}/bananui:${VERSION}
     - docker push ${DOCKER_HUB_REPOSITORY}/bananapi:${VERSION}
     - docker push ${DOCKER_HUB_REPOSITORY}/bananasettings:${VERSION}
+    - docker push ${DOCKER_HUB_REPOSITORY}/bananadm:${VERSION}
   only:
     - master
   except:
