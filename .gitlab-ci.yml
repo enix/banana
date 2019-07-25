@@ -67,12 +67,12 @@ build stack prod:
   except:
     - tags
 
-build bananadm dev:
-  <<: *build-bananadm
-  variables:
-    VERSION: dev
-  except:
-    - master
+# build bananadm dev:
+#   <<: *build-bananadm
+#   variables:
+#     VERSION: dev
+#   except:
+#     - master
 
 build bananadm prod:
   <<: *build-bananadm
@@ -261,7 +261,7 @@ release images on docker hub:
     - docker push ${DOCKER_HUB_REPOSITORY}/bananui:${VERSION}
     - docker push ${DOCKER_HUB_REPOSITORY}/bananapi:${VERSION}
     - docker push ${DOCKER_HUB_REPOSITORY}/bananasettings:${VERSION}
-  # only:
-  #   - master
+  only:
+    - master
   except:
     - tags
