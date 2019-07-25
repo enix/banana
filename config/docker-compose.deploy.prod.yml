@@ -2,13 +2,13 @@ version: "3.4"
 
 services:
   ui:
-    image: docker-registry.enix.io/products/banana/ui:${CI_COMMIT_TAG}
+    image: enix/bananaui:${CI_COMMIT_TAG}
     restart: unless-stopped
     expose:
       - 80
 
   api:
-    image: docker-registry.enix.io/products/banana/api:${CI_COMMIT_TAG}
+    image: enix/bananapi:${CI_COMMIT_TAG}
     restart: unless-stopped
     environment:
       - REDIS_ADDR=redis:6379
@@ -18,7 +18,7 @@ services:
       - 80
 
   settings:
-    image: docker-registry.enix.io/products/banana/settings:${CI_COMMIT_TAG}
+    image: enix/bananasettings:${CI_COMMIT_TAG}
     restart: unless-stopped
     volumes:
       - settings:/settings

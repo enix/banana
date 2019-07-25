@@ -12,7 +12,7 @@ If this is not the case, you should edit your `/etc/hosts` file in consequence :
 
 ### On the monitor node
 
-Grab the lastest `docker-compose.yml` from [gitlab releases](https://gitlab.enix.io/products/banana/releases) and run the stack.
+Grab the lastest `docker-compose.yml` from [github releases](https://github.com/enix/banana/releases) and run the stack.
 
 ```bash
 docker-compose up -d
