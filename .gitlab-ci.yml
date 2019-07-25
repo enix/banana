@@ -178,7 +178,6 @@ semantic release:
   stage: release
   image: enix/semantic-release:gitlab
   script:
-    - cat /usr/local/lib/node_modules/@semantic-release/github/README.md | grep repository
     - npx semantic-release --ci
   # only:
   #   - master
