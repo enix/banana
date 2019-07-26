@@ -1,9 +1,9 @@
 #! /usr/bin/env bash
 
-set -e
 source ~/.ssh/environment
 sudo -E bash
 cd ~
+set -e
 
 # upgrade the stack
 docker-compose -f /root/docker-compose.yml up -d

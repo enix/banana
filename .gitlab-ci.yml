@@ -56,9 +56,7 @@ build stack prod:
 
 .build-bananadm: &build-bananadm
   stage: build
-  image: docker:stable
-  services:
-    - docker:dind
+  image: docker:stable-dind
   script:
     - cd admin
     - echo ${CI_REGISTRY_PASSWORD} | docker login ${CI_REGISTRY} -u ${CI_REGISTRY_USER} --password-stdin
@@ -136,7 +134,7 @@ e2e tests:
     - cp ${SSH_PRIVKEY} ~/.ssh/id_rsa
     - chmod 600 ~/.ssh/id_rsa
   script:
-    - scp docker-compose.yml ubuntu@${MONITOR_NODE_IP}:/root/docker-compose.yml
+    - scp docker-compose.test.yml ubuntu@${MONITOR_NODE_IP}:/root/docker-compose.yml
     - ssh ubuntu@${MONITOR_NODE_IP} < config/e2e/upgrade_stack.sh
     - scp ${BANANACTL}-linux ubuntu@${TEST_NODE_IP}:~
     - ssh ubuntu@${TEST_NODE_IP} "sudo bash -s ${GL_TOKEN} ${CI_COMMIT_REF_NAME}" < config/e2e/test_agent.sh
@@ -156,7 +154,7 @@ test admin:
   except:
     - tags
 
-generate compose file:
+.generate-compose-file: &generate-compose-file
     stage: pre-release
     image:
       name: docker/compose:1.24.1
@@ -165,14 +163,26 @@ generate compose file:
         - -c
     script:
       - export CI_COMMIT_TAG=$(cat VERSION)
-      - docker-compose -f config/docker-compose.deploy.prod.yml config > docker-compose.yml
+      - docker-compose -f config/docker-compose.deploy.prod.yml config > ${COMPOSE_FILE}
     only:
       - master
     except:
       - tags
     artifacts:
       paths:
-        - docker-compose.yml
+        - ${COMPOSE_FILE}
+
+generate testing compose file:
+  <<: *generate-compose-file
+  before_script:
+    - export IMAGE_BASE=${CI_REGISTRY_IMAGE}/
+    - export COMPOSE_FILE=docker-compose.test.yml
+
+generate release compose file:
+  <<: *generate-compose-file
+  before_script:
+    - export IMAGE_BASE=${DOCKER_HUB_REPOSITORY}/banana
+    - export COMPOSE_FILE=docker-compose.yml
 
 semantic release:
   stage: release
