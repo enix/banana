@@ -174,7 +174,8 @@ e2e tests:
       - tags
     artifacts:
       paths:
-        - ${COMPOSE_FILE}
+        - docker-compose.yml
+        - docker-compose.test.yml
 
 generate testing compose file:
   <<: *generate-compose-file
