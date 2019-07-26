@@ -169,22 +169,25 @@ test admin:
       - master
     except:
       - tags
-    artifacts:
-      paths:
-        - docker-compose.yml
-        - docker-compose.test.yml
 
 generate testing compose file:
   <<: *generate-compose-file
   before_script:
     - export IMAGE_BASE=${CI_REGISTRY_IMAGE}/
     - export COMPOSE_FILE=docker-compose.test.yml
+    - rm docker-compose.yml
+  artifacts:
+    paths:
+      - docker-compose.test.yml
 
 generate release compose file:
   <<: *generate-compose-file
   before_script:
     - export IMAGE_BASE=${DOCKER_HUB_REPOSITORY}/banana
     - export COMPOSE_FILE=docker-compose.yml
+  artifacts:
+    paths:
+      - docker-compose.yml
 
 semantic release:
   stage: release
