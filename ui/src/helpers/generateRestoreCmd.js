@@ -7,12 +7,9 @@ function trimSlash(str) {
   return str;
 }
 
-function generateRestoreCmd({ command: { name, target, opaque_id } }) {
-  if (!target) {
-    return;
-  }
-
-  return `bananagent restore ${name} ${opaque_id} ${trimSlash(target)}.bak`;
+function generateRestoreCmd() {
+  return 'restore helper not implemented yet, refer to doc to restore';
+  // return `bananagent restore ${name} ${opaque_id} ${trimSlash(target)}.bak`;
 }
 
 export default generateRestoreCmd;

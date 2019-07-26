@@ -16,5 +16,6 @@ Please note that Vault's TLS certificate will be re-generated.
 You can update using apt:
 
 ```
-apt upgrade bananagent
+apt update
+apt install bananagent
 ```
