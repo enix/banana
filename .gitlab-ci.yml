@@ -185,7 +185,7 @@ generate release compose file:
   <<: *generate-compose-file
   before_script:
     - export IMAGE_BASE=${DOCKER_HUB_REPOSITORY}/banana
-    - export IMAGE_BASE_SHORT=${CI_REGISTRY_IMAGE}/banan
+    - export IMAGE_BASE_SHORT=${DOCKER_HUB_REPOSITORY}/banan
     - export COMPOSE_FILE=docker-compose.yml
   artifacts:
     paths:
@@ -273,11 +273,11 @@ release images on docker hub:
     - docker pull ${CI_REGISTRY_IMAGE}/api:${VERSION}
     - docker pull ${CI_REGISTRY_IMAGE}/settings:${VERSION}
     - docker pull ${CI_REGISTRY_IMAGE}/admin:${VERSION}
-    - docker tag ${CI_REGISTRY_IMAGE}/ui:${VERSION} ${DOCKER_HUB_REPOSITORY}/bananui:${VERSION}
+    - docker tag ${CI_REGISTRY_IMAGE}/ui:${VERSION} ${DOCKER_HUB_REPOSITORY}/bananaui:${VERSION}
     - docker tag ${CI_REGISTRY_IMAGE}/api:${VERSION} ${DOCKER_HUB_REPOSITORY}/bananapi:${VERSION}
     - docker tag ${CI_REGISTRY_IMAGE}/settings:${VERSION} ${DOCKER_HUB_REPOSITORY}/bananasettings:${VERSION}
     - docker tag ${CI_REGISTRY_IMAGE}/admin:${VERSION} ${DOCKER_HUB_REPOSITORY}/bananadm:${VERSION}
-    - docker push ${DOCKER_HUB_REPOSITORY}/bananui:${VERSION}
+    - docker push ${DOCKER_HUB_REPOSITORY}/bananaui:${VERSION}
     - docker push ${DOCKER_HUB_REPOSITORY}/bananapi:${VERSION}
     - docker push ${DOCKER_HUB_REPOSITORY}/bananasettings:${VERSION}
     - docker push ${DOCKER_HUB_REPOSITORY}/bananadm:${VERSION}
