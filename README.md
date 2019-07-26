@@ -46,7 +46,7 @@ Banana depends on other components in order to work :
 
 ## Installation
 
-If you're in a hurry, you can checkout the [quickstart guide](). Otherwise, feel free to explore the complete [install guide](docs/INSTALLATION.md) to setup banana.
+If you're in a hurry, you can checkout the [quickstart guide](docs/QUICKSTART.md). Otherwise, feel free to explore the complete [install guide](docs/INSTALLATION.md) to setup banana.
 
 ## Upgrade
 
