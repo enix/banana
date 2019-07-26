@@ -48,7 +48,7 @@ func (cmd *backupCmd) execute(config *models.Config) error {
 	}
 
 	klog.Infof("running %s, see you on the other side\n", config.Plugin)
-	rawMetadata, logs, artifactsReader, err := plugin.backup(config, cmd)
+	rawMetadata, logs, artifacts, err := plugin.backup(config, cmd)
 
 	if logs == nil {
 		if err != nil {
@@ -74,7 +74,7 @@ func (cmd *backupCmd) execute(config *models.Config) error {
 	klog.Info("backup done, everything OK. uploading artifacts...")
 
 	artifactsPostURL := fmt.Sprintf("%s/agents/artifacts/%s", config.MonitorURL, backupID)
-	_, err = fireAPIRequest(config, artifactsPostURL, artifactsReader)
+	_, err = fireAPIRequest(config, artifactsPostURL, artifacts)
 	return err
 }
 

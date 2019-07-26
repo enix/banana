@@ -10,7 +10,7 @@ import (
 	"k8s.io/klog"
 )
 
-func executeWithExtraFD(cmd string, args ...string) ([]byte, []byte, *os.File, error) {
+func executeWithExtraFD(cmd string, args ...string) ([]byte, []byte, []byte, error) {
 	klog.Info("spawning plugin with arguments: ", args)
 	process := exec.Command(cmd, args...)
 
@@ -49,7 +49,13 @@ func executeWithExtraFD(cmd string, args ...string) ([]byte, []byte, *os.File, e
 
 	err = process.Wait()
 	extraPipeW.Close()
-	return stdout, stderr, extraPipeR, err
+
+	extraData, err := ioutil.ReadAll(extraPipeR)
+	if err != nil {
+		return nil, nil, nil, err
+	}
+
+	return stdout, stderr, extraData, err
 }
 
 // execute : Execute binaries

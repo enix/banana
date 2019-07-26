@@ -10,17 +10,23 @@ If this is not the case, you should edit your `/etc/hosts` file in consequence :
 <ip of the monitor node>	banana.dev.enix.io
 ```
 
-#### On the monitor node
+### On the monitor node
 
-Grab the lastest `docker-compose.yml` from [gitlab releases](https://gitlab.enix.io/products/banana/releases) and run the stack.
+Grab the lastest `docker-compose.yml` from [github releases](https://github.com/enix/banana/releases) and run the stack.
 
 ```bash
 docker-compose up -d
 ```
 
-#### On the admin node (can be your laptop)
+### On the admin node (can be your laptop)
 
-Make sure you have `python3` and `pip3` installed, then install `bananadm`.
+* Using docker
+
+```bash
+docker run --rm -it enix/bananadm -h
+```
+
+* Using pip
 
 ```bash
 pip3 install bananadm
@@ -28,57 +34,13 @@ pip3 install bananadm
 
 ## Setting up Vault
 
-You need to allow `bananadm` to interact with Vault. To do so :
+You need to allow `bananadm` to interact with Vault.
 
 > DISCLAIMER: For now, it is highly recommended to run this project on a dedicated Vault. The permissions granted to `bananadm` are dangerous and can lead to a full privilege escalation on your Vault instance.
 
-If your Vault is already up and running, you can skip to step 3.
-
-1. Init Vault :
-
-```bash
-export VAULT_ADDR=https://banana.dev.enix.io:7777
-
-# for the sake of simplicity we use a single unseal key. for production, it is highly recommended to use more
-vault operator init -tls-skip-verify -key-shares=1 -key-threshold=1
-```
-
-2. Unseal Vault :
-
-```bash
-# will prompt for the unseal key, which is the base 64 key in the previous command's output
-vault operator unseal -tls-skip-verify
-```
-
-3. Log into Vault using any method. One possibility is to set the `VAULT_TOKEN` environment variables, just like this :
-
-```bash
-export VAULT_TOKEN=s.the_root_token_in_step_1_output
-```
-
-4. Download [the bananadm policy](https://gitlab.enix.io/products/banana/raw/master/config/vault/bananadm-policy.hcl).
-
-5. Write this policy into Vault :
-
-```bash
-vault policy write -tls-skip-verify bananadm bananadm-policy.hcl
-```
-
-6. Issue a token with the associated permissions :
-
-```bash
-vault token create -tls-skip-verify -policy=bananadm
-```
-
-7. Downgrade your privileges by updating your Vault token with the newly generated token :
-
-```bash
-export VAULT_TOKEN=s.freshly_generated_bananadm_token
-```
+If you'd like to setup banana with an existing or external Vault instance, please follow [this guide](SETUP_VAULT.md). Otherwise, if you prefer using the builtin Vault, you can init everything with a single command (see below).
 
 ## Using bananadm
-
-Make sure `VAULT_ADDR` and `VAULT_TOKEN` environment variables are set.
 
 When using the CLI in dev environment, add the switch `--tls-skip-verify` to all `bananadm` commands :
 
@@ -86,11 +48,26 @@ When using the CLI in dev environment, add the switch `--tls-skip-verify` to all
 alias bananadm="bananadm --tls-skip-verify"
 ```
 
-On the very first time, you'll need to init some stuff:
+On the very first time, you'll need to init some stuff.
+
+#### Using the builtin Vault
+
+This command will do everything needed to get Vault running, including initialization, unseal and required policies upload.
+
+```
+export VAULT_ADDR=banana.dev.enix.io:8200
+bananadm init --from-scratch
+```
+
+#### Using an external Vault
+
+Make sure `VAULT_ADRR` and `VAULT_TOKEN` environment variables are set.
 
 ```bash
 bananadm init
 ```
+
+---
 
 `bananadm` is now ready for use and you're done setting up banana.
 
@@ -139,19 +116,12 @@ All agents in the same client share all the storage secrets. By default (for now
 
 ### Setup the agent(s)
 
-* Install `bananactl` on the node(s):
+* Install `bananagent` on the node(s):
 
-First, install `curl`. Then install `bananactl` using the following command (add `-k` tu `curl` command if needed):
-
-```bash
-$ curl -fsS https://banana.dev.enix.io/install | bash -s - '<gitlab access token>'
-
-downloading latest agent release...
-  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
-                                 Dload  Upload   Total   Spent    Left  Speed
-100 5028k  100 5028k    0     0  25.3M      0 --:--:-- --:--:-- --:--:-- 25.3M
-[...]
-success!
+```
+echo 'deb [trusted=yes] https://raw.githubusercontent.com/enix/packages/master' unstable main >> /etc/apt/sources.list
+apt update
+apt install bananagent
 ```
 
 * Create an agent join command using `bananadm`:
@@ -163,10 +133,10 @@ client in which create the agent(s)? enix
 generating temporary token to allow new agent(s) to register
 success! join your new agent(s) using:
 
-bananactl --vault-addr=https://banana.dev.enix.io:7777 init s.BVYt1Hj3eLn6NDPS2fJIKzfO enix <agent name>
+bananagent --vault-addr=https://banana.dev.enix.io:8200 init s.BVYt1Hj3eLn6NDPS2fJIKzfO enix <agent name>
 ```
 
-> The `new agent` command generates a token with a 1h TTL which has the required permissions to issue certificates from the client's agents PKI. The generated `bananactl` command can then be runned an unlimited amount of times to register multiple agents, while the token is still valid.
+> The `new agent` command generates a token with a 1h TTL which has the required permissions to issue certificates from the client's agents PKI. The generated `bananagent` command can then be runned an unlimited amount of times to register multiple agents, while the token is still valid.
 
 * Copy/paste the command on each node that you'd like to initialize.
 
@@ -195,7 +165,7 @@ This example configuration will :
 * Create a user :
 
 ```bash
-$ bananadm new user
+$ bananadm new user > cert.p12
 
 client in which create the user? enix
 username? arthur
@@ -203,7 +173,7 @@ issuing certificate with CN 'arthur' using PKI banana/enix/users-pki
 creating p12 file
 Enter Export Password: ****
 Verifying - Enter Export Password: ****
-successfully wrote arthur.p12
+successfully wrote p12 data to stdout
 ```
 
 * Open your bowser on [banana.dev.enix.io](https://banana.dev.enix.io) and authenticate using the generated p12 file.

@@ -1,12 +1,13 @@
 import os
+import sys
 from libbananadm import vault
 from tabulate import tabulate
 
 
 def create_user(args):
     client_pki = '{}/{}/users-pki'.format(args.root_path, args.client)
-    print(
-        'issuing certificate with CN \'{}\' using PKI {}'
+    sys.stderr.write(
+        'issuing certificate with CN \'{}\' using PKI {}\n'
         .format(args.name, client_pki)
     )
     cert, key = vault.create_cert(
@@ -15,15 +16,15 @@ def create_user(args):
     open(args.name + '.pem', 'w').write(cert)
     open(args.name + '.key', 'w').write(key)
 
-    print('creating p12 file')
+    sys.stderr.write('creating p12 file\n')
     os.system(
-        'openssl pkcs12 -export -out {}.p12 -inkey {}.key -in {}.pem'
+        'openssl pkcs12 -export -inkey {}.key -in {}.pem'
         .format(args.name, args.name, args.name)
     )
     os.system('rm {}.pem'.format(args.name))
     os.system('rm {}.key'.format(args.name))
 
-    print('successfully wrote {}.p12'.format(args.name))
+    sys.stderr.write('successfully wrote p12 data to stdout\n')
 
 
 def list_users(args):

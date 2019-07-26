@@ -1,14 +1,14 @@
 version: "3.4"
 
 services:
-  client:
-    image: docker-registry.enix.io/products/banana/client:${CI_COMMIT_TAG}
+  ui:
+    image: enix/bananaui:${CI_COMMIT_TAG}
     restart: unless-stopped
     expose:
       - 80
 
   api:
-    image: docker-registry.enix.io/products/banana/api:${CI_COMMIT_TAG}
+    image: enix/bananapi:${CI_COMMIT_TAG}
     restart: unless-stopped
     environment:
       - REDIS_ADDR=redis:6379
@@ -17,15 +17,23 @@ services:
     expose:
       - 80
 
+  settings:
+    image: enix/bananasettings:${CI_COMMIT_TAG}
+    restart: unless-stopped
+    volumes:
+      - settings:/settings
+
   vault:
-    image: docker-registry.enix.io/products/banana/vault:${CI_COMMIT_TAG}
+    image: vault:1.1.3
+    command: /settings/vault/entrypoint.sh
     restart: unless-stopped
     ports:
-      - 7777:8200
+      - 8200:8200
     cap_add:
       - IPC_LOCK
     volumes:
       - vault:/data
+      - settings:/settings
 
   nginx:
     image: docker-registry.enix.io/products/banana/nginx:${CI_COMMIT_TAG}
@@ -42,3 +50,4 @@ services:
 volumes:
   db:
   vault:
+  settings:

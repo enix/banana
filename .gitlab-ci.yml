@@ -5,10 +5,7 @@ stages:
   - test
   - release
 
-variables:
-  REPO_DIR: /builds/products/banana
-
-select-version:
+select version:
   stage: prepare
   image: enix/semantic-release:gitlab
   script:
@@ -35,7 +32,7 @@ select-version:
   before_script:
     - echo ${CI_REGISTRY_PASSWORD} | docker login ${CI_REGISTRY} -u ${CI_REGISTRY_USER} --password-stdin
 
-build-stack-dev:
+build stack dev:
   <<: *build-stack
   script:
     - export CI_COMMIT_TAG=dev
@@ -45,7 +42,7 @@ build-stack-dev:
     - master
     - tags
 
-build-stack-prod:
+build stack prod:
   <<: *build-stack
   script:
     - export CI_COMMIT_TAG=$(cat VERSION)
@@ -57,6 +54,33 @@ build-stack-prod:
   except:
     - tags
 
+.build-bananadm: &build-bananadm
+  stage: build
+  image: docker:stable
+  services:
+    - docker:dind
+  script:
+    - cd admin
+    - echo ${CI_REGISTRY_PASSWORD} | docker login ${CI_REGISTRY} -u ${CI_REGISTRY_USER} --password-stdin
+    - docker build . -t ${CI_REGISTRY_IMAGE}/admin:${VERSION}
+    - docker push ${CI_REGISTRY_IMAGE}/admin:${VERSION}
+  except:
+    - tags
+
+build bananadm dev:
+  <<: *build-bananadm
+  variables:
+    VERSION: dev
+  except:
+    - master
+
+build bananadm prod:
+  <<: *build-bananadm
+  before_script:
+    - export VERSION=$(cat VERSION)
+  only:
+    - master
+
 .build-agent: &build-agent
   stage: build
   image:
@@ -66,19 +90,19 @@ build-stack-prod:
       - -c
   before_script:
     - mkdir -p /go/src/enix.io/banana
-    - ln -s ${REPO_DIR}/agent/src /go/src/enix.io/banana/src
-    - cp ${REPO_DIR}/agent/Gopkg.* /go/src/enix.io/banana/src
+    - ln -s ${CI_PROJECT_DIR}/agent/src /go/src/enix.io/banana/src
+    - cp ${CI_PROJECT_DIR}/agent/Gopkg.* /go/src/enix.io/banana/src
     - cd /go/src/enix.io/banana/src
     - unlink services
     - unlink models
-    - cp -r ${REPO_DIR}/api/src/services .
-    - cp -r ${REPO_DIR}/api/src/models .
-    - export VERSION=v$(cat ${REPO_DIR}/VERSION)
-    - echo -e "package main\nconst version = \"$(cat ${REPO_DIR}/VERSION > /dev/null && echo ${VERSION} || echo canary build ${CI_COMMIT_SHORT_SHA})\"" > version.go
+    - cp -r ${CI_PROJECT_DIR}/api/src/services .
+    - cp -r ${CI_PROJECT_DIR}/api/src/models .
+    - export VERSION=v$(cat ${CI_PROJECT_DIR}/VERSION)
+    - echo -e "package main\nconst version = \"$(cat ${CI_PROJECT_DIR}/VERSION > /dev/null && echo ${VERSION} || echo canary build ${CI_COMMIT_SHORT_SHA})\"" > version.go
   script:
     - cd /go/src/enix.io/banana/src
     - dep ensure
-    - CGO_ENABLED=0 go build -v -o ${REPO_DIR}/${BANANACTL}-${GOOS}
+    - CGO_ENABLED=0 go build -v -o ${CI_PROJECT_DIR}/${BANANACTL}-${GOOS}
   artifacts:
     paths:
       - ${BANANACTL}-${GOOS}
@@ -87,22 +111,22 @@ build-stack-prod:
   except:
     - tags
 
-build-agent-linux:
+build agent linux:
   <<: *build-agent
   variables:
     GOOS: linux
 
-build-agent-darwin:
+build agent darwin:
   <<: *build-agent
   variables:
     GOOS: darwin
 
-build-agent-windows:
+build agent windows:
   <<: *build-agent
   variables:
     GOOS: windows
 
-e2e-tests:
+e2e tests:
   stage: test
   image: kroniak/ssh-client
   before_script:
@@ -114,14 +138,14 @@ e2e-tests:
   script:
     - scp docker-compose.yml ubuntu@${MONITOR_NODE_IP}:/root/docker-compose.yml
     - ssh ubuntu@${MONITOR_NODE_IP} < config/e2e/upgrade_stack.sh
-    - scp bananactl-linux ubuntu@${TEST_NODE_IP}:~
+    - scp ${BANANACTL}-linux ubuntu@${TEST_NODE_IP}:~
     - ssh ubuntu@${TEST_NODE_IP} "sudo bash -s ${GL_TOKEN} ${CI_COMMIT_REF_NAME}" < config/e2e/test_agent.sh
   only:
     - master
   except:
     - tags
 
-test-admin:
+test admin:
   stage: test
   image: python:3.7
   script:
@@ -132,7 +156,7 @@ test-admin:
   except:
     - tags
 
-generate-compose-file:
+generate compose file:
     stage: pre-release
     image:
       name: docker/compose:1.24.1
@@ -150,7 +174,7 @@ generate-compose-file:
       paths:
         - docker-compose.yml
 
-semantic-release:
+semantic release:
   stage: release
   image: enix/semantic-release:gitlab
   script:
@@ -160,7 +184,7 @@ semantic-release:
   except:
     - tags
 
-release-agent:
+release agent on apt:
   stage: release
   image:
     name: skandyla/fpm
@@ -188,7 +212,7 @@ release-agent:
         --deb-pre-depends jq \
         --deb-pre-depends duplicity \
         --deb-pre-depends python-boto \
-        bananactl-linux=/usr/local/bin/bananactl \
+        ${BANANACTL}-linux=/usr/local/bin/${BANANACTL} \
         agent/plugins/=/etc/banana/plugins.d/ \
         config/systemd/=/etc/systemd/system/
     - cd packages
@@ -203,14 +227,44 @@ release-agent:
   except:
     - tags
 
-release-admin:
+release admin on pip:
   stage: release
   image: python:3.7
   before_script:
     - pip3 install twine
+    - export CI_COMMIT_TAG=$(cat VERSION)
   script:
     - cd admin
     - ./setup.py sdist bdist_wheel
     - twine upload dist/* --repository-url ${PYPI_REPOSITORY}
   only:
+    - master
+  except:
+    - tags
+
+release images on docker hub:
+  stage: release
+  image: docker:stable
+  services:
+    - docker:dind
+  before_script:
+    - echo ${DOCKER_HUB_PASSWORD} | docker login -u ${DOCKER_HUB_USER} --password-stdin
+    - echo ${CI_REGISTRY_PASSWORD} | docker login ${CI_REGISTRY} -u ${CI_REGISTRY_USER} --password-stdin
+  script:
+    - export VERSION=$(cat VERSION)
+    - docker pull ${CI_REGISTRY_IMAGE}/ui:${VERSION}
+    - docker pull ${CI_REGISTRY_IMAGE}/api:${VERSION}
+    - docker pull ${CI_REGISTRY_IMAGE}/settings:${VERSION}
+    - docker pull ${CI_REGISTRY_IMAGE}/admin:${VERSION}
+    - docker tag ${CI_REGISTRY_IMAGE}/ui:${VERSION} ${DOCKER_HUB_REPOSITORY}/bananui:${VERSION}
+    - docker tag ${CI_REGISTRY_IMAGE}/api:${VERSION} ${DOCKER_HUB_REPOSITORY}/bananapi:${VERSION}
+    - docker tag ${CI_REGISTRY_IMAGE}/settings:${VERSION} ${DOCKER_HUB_REPOSITORY}/bananasettings:${VERSION}
+    - docker tag ${CI_REGISTRY_IMAGE}/admin:${VERSION} ${DOCKER_HUB_REPOSITORY}/bananadm:${VERSION}
+    - docker push ${DOCKER_HUB_REPOSITORY}/bananui:${VERSION}
+    - docker push ${DOCKER_HUB_REPOSITORY}/bananapi:${VERSION}
+    - docker push ${DOCKER_HUB_REPOSITORY}/bananasettings:${VERSION}
+    - docker push ${DOCKER_HUB_REPOSITORY}/bananadm:${VERSION}
+  only:
+    - master
+  except:
     - tags

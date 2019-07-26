@@ -3,8 +3,8 @@
 set -e
 
 # update the agent
-cp /home/ubuntu/bananactl-linux /usr/local/bin/bananactl
-echo version that will be tested: $(bananactl version)
+cp /home/ubuntu/bananagent-linux /usr/local/bin/bananagent
+echo version that will be tested: $(bananagent version)
 
 # run a test backup
-bananactl b full "etc directory" /etc
+bananagent b full "etc directory" /etc

@@ -37,7 +37,7 @@ The current status of the project is *alpha*.
 
 Banana is compound of :
 * *bananaui*: A centralised "watch tower"
-* *bananactl*: An agent to be launched on any node to backup
+* *bananagent*: An agent to be launched on any node to backup
 * *bananadm*: An administrative configuration helper
 
 Banana depends on other components in order to work :

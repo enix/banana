@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"io"
 	"io/ioutil"
 	"time"
 
@@ -14,10 +13,10 @@ import (
 	"k8s.io/klog"
 )
 
-func fireAPIRequest(config *models.Config, url string, data io.Reader) (string, error) {
+func fireAPIRequest(config *models.Config, url string, data []byte) (string, error) {
 	fmt.Print("waiting for monitor... ")
 	httpClient := services.GetHTTPClient(config.SkipTLSVerify)
-	res, err := httpClient.Post(url, "application/json", data)
+	res, err := httpClient.Post(url, "application/json", bytes.NewReader(data))
 	if err != nil {
 		return "", err
 	}
@@ -41,7 +40,7 @@ func sendToMonitor(config *models.Config, message *models.AgentMessage) (string,
 	url := fmt.Sprintf("%s/agents/notify", config.MonitorURL)
 	rawMessage, _ := json.Marshal(message)
 
-	return fireAPIRequest(config, url, bytes.NewReader(rawMessage))
+	return fireAPIRequest(config, url, rawMessage)
 }
 
 // sendMessageToMonitor : Convenience function to create and send a message

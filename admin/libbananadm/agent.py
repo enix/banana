@@ -13,7 +13,7 @@ def create_agent(args):
 
     print('success! join your new agent(s) using:\n')
     print(
-        'bananactl {} --vault-addr={} init {} {} <agent name>'
+        'bananagent {} --vault-addr={} init {} {} <agent name>'
         .format(
             '--tls-skip-verify' if args.tls_skip_verify else '',
             os.getenv('VAULT_ADDR'),

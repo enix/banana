@@ -62,7 +62,7 @@ typings/
 
 # executables
 banana
-bananactl
+bananagent
 
 # certs & keys
 /security
@@ -73,3 +73,5 @@ __pycache__
 *.egg-info
 build
 dist
+
+\.DS_Store
