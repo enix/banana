@@ -8,7 +8,7 @@ services:
       - 80
 
   api:
-    image: ${IMAGE_BASE}api:${CI_COMMIT_TAG}
+    image: ${IMAGE_BASE_SHORT}api:${CI_COMMIT_TAG}
     restart: unless-stopped
     environment:
       - REDIS_ADDR=redis:6379
