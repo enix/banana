@@ -71,6 +71,7 @@ build bananadm dev:
     VERSION: dev
   except:
     - master
+    - tags
 
 build bananadm prod:
   <<: *build-bananadm
