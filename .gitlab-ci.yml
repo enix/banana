@@ -163,7 +163,6 @@ test admin:
         - -c
     script:
       - export CI_COMMIT_TAG=$(cat VERSION)
-      - echo ${COMPOSE_FILE}
       - docker-compose -f config/docker-compose.deploy.prod.yml config > ${COMPOSE_FILE}
     only:
       - master
@@ -171,7 +170,8 @@ test admin:
       - tags
     artifacts:
       paths:
-        - ${COMPOSE_FILE}
+        - docker-compose.yml
+        - docker-compose.test.yml
 
 generate testing compose file:
   <<: *generate-compose-file
