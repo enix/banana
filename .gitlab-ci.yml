@@ -185,7 +185,7 @@ generate release compose file:
   <<: *generate-compose-file
   before_script:
     - export IMAGE_BASE=${DOCKER_HUB_REPOSITORY}/banana
-    - export IMAGE_BASE_SHORT=${CI_REGISTRY_IMAGE}/banan
+    - export IMAGE_BASE_SHORT=${DOCKER_HUB_REPOSITORY}/banan
     - export COMPOSE_FILE=docker-compose.yml
   artifacts:
     paths:
