@@ -56,9 +56,7 @@ build stack prod:
 
 .build-bananadm: &build-bananadm
   stage: build
-  image: docker:stable
-  services:
-    - docker:dind
+  image: docker:stable-dind
   script:
     - cd admin
     - echo ${CI_REGISTRY_PASSWORD} | docker login ${CI_REGISTRY} -u ${CI_REGISTRY_USER} --password-stdin
