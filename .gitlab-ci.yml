@@ -16,8 +16,8 @@ select version:
     - if [ ${EXIT_CODE} -eq 0 ]; then cat release.txt | awk '{printf $7}' | tr -d '[:cntrl:]' > VERSION; else echo no new version will be released; fi
     - set -e
     - "echo next version: $(cat VERSION)"
-  # only:
-  #   - master
+  only:
+    - master
   except:
     - tags
   artifacts:
@@ -32,15 +32,15 @@ select version:
   before_script:
     - echo ${CI_REGISTRY_PASSWORD} | docker login ${CI_REGISTRY} -u ${CI_REGISTRY_USER} --password-stdin
 
-# build stack dev:
-#   <<: *build-stack
-#   script:
-#     - export CI_COMMIT_TAG=dev
-#     - docker-compose build --parallel
-#     - docker-compose push
-#   except:
-#     - master
-#     - tags
+build stack dev:
+  <<: *build-stack
+  script:
+    - export CI_COMMIT_TAG=dev
+    - docker-compose build --parallel
+    - docker-compose push
+  except:
+    - master
+    - tags
 
 build stack prod:
   <<: *build-stack
@@ -109,20 +109,20 @@ build bananadm prod:
   except:
     - tags
 
-# build agent linux:
-#   <<: *build-agent
-#   variables:
-#     GOOS: linux
+build agent linux:
+  <<: *build-agent
+  variables:
+    GOOS: linux
 
-# build agent darwin:
-#   <<: *build-agent
-#   variables:
-#     GOOS: darwin
+build agent darwin:
+  <<: *build-agent
+  variables:
+    GOOS: darwin
 
-# build agent windows:
-#   <<: *build-agent
-#   variables:
-#     GOOS: windows
+build agent windows:
+  <<: *build-agent
+  variables:
+    GOOS: windows
 
 e2e tests:
   stage: test
@@ -143,16 +143,16 @@ e2e tests:
   except:
     - tags
 
-# test admin:
-#   stage: test
-#   image: python:3.7
-#   script:
-#     - cd admin
-#     - ./setup.py test
-#     - ./setup.py install --dry-run -v
-#     - ./bananadm
-#   except:
-#     - tags
+test admin:
+  stage: test
+  image: python:3.7
+  script:
+    - cd admin
+    - ./setup.py test
+    - ./setup.py install --dry-run -v
+    - ./bananadm
+  except:
+    - tags
 
 .generate-compose-file: &generate-compose-file
     stage: pre-release
@@ -163,13 +163,9 @@ e2e tests:
         - -c
     script:
       - export CI_COMMIT_TAG=$(cat VERSION)
-      - echo ${COMPOSE_FILE}
       - docker-compose -f config/docker-compose.deploy.prod.yml config > ${COMPOSE_FILE}
-      - echo ${COMPOSE_FILE}
-      - cat ${COMPOSE_FILE}
-      - ls -l ${COMPOSE_FILE}
-    # only:
-    #   - master
+    only:
+      - master
     except:
       - tags
     artifacts:
